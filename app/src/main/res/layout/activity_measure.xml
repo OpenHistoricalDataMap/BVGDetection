@@ -5,15 +5,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="1"
-    tools:context="de.htwberlin.f4.ai.ma.android.measure.MeasureViewImpl">
+    tools:context="de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.MeasureViewImpl">
 
     <!-- TODO: Update blank fragment layout -->
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.4"
+        android:orientation="vertical"
         android:weightSum="1">
 
         <LinearLayout
@@ -34,7 +34,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/compass" />
-
                 />
             </LinearLayout>
 
@@ -120,13 +119,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
-                    android:orientation="horizontal"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.3"/>
+                        android:layout_weight="0.3" />
 
                     <ImageView
                         android:id="@+id/coordinates_measure_locate_wifi"
@@ -144,7 +143,6 @@
                 </LinearLayout>
 
 
-
             </LinearLayout>
 
         </LinearLayout>
@@ -154,18 +152,18 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.1"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:layout_weight="0.1">
 
         <TextView
             android:id="@+id/coordinates_measure_coordinates"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
             android:layout_weight="0.075"
             android:text="0.0 | 0.0 | 0.0"
-            android:layout_centerHorizontal="true"
             android:textColor="@android:color/holo_red_light"
-            android:textSize="40sp"/>
+            android:textSize="40sp" />
     </RelativeLayout>
 
 
@@ -175,9 +173,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="0.1"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
 
         android:weightSum="1">
 
@@ -205,30 +203,18 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.1"/>
+            android:layout_weight="0.1" />
 
         <Switch
             android:id="@+id/coordinates_measure_stairs"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="Treppe"/>
-
+            android:text="Treppe" />
 
 
     </LinearLayout>
-
-
-    <!--
-    <ListView
-        android:id="@+id/coordinates_measure_steplist"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.4"
-        android:transcriptMode="alwaysScroll"
-        android:stackFromBottom="false"/>
-    -->
-
+    
     <!-- Layout for Start and Target Node -->
     <!-- divide into 3 parts horizontal -->
     <LinearLayout
@@ -304,7 +290,6 @@
                     android:text="Nullpunkt" />
 
             </RelativeLayout>
-
 
 
         </LinearLayout>
@@ -397,7 +382,6 @@
                     android:text="x | y | z"
                     android:textSize="16sp" />
             </RelativeLayout>
-
 
 
         </LinearLayout>

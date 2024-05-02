@@ -1,145 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        >
+        android:layout_height="500dp">
 
 
         <RelativeLayout
+            android:id="@+id/start_dest_spinners"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/start_dest_spinners"
+            android:layout_centerHorizontal="true"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_centerHorizontal="true">
+            android:layout_marginEnd="10dp">
 
             <TextView
+                android:id="@+id/start_node_spinner_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/from_label_text"
-                android:id="@+id/start_node_spinner_label"
-                android:textStyle="bold"
-                android:textSize="18sp"/>
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <Spinner
+                android:id="@+id/start_node_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="55dp"
-                android:id="@+id/start_node_spinner"
                 android:spinnerMode="dropdown" />
 
             <ImageButton
+                android:id="@+id/locate_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/locate_button"
                 android:layout_marginTop="5dp"
                 android:layout_toEndOf="@+id/start_node_spinner"
                 android:background="@android:color/white"
-                android:contentDescription="@string/locate_button_description"
-                />
+                android:contentDescription="@string/locate_button_description" />
 
 
             <TextView
+                android:id="@+id/destination_node_spinner_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/start_node_spinner_label"
                 android:layout_marginTop="23dp"
                 android:text="@string/to_label_text"
-                android:id="@+id/destination_node_spinner_label"
-                android:textStyle="bold"
                 android:textSize="18sp"
-                />
+                android:textStyle="bold" />
 
             <Spinner
+                android:id="@+id/destination_node_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/destination_node_spinner"
-                android:spinnerMode="dropdown"
                 android:layout_below="@+id/start_node_spinner"
                 android:layout_marginStart="55dp"
-                />
+                android:spinnerMode="dropdown" />
 
         </RelativeLayout>
 
 
         <LinearLayout
+            android:id="@+id/accessibly_checkbox_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/accessibly_checkbox_layout"
             android:layout_below="@+id/start_dest_spinners"
+            android:layout_centerInParent="true"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_centerInParent="true">
+            android:layout_marginEnd="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/accessibility_checkbox_text"/>
+                android:text="@string/accessibility_checkbox_text" />
 
             <CheckBox
+                android:id="@+id/accessibility_checkbox_navi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:id="@+id/accessibility_checkbox_navi"/>
+                android:layout_marginTop="20dp" />
 
             <ImageButton
+                android:id="@+id/find_route_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/find_route_button"
                 android:contentDescription="@string/find_route_button_description" />
 
         </LinearLayout>
 
 
         <TextView
+            android:id="@+id/total_distance_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/total_distance_textview"
             android:layout_below="@+id/accessibly_checkbox_layout"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true" />
 
         <View
+            android:id="@+id/separator_view"
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="#7A7A7A"
             android:layout_below="@+id/total_distance_textview"
-            android:id="@+id/separator_view"/>
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
+            android:background="#7A7A7A" />
 
 
-        <ListView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ListView
             android:id="@+id/navigation_result_listview"
-            android:layout_below="@+id/separator_view"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/separator_view" />
 
 
     </RelativeLayout>
 
 
-
-
-
     <TextView
+        android:id="@+id/infobox_routefinder"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginBottom="15dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:paddingTop="6dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:id="@+id/infobox_routefinder"
+        android:layout_marginBottom="15dp"
         android:background="@drawable/info_box"
-        android:text="@string/navigation_infobox_text"
-        android:layout_alignParentBottom="true"/>
+        android:paddingStart="10dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="10dp"
+        android:text="@string/navigation_infobox_text" />
 
 </RelativeLayout>

@@ -12,8 +12,10 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.EdgeFactory;
@@ -23,7 +25,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * This activity is used to manage (create and delete) edges ("Wege verwalten").
  */
 
@@ -106,7 +108,9 @@ public class EdgesManagerActivity extends BaseActivity {
                     lastSelectedItemA = selectedA;
                 }
             }
-            public void onNothingSelected(AdapterView<?> arg0) {}
+
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
         });
 
 
@@ -126,8 +130,7 @@ public class EdgesManagerActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 connectNodesButton.setImageResource(R.drawable.ways_inactive);
-                boolean accessible = false;
-                if (accessibilityCheckbox.isChecked()) { accessible = true; }
+                boolean accessible = accessibilityCheckbox.isChecked();
 
                 Node nodeA = databaseHandler.getNode(spinnerA.getSelectedItem().toString());
                 Node nodeB = databaseHandler.getNode(spinnerB.getSelectedItem().toString());

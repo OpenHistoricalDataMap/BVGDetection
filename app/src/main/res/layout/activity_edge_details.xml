@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:weightSum="1">
 
     <!-- Layout for Start and Target Node -->
@@ -39,7 +38,6 @@
             </RelativeLayout>
 
 
-
             <ImageView
                 android:id="@+id/edgedetails_start_image"
                 android:layout_width="match_parent"
@@ -62,12 +60,7 @@
                     android:textSize="16sp" />
             </RelativeLayout>
 
-
-
-
         </LinearLayout>
-
-
 
         <!-- target node -->
         <LinearLayout
@@ -90,8 +83,6 @@
                     android:text="Ziel"
                     android:textSize="25sp" />
             </RelativeLayout>
-
-
 
 
             <ImageView
@@ -121,7 +112,6 @@
 
     </LinearLayout>
 
-
     <!-- Outer Layout for edge distance and handycapfriendly-->
     <LinearLayout
         android:layout_width="match_parent"
@@ -144,7 +134,6 @@
                 android:layout_weight="0.4">
 
                 <TextView
-
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
@@ -162,12 +151,10 @@
                     android:id="@+id/edgedetails_distance_value"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
                     android:text="0.00"
                     android:textAlignment="center"
-                    android:textSize="20sp"
-                    android:layout_marginTop="10dp"
-                    />
-
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -194,19 +181,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Barrierefrei"
-
                 android:textColor="?android:attr/textColorTertiary"
                 android:textSize="18sp" />
-
-
         </LinearLayout>
 
 
     </LinearLayout>
 
     <!-- additional info -->
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -226,10 +208,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textMultiLine"
-
             android:textAlignment="center"
             android:textSize="20sp" />
-
 
     </LinearLayout>
 
@@ -239,7 +219,6 @@
         android:layout_height="0dp"
         android:layout_weight="0.1"
         android:orientation="horizontal">
-
 
         <Button
             android:id="@+id/edgedetails_delete"
@@ -255,9 +234,7 @@
             android:layout_weight="0.2"
             android:text="@string/step_setup_save" />
 
-
     </LinearLayout>
-
 
     <ListView
         android:id="@+id/edgedetails_steplist"
@@ -265,8 +242,6 @@
         android:layout_height="0dp"
         android:layout_weight="0.225">
 
-
     </ListView>
-
 
 </LinearLayout>

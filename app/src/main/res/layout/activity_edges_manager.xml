@@ -1,78 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
 
     <RelativeLayout
+        android:id="@+id/nodes_connector_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/nodes_connector_layout"
+        android:layout_centerHorizontal="true"
         android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_centerHorizontal="true">
+        android:layout_marginEnd="10dp">
+
 
         <TextView
+            android:id="@+id/start_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/start_edgesmanager"
             android:layout_marginTop="10dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/start_label"/>
+            android:text="@string/start_edgesmanager"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
+            android:id="@+id/nodeA_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:id="@+id/nodeA_spinner"
-            android:spinnerMode="dropdown"
-            android:layout_toEndOf="@+id/start_label">
-        </Spinner>
+            android:layout_toEndOf="@+id/start_label"
+            android:spinnerMode="dropdown"></Spinner>
 
         <TextView
+            android:id="@+id/destination_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/destination_edgesmanager"
-            android:id="@+id/destination_label"
+            android:layout_below="@+id/start_label"
             android:layout_marginTop="24dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_below="@+id/start_label"/>
+            android:text="@string/destination_edgesmanager"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
+            android:id="@+id/nodeB_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:id="@+id/nodeB_spinner"
-            android:spinnerMode="dropdown"
             android:layout_below="@+id/nodeA_spinner"
-            android:layout_toEndOf="@+id/destination_label">
-        </Spinner>
-
+            android:layout_marginStart="4dp"
+            android:layout_toEndOf="@+id/destination_label"
+            android:spinnerMode="dropdown"></Spinner>
 
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_below="@+id/destination_label"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp">
 
             <CheckBox
+                android:id="@+id/accessibility_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:id="@+id/accessibility_checkbox"
-                android:text="@string/accessibility_checkbox_text"
-                />
+                android:text="@string/accessibility_checkbox_text" />
 
             <ImageButton
+                android:id="@+id/connect_nodes_imagebutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:id="@+id/connect_nodes_imagebutton"
-                android:contentDescription="@string/connect_nodes_button_text"
-                />
+                android:contentDescription="@string/connect_nodes_button_text" />
 
         </LinearLayout>
 
@@ -81,38 +77,37 @@
 
 
     <View
+        android:id="@+id/separator_view_edgesmanager"
         android:layout_width="fill_parent"
         android:layout_height="2dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:background="#7A7A7A"
         android:layout_below="@+id/nodes_connector_layout"
-        android:id="@+id/separator_view_edgesmanager"/>
-
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="5dp"
+        android:background="#7A7A7A" />
 
 
     <ListView
+        android:id="@+id/edges_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/edges_listview"
         android:layout_below="@+id/separator_view_edgesmanager"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp" />
 
 
     <TextView
+        android:id="@+id/infobox_record_edit"
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:layout_marginBottom="10dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:paddingTop="6dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/info_box"
-        android:text="@string/edges_manager_infobox_text"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/infobox_record_edit"/>
+        android:paddingStart="10dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="10dp"
+        android:text="@string/edges_manager_infobox_text" />
 
 </RelativeLayout>

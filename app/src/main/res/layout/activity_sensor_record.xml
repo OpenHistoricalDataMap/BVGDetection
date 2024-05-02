@@ -8,10 +8,11 @@
     <!-- TODO: Update blank fragment layout -->
 
     <CheckBox
+        android:id="@+id/fragment_record_cb_accelerometer"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
-        android:text="Accelerometer"
-        android:id="@+id/fragment_record_cb_accelerometer"/>
+        android:text="Accelerometer" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,10 +45,10 @@
 
 
     <CheckBox
+        android:id="@+id/fragment_record_cb_accelerometer_linear"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
-        android:text="Accelerometer Linear"
-        android:id="@+id/fragment_record_cb_accelerometer_linear"/>/>
+        android:text="Accelerometer Linear" />/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -116,10 +117,10 @@
 
 
     <CheckBox
+        android:id="@+id/fragment_record_cb_gyroscope"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
-        android:text="Gyroscope"
-        android:id="@+id/fragment_record_cb_gyroscope"/>/>
+        android:text="Gyroscope" />/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -187,10 +188,10 @@
     </LinearLayout>
 
     <CheckBox
+        android:id="@+id/fragment_record_cb_magneticfield"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
-        android:text="Magnetic Field"
-        android:id="@+id/fragment_record_cb_magneticfield"/>/>
+        android:text="Magnetic Field" />/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -222,30 +223,27 @@
     </LinearLayout>
 
 
-
-
     <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:weightSum="1">
-
-    <CheckBox
-        android:layout_width="0dp"
-        android:layout_height="19dp"
-        android:layout_weight="0.4"
-        android:text="CompassFusion"
-        android:id="@+id/fragment_record_cb_compassfusion"/>/>
-
-    <TextView
-        android:id="@+id/fragment_record_compass_fusion"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.3"
-         />
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <CheckBox
+            android:id="@+id/fragment_record_cb_compassfusion"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_weight="0.4"
+            android:text="CompassFusion" />/>
+
+        <TextView
+            android:id="@+id/fragment_record_compass_fusion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3" />
 
 
-</LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -254,18 +252,17 @@
         android:weightSum="1">
 
         <CheckBox
+            android:id="@+id/fragment_record_cb_compasssimple"
             android:layout_width="0dp"
             android:layout_height="19dp"
             android:layout_weight="0.4"
-            android:text="CompassSimple"
-            android:id="@+id/fragment_record_cb_compasssimple"/>/>
+            android:text="CompassSimple" />/>
 
         <TextView
             android:id="@+id/fragment_record_compass_simple"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            />
+            android:layout_weight="0.3" />
 
 
     </LinearLayout>
@@ -277,21 +274,18 @@
         android:weightSum="1">
 
         <CheckBox
+            android:id="@+id/fragment_record_cb_pressure"
             android:layout_width="0dp"
             android:layout_height="19dp"
             android:layout_weight="0.5"
-            android:text="Pressure"
-            android:id="@+id/fragment_record_cb_pressure"/>/>
+            android:text="Pressure" />/>
 
         <TextView
             android:id="@+id/fragment_record_barometer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-             />
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
-
-
 
 
     <TextView
@@ -311,7 +305,7 @@
         android:id="@+id/fragment_record_period_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="1000"/>
+        android:max="1000" />
 
     <Button
         android:id="@+id/fragment_record_start_btn"
@@ -324,7 +318,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/record_stop" />
-
 
 
 </LinearLayout>
