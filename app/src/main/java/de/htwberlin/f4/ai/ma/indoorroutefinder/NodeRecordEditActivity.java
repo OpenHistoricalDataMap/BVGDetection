@@ -15,7 +15,6 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -28,6 +27,9 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+
 import com.bumptech.glide.Glide;
 import java.io.File;
 import java.sql.Timestamp;
@@ -386,6 +388,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == -1) {
             nodeIdEdittext.setEnabled(false);
             pictureTaken = true;

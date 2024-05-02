@@ -1,18 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    compileSdk 34
 
     defaultConfig {
         applicationId "de.htwberlin.f4.ma.indoorroutefinder"
-        minSdkVersion 23
-        targetSdkVersion 23
+        minSdkVersion 26
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
-
+        setProperty("archivesBaseName", "Indoor Route Finder")
     }
-
 
     buildTypes {
         release {
@@ -20,19 +18,24 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'de.htwberlin.f4.ai.ma.indoorroutefinder'
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/guava-19.0.jar')
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.android.gms:play-services-vision:10.2.6'
-    testCompile 'junit:junit:4.12'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    def appcompat_version = "1.6.1"
 
-    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
-    compile 'com.android.support:support-v4:25.3.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.appcompat:appcompat-resources:$appcompat_version"
+
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
+    implementation 'com.google.android.gms:play-services-vision:20.1.3'
+    testImplementation 'junit:junit:4.13.2'
+
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
 }

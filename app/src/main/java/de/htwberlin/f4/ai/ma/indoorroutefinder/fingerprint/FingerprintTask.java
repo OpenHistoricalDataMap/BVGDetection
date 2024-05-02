@@ -1,5 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint;
 
+import android.annotation.SuppressLint;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import com.google.common.collect.ArrayListMultimap;
@@ -13,10 +14,11 @@ import java.util.Locale;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformationFactory;
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 
 /**
@@ -79,6 +81,7 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
 
 
     @Override
+    @SuppressLint("MissingPermission")
     protected Fingerprint doInBackground(Void... voids) {
             for (int i = 0; i < seconds; i++) {
 
