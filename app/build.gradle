@@ -19,6 +19,12 @@ android {
         }
     }
     namespace 'de.htwberlin.f4.ai.ma.indoorroutefinder'
+
+//    tasks.withType(JavaCompile).tap {
+//        configureEach {
+//            options.compilerArgs << "-Xlint:deprecation"
+//        }
+//    }
 }
 
 dependencies {

@@ -4,10 +4,9 @@ import android.content.Context;
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Factory for creating LocationCalculator objects
  */
-
 public class LocationCalculatorFactory {
 
     public static LocationCalculator createInstance(Context context) {

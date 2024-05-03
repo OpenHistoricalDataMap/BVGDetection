@@ -26,16 +26,14 @@ import com.google.android.gms.vision.barcode.Barcode;
 /**
  * Factory for creating a tracker and associated graphic to be associated with a new barcode.  The
  * multi-processor uses this factory to create barcode trackers as needed -- one for each barcode.
- */
-
-/**
+ * <p>
  * Used for getting QR-Code content
- *
- * Source: https://github.com/varvet/BarcodeReaderSample
+ * <p>
+ * Source: <a href="https://github.com/varvet/BarcodeReaderSample">...</a>
  */
 
 class BarcodeTrackerFactory implements MultiProcessor.Factory<Barcode> {
-    private Context mContext;
+    private final Context mContext;
 
     BarcodeTrackerFactory(Context context) {
         mContext = context;

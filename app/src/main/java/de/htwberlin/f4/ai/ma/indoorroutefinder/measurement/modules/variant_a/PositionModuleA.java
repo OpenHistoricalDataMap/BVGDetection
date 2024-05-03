@@ -10,18 +10,17 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.PositionModul
 
 /**
  * PositionModuleA Class which implements the PositionModule Interface
- *
+ * <p>
  * Used for IndoorMeasurementType.VARIANT_A
- *
+ * <p>
  * Orientation: CompassFusion (Rotation Vector)
  * Altitude: Barometer
  * Distance: Steplength
- *
+ * <p>
  * No Lowpass filter
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public class PositionModuleA implements PositionModule {
 
     protected AltitudeModule altitudeModule;
@@ -33,7 +32,7 @@ public class PositionModuleA implements PositionModule {
     // coordinates[0] = x = east / west
     // coordinates[1] = y = north / south
     // coordinates[2] = z = movement upward / downward
-    private float[] coordinates;
+    private final float[] coordinates;
 
 
     public PositionModuleA(Context context, CalibrationData calibrationData) {
@@ -47,10 +46,10 @@ public class PositionModuleA implements PositionModule {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                              Interface Methods                                    *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                              Interface Methods                                    *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**

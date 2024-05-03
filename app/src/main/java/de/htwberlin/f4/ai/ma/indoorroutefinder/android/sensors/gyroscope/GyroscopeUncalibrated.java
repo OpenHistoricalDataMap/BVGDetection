@@ -7,17 +7,15 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
 
-import java.sql.Timestamp;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * Gyroscope Class which implements the Sensor and SensorEventListener Interface
- *
+ * <p>
  * Used Android Sensor: Sensor.TYPE_LINEAR_GYROSCOPE_UNCALIBRATED
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
@@ -25,12 +23,11 @@ public class GyroscopeUncalibrated implements SensorEventListener, de.htwberlin.
 
     private static final SensorType SENSORTYPE = SensorType.GYROSCOPE_UNCALIBRATED;
 
-    private SensorManager sensorManager;
+    private final SensorManager sensorManager;
+    private final int sensorRate;
     private Sensor gyroscopeSensor;
     private SensorListener listener;
-
     private SensorData sensorData;
-    private int sensorRate;
 
 
     public GyroscopeUncalibrated(Context context, int sensorRate) {
@@ -42,10 +39,10 @@ public class GyroscopeUncalibrated implements SensorEventListener, de.htwberlin.
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Sensor Interface Methods                            *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Sensor Interface Methods                            *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -89,11 +86,7 @@ public class GyroscopeUncalibrated implements SensorEventListener, de.htwberlin.
      */
     @Override
     public boolean isSensorAvailable() {
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE_UNCALIBRATED) == null) {
-            return false;
-        }
-
-        return true;
+        return sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE_UNCALIBRATED) != null;
     }
 
 
@@ -120,31 +113,31 @@ public class GyroscopeUncalibrated implements SensorEventListener, de.htwberlin.
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                      SensorEventListener Interface Methods                        *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                      SensorEventListener Interface Methods                        *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
      * Copy sensor values and create SensorData Object with sensortype, correct timestamp and
      * sensor values
-     *
+     * <p>
      * values[0]: angular speed (without drift compensation) around the X axis in rad/s
      * values[1]: angular speed (without drift compensation) around the Y axis in rad/s
      * values[2]: angular speed (without drift compensation) around the Z axis in rad/s
-     *
+     * <p>
      * All values are in radians/second and measure the rate of rotation around the X, Y and Z axis
-     *
+     * <p>
      * Rotation is positive in the counter-clockwise direction (right-hand rule)
      *
-     * @param sensorEvent
+     * @param sensorEvent sensor event
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE_UNCALIBRATED) {
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            long realTimestamp = timestamp.getTime();
+//            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            // long realTimestamp = timestamp.getTime();
             float[] values = new float[sensorEvent.values.length];
             System.arraycopy(sensorEvent.values, 0, values, 0, sensorEvent.values.length);
 

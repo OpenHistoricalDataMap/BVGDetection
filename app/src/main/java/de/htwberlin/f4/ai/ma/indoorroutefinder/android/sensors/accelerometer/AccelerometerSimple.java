@@ -7,17 +7,15 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
 
-import java.sql.Timestamp;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * AccelerometerSimple Class which implements the Sensor and SensorEventListener Interface
- *
+ * <p>
  * Used Android Sensor: Sensor.TYPE_ACCELEROMETER
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
@@ -25,12 +23,11 @@ public class AccelerometerSimple implements SensorEventListener, de.htwberlin.f4
 
     private static final SensorType SENSORTYPE = SensorType.ACCELEROMETER_SIMPLE;
 
-    private SensorManager sensorManager;
+    private final SensorManager sensorManager;
+    private final int sensorRate;
     private Sensor accelerometerSensor;
     private SensorListener listener;
-
     private SensorData sensorData;
-    private int sensorRate;
 
 
     public AccelerometerSimple(Context context, int sensorRate) {
@@ -42,10 +39,10 @@ public class AccelerometerSimple implements SensorEventListener, de.htwberlin.f4
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Sensor Interface Methods                            *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Sensor Interface Methods                            *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -89,11 +86,7 @@ public class AccelerometerSimple implements SensorEventListener, de.htwberlin.f4
      */
     @Override
     public boolean isSensorAvailable() {
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) == null) {
-            return false;
-        }
-
-        return true;
+        return sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null;
     }
 
 
@@ -120,20 +113,21 @@ public class AccelerometerSimple implements SensorEventListener, de.htwberlin.f4
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                      SensorEventListener Interface Methods                        *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                      SensorEventListener Interface Methods                        *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
      * Copy sensor values and create SensorData Object with sensortype, correct timestamp and
      * sensor values
-     *
+     * <p>
      * values[0]: Acceleration force along the x axis (including gravity).
      * values[1]: Acceleration force along the y axis (including gravity).
      * values[2]: Acceleration force along the z axis (including gravity).
-     * @param sensorEvent
+     *
+     * @param sensorEvent sensor event
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {

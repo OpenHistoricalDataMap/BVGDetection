@@ -7,30 +7,26 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
 
-import java.sql.Timestamp;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * MagneticFieldSensor Class which implements the Sensor and SensorEventListener Interface
- *
+ * <p>
  * Used Android Sensor: Sensor.TYPE_MAGNETIC_FIELD
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class MagneticFieldSensor implements SensorEventListener, de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor {
 
     private static final SensorType SENSORTYPE = SensorType.MAGNETIC_FIELD;
-
-    private SensorManager sensorManager;
+    private final SensorManager sensorManager;
+    private final int sensorRate;
     private Sensor magneticFieldSensor;
     private SensorListener listener;
-
     private SensorData sensorData;
-    private int sensorRate;
 
 
     public MagneticFieldSensor(Context context, int sensorRate) {
@@ -42,10 +38,10 @@ public class MagneticFieldSensor implements SensorEventListener, de.htwberlin.f4
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Sensor Interface Methods                            *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Sensor Interface Methods                            *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -89,10 +85,7 @@ public class MagneticFieldSensor implements SensorEventListener, de.htwberlin.f4
      */
     @Override
     public boolean isSensorAvailable() {
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) == null) {
-            return false;
-        }
-        return true;
+        return sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null;
     }
 
     /**
@@ -118,19 +111,19 @@ public class MagneticFieldSensor implements SensorEventListener, de.htwberlin.f4
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                      SensorEventListener Interface Methods                        *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                      SensorEventListener Interface Methods                        *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
      * Copy sensor values and create SensorData Object with sensortype, correct timestamp and
      * sensor values
-     *
+     * <p>
      * All values are in micro-Tesla (uT) and measure the ambient magnetic field in the X, Y and Z axis.
      *
-     * @param sensorEvent
+     * @param sensorEvent sensor event
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {

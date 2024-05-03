@@ -2,6 +2,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.persistence;
 
 import android.os.Environment;
 import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,17 +12,16 @@ import java.sql.Timestamp;
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Provides functions for file management (creating and copying).
  */
-
 public class FileUtilities {
 
     /**
      * Copies a File from one to another path.
      *
      * @param fromFile FileInputStream for the file to copy from.
-     * @param toFile FileInputStream for the file to copy to.
+     * @param toFile   FileInputStream for the file to copy to.
      */
     static void copyFile(FileInputStream fromFile, FileOutputStream toFile) throws IOException {
         FileChannel fromChannel = null;

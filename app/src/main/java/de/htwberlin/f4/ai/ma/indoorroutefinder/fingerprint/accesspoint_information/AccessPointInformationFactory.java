@@ -2,7 +2,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_informat
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Factory for creating AccessPointInformations
  */
 

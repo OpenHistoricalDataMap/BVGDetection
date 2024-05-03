@@ -3,7 +3,6 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -31,10 +30,12 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
+
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.AsyncResponse;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
@@ -49,47 +50,50 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.JSON.JSONWriter;
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * This class handles the recording and editing of nodes.
- *
+ * <p>
  * Icon sources:
- * https://www.iconfinder.com/icons/322425/camera_icon
- * https://www.iconfinder.com/icons/115789/trash_icon
- * https://www.iconfinder.com/icons/809537/diskette_guardar_multimedia_save_save_disk_technology_icon
- * https://www.iconfinder.com/icons/1608681/exchange_icon
- * https://www.iconfinder.com/icons/2135802/communication_network_tower_wifi_wifi_tower_icon
- * https://www.iconfinder.com/icons/492103/directions_location_navigation_search_socialmedia_icon
- * https://www.iconfinder.com/icons/2135924/location_map_navigation_pointer_icon
- * https://www.iconfinder.com/icons/352562/navigation_icon
- * https://www.iconfinder.com/icons/339913/help_info_information_notice_icon
- * https://www.iconfinder.com/icons/2135801/communication_internet_network_wifi_icon
- * https://www.iconfinder.com/icons/2075795/arrow_below_down_low_icon
- * https://www.flaticon.com/free-icon/fingerprint-with-crosshair-focus_25927
- * http://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/48/export-icon.png
- * http://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/48/import-icon.png
- * https://thenounproject.com/search/?q=connect&i=1227146
- *
+ * <a href="https://www.iconfinder.com/icons/322425/camera_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/115789/trash_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/809537/diskette_guardar_multimedia_save_save_disk_technology_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/1608681/exchange_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/2135802/communication_network_tower_wifi_wifi_tower_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/492103/directions_location_navigation_search_socialmedia_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/2135924/location_map_navigation_pointer_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/352562/navigation_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/339913/help_info_information_notice_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/2135801/communication_internet_network_wifi_icon">...</a>
+ * <a href="https://www.iconfinder.com/icons/2075795/arrow_below_down_low_icon">...</a>
+ * <a href="https://www.flaticon.com/free-icon/fingerprint-with-crosshair-focus_25927">...</a>
+ * <a href="http://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/48/export-icon.png">...</a>
+ * <a href="http://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/48/import-icon.png">...</a>
+ * <a href="https://thenounproject.com/search/?q=connect&i=1227146">...</a>
  */
-
 public class NodeRecordEditActivity extends BaseActivity implements AsyncResponse {
 
+    private static final int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 3;
+    private static final int CAM_REQUEST = 1;
+    private final File sdCard = Environment.getExternalStorageDirectory();
+    private final Context context = this;
+    String[] permissions;
+    TextView initialWifiTextview;
+    TextView initialWifiLabelTextview;
+    TextView coordinatesLabelTextview;
+    ImageButton showFingerprintButton;
+    ImageButton captureButton;
+    ImageButton saveNodeButton;
+    RelativeLayout buttonsLayout;
     private String picturePath;
     private String oldNodeId = null;
     private List<String> oldPicturePaths;
-    String[] permissions;
     private int recordTime;
     private int progressStatus = 0;
     private ProgressBar progressBar;
     private JSONWriter JSONWriter;
     private TextView progressTextview;
-    TextView initialWifiTextview;
-    TextView initialWifiLabelTextview;
-    TextView coordinatesLabelTextview;
     private TextView infobox;
-    ImageButton showFingerprintButton;
     private ImageButton recordButton;
-    ImageButton captureButton;
-    ImageButton saveNodeButton;
     private ImageView cameraImageview;
     private EditText nodeIdEdittext;
     private EditText descriptionEdittext;
@@ -104,17 +108,10 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     private boolean verboseMode;
     private boolean useSSIDfilter;
     private Node nodeToUpdate;
-    private File sdCard = Environment.getExternalStorageDirectory();
-    private Context context = this;
     private WifiManager wifiManager;
     private Timestamp timestamp;
     private Fingerprint fingerprint = null;
     private FingerprintTask fingerprintTask;
-    private static final int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 3;
-    private static final int CAM_REQUEST = 1;
-    RelativeLayout buttonsLayout;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +136,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
 
         recordButton = (ImageButton) findViewById(R.id.record_button);
-        captureButton  = (ImageButton) findViewById(R.id.capture_button);
+        captureButton = (ImageButton) findViewById(R.id.capture_button);
         saveNodeButton = (ImageButton) findViewById(R.id.save_node_button);
         showFingerprintButton = (ImageButton) findViewById(R.id.show_fingerprint_button);
         cameraImageview = (ImageView) findViewById(R.id.camera_imageview);
@@ -221,7 +218,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 initialWifiTextview.setText("-");
             }
 
-            if (nodeToUpdate.getCoordinates().length() > 0) {
+            if (!nodeToUpdate.getCoordinates().isEmpty()) {
                 coordinatesEdittext.setVisibility(View.VISIBLE);
                 coordinatesLabelTextview.setVisibility(View.VISIBLE);
                 coordinatesEdittext.setText(nodeToUpdate.getCoordinates());
@@ -233,130 +230,107 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 Glide.with(this).load(picturePath).into(cameraImageview);
             }
 
-            deleteNodeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new AlertDialog.Builder(view.getContext())
-                            .setTitle(getString(R.string.delete_entry_title_question))
-                            .setMessage("Soll der Ort \"" + oldNodeId + "\" wirklich gelöscht werden?")
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
+            deleteNodeButton.setOnClickListener(view -> new AlertDialog.Builder(view.getContext())
+                    .setTitle(getString(R.string.delete_entry_title_question))
+                    .setMessage("Soll der Ort \"" + oldNodeId + "\" wirklich gelöscht werden?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
 
-                                    if (nodeToUpdate.getPicturePath() != null) {
-                                        File imageFile = new File(nodeToUpdate.getPicturePath());
-                                        imageFile.delete();
-                                    }
-                                    databaseHandler.deleteNode(nodeToUpdate);
+                        if (nodeToUpdate.getPicturePath() != null) {
+                            File imageFile = new File(nodeToUpdate.getPicturePath());
+                            imageFile.delete();
+                        }
+                        databaseHandler.deleteNode(nodeToUpdate);
 
-                                    finish();
-                                    Intent intent = new Intent(context, NodeListActivity.class);
-                                    startActivity(intent);
-                                }
-                            })
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-                }
-            });
+                        finish();
+                        Intent intent1 = new Intent(context, NodeListActivity.class);
+                        startActivity(intent1);
+                    })
+                    .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show());
 
-            showFingerprintButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(context, ShowFingerprintActivity.class);
-                    intent.putExtra("nodeID", nodeToUpdate.getId());
-                    startActivity(intent);
-                }
+            showFingerprintButton.setOnClickListener(view -> {
+                Intent intent12 = new Intent(context, ShowFingerprintActivity.class);
+                intent12.putExtra("nodeID", nodeToUpdate.getId());
+                startActivity(intent12);
             });
         }
 
 
         saveNodeButton.setImageResource(R.drawable.save);
 
-        recordButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    if (nodeIdEdittext.getText().toString().equals("")){
-                        Toast.makeText(getApplicationContext(), getString(R.string.please_enter_node_name), Toast.LENGTH_SHORT).show();
-                    } else if (databaseHandler.checkIfNodeExists(nodeIdEdittext.getText().toString()) && !updateMode) {
-                        Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_SHORT).show();
-                    } else {
-                        recordButton.setEnabled(false);
-                        progressBar.setVisibility(View.VISIBLE);
-                        progressTextview.setVisibility(View.VISIBLE);
-                        recordButton.setImageResource(R.drawable.fingerprint_low_contrast);
-                        recordTime = minutesDropdown.getSelectedItemPosition() + 1;
+        recordButton.setOnClickListener(v -> {
+            if (nodeIdEdittext.getText().toString().isEmpty()) {
+                Toast.makeText(getApplicationContext(), getString(R.string.please_enter_node_name), Toast.LENGTH_SHORT).show();
+            } else if (databaseHandler.checkIfNodeExists(nodeIdEdittext.getText().toString()) && !updateMode) {
+                Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_SHORT).show();
+            } else {
+                recordButton.setEnabled(false);
+                progressBar.setVisibility(View.VISIBLE);
+                progressTextview.setVisibility(View.VISIBLE);
+                recordButton.setImageResource(R.drawable.fingerprint_low_contrast);
+                recordTime = minutesDropdown.getSelectedItemPosition() + 1;
 
-                        verboseMode = sharedPreferences.getBoolean("verbose_mode", false);
-                        String ssidFilterString = null;
+                verboseMode = sharedPreferences.getBoolean("verbose_mode", false);
+                String ssidFilterString = null;
 
-                        if (verboseMode) {
-                            if (useSSIDfilter) {
-                                ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
-                            }
-                            fingerprintTask = new FingerprintTask(ssidFilterString, 60 * recordTime, wifiManager, false, progressBar, progressTextview, infobox);
-                        } else {
-                            if (useSSIDfilter) {
-                                ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
-                            }
-                            infobox.setText(getString(R.string.please_stay));
-                            fingerprintTask = new FingerprintTask(ssidFilterString, 60 * recordTime, wifiManager, false, progressBar, progressTextview);
-                        }
-
-                        fingerprintTask.delegate = NodeRecordEditActivity.this;
-                        fingerprintTask.execute();
+                if (verboseMode) {
+                    if (useSSIDfilter) {
+                        ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
                     }
-                }
-        });
-
-
-        captureButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                if (nodeIdEdittext.getText().toString().equals("")){
-                    Toast.makeText(getApplicationContext(), getString(R.string.please_enter_node_name), Toast.LENGTH_SHORT).show();
+                    fingerprintTask = new FingerprintTask(ssidFilterString, 60 * recordTime, wifiManager, false, progressBar, progressTextview, infobox);
                 } else {
-                    takingPictureAtTheMoment = true;
-                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                    timestamp = new Timestamp(System.currentTimeMillis());
-                    File file = FileUtilities.getFile(nodeIdEdittext.getText().toString(), timestamp);
-
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(cameraIntent, CAM_REQUEST);
+                    if (useSSIDfilter) {
+                        ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
+                    }
+                    infobox.setText(getString(R.string.please_stay));
+                    fingerprintTask = new FingerprintTask(ssidFilterString, 60 * recordTime, wifiManager, false, progressBar, progressTextview);
                 }
-                }
-        });
 
-
-        cameraImageview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showingBigPictureAtTheMoment = true;
-                if (pictureTaken) {
-                    Intent intent = new Intent(getApplicationContext(), MaxPictureActivity.class);
-                    intent.putExtra("picturePath", picturePath);
-                    intent.putExtra("nodeID", nodeIdEdittext.getText().toString());
-                    startActivity(intent);
-                } else if (nodeToUpdate != null && nodeToUpdate.getPicturePath() != null) {
-
-                    Intent intent = new Intent(getApplicationContext(), MaxPictureActivity.class);
-                    intent.putExtra("picturePath", nodeToUpdate.getPicturePath());
-                    intent.putExtra("nodeID", nodeToUpdate.getId());
-                    startActivity(intent);
-                }
+                fingerprintTask.delegate = NodeRecordEditActivity.this;
+                fingerprintTask.execute();
             }
         });
 
-        saveNodeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (updateMode) {
-                    checkUpdatedNodeID();
-                } else {
-                    saveNewNode();
-                }
+
+        captureButton.setOnClickListener(view -> {
+            if (nodeIdEdittext.getText().toString().isEmpty()) {
+                Toast.makeText(getApplicationContext(), getString(R.string.please_enter_node_name), Toast.LENGTH_SHORT).show();
+            } else {
+                takingPictureAtTheMoment = true;
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                timestamp = new Timestamp(System.currentTimeMillis());
+                File file = FileUtilities.getFile(nodeIdEdittext.getText().toString(), timestamp);
+
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                startActivityForResult(cameraIntent, CAM_REQUEST);
+            }
+        });
+
+
+        cameraImageview.setOnClickListener(view -> {
+            showingBigPictureAtTheMoment = true;
+            if (pictureTaken) {
+                Intent intent13 = new Intent(getApplicationContext(), MaxPictureActivity.class);
+                intent13.putExtra("picturePath", picturePath);
+                intent13.putExtra("nodeID", nodeIdEdittext.getText().toString());
+                startActivity(intent13);
+            } else if (nodeToUpdate != null && nodeToUpdate.getPicturePath() != null) {
+
+                Intent intent13 = new Intent(getApplicationContext(), MaxPictureActivity.class);
+                intent13.putExtra("picturePath", nodeToUpdate.getPicturePath());
+                intent13.putExtra("nodeID", nodeToUpdate.getId());
+                startActivity(intent13);
+            }
+        });
+
+        saveNodeButton.setOnClickListener(view -> {
+            if (updateMode) {
+                checkUpdatedNodeID();
+            } else {
+                saveNewNode();
             }
         });
     }
@@ -364,6 +338,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
     /**
      * If the fingerprinting background task finished
+     *
      * @param fp the Fingerprint from the AsyncTask
      */
     @Override
@@ -407,62 +382,58 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
      * Create and persist the new Node.
      */
     private void saveNewNode() {
-        if (nodeIdEdittext.getText().toString().equals("")) {
+        if (nodeIdEdittext.getText().toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), getString(R.string.please_enter_node_name), Toast.LENGTH_SHORT).show();
         } else {
 
-                final String picPathToSave;
-                if (pictureTaken) {
-                    long realTimestamp = timestamp.getTime();
-                    picPathToSave = sdCard.getAbsolutePath() + "/IndoorPositioning/Pictures/" + nodeIdEdittext.getText() + "_" + realTimestamp + ".jpg";
-                } else {
-                    picPathToSave = null;
-                }
+            final String picPathToSave;
+            if (pictureTaken) {
+                long realTimestamp = timestamp.getTime();
+                picPathToSave = sdCard.getAbsolutePath() + "/IndoorPositioning/Pictures/" + nodeIdEdittext.getText() + "_" + realTimestamp + ".jpg";
+            } else {
+                picPathToSave = null;
+            }
 
-                final String nodeID = nodeIdEdittext.getText().toString();
-                final String nodeDescription = descriptionEdittext.getText().toString();
+            final String nodeID = nodeIdEdittext.getText().toString();
+            final String nodeDescription = descriptionEdittext.getText().toString();
 
-                if (databaseHandler.checkIfNodeExists(nodeIdEdittext.getText().toString())) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_LONG).show();
-                } else {
+            if (databaseHandler.checkIfNodeExists(nodeIdEdittext.getText().toString())) {
+                Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_LONG).show();
+            } else {
 
-                    // If no fingerprint has been captured...
-                    if (fingerprint == null) {
-                        new AlertDialog.Builder(this)
-                                .setTitle(getString(R.string.no_fingerprint_title_text))
-                                .setMessage("Soll der Ort \"" + nodeIdEdittext.getText().toString() + "\" wirklich ohne Fingerprint erstellt werden?")
-                                .setCancelable(false)
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        final Node node = NodeFactory.createInstance(nodeID, nodeDescription, null, "", picPathToSave, "");
-                                        JSONWriter.writeJSON(node);
-                                        databaseHandler.insertNode(node);
-                                        Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
-                                        deleteOldPictures();
-                                        resetUiElements();
-                                        askForNewNode();
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
+                // If no fingerprint has been captured...
+                if (fingerprint == null) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.no_fingerprint_title_text))
+                            .setMessage("Soll der Ort \"" + nodeIdEdittext.getText().toString() + "\" wirklich ohne Fingerprint erstellt werden?")
+                            .setCancelable(false)
+                            .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                                final Node node = NodeFactory.createInstance(nodeID, nodeDescription, null, "", picPathToSave, "");
+                                JSONWriter.writeJSON(node);
+                                databaseHandler.insertNode(node);
+                                Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
+                                deleteOldPictures();
+                                resetUiElements();
+                                askForNewNode();
+                            })
+                            .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
 
                     // If a fingerprint has been captured...
-                    } else {
-                        final Node node = NodeFactory.createInstance(nodeID, nodeDescription, fingerprint, "", picPathToSave, "");
-                        JSONWriter.writeJSON(node);
-                        databaseHandler.insertNode(node);
-                        progressStatus = 0;
-                        progressTextview.setText(String.valueOf(progressStatus));
-                        progressBar.setProgress(progressStatus);
-                        Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
-                        deleteOldPictures();
-                        askForNewNode();
-                    }
+                } else {
+                    final Node node = NodeFactory.createInstance(nodeID, nodeDescription, fingerprint, "", picPathToSave, "");
+                    JSONWriter.writeJSON(node);
+                    databaseHandler.insertNode(node);
+                    progressStatus = 0;
+                    progressTextview.setText(String.valueOf(progressStatus));
+                    progressBar.setProgress(progressStatus);
+                    Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
+                    deleteOldPictures();
+                    askForNewNode();
                 }
+            }
         }
     }
 
@@ -471,12 +442,12 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
      * Check if the given nodeID is valid
      */
     private void checkUpdatedNodeID() {
-        if (nodeIdEdittext.getText().toString().equals("")) {
+        if (nodeIdEdittext.getText().toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), getString(R.string.please_enter_node_name), Toast.LENGTH_SHORT).show();
         } else {
             if (oldNodeId.equals(nodeIdEdittext.getText().toString())) {
                 // old id == new id -> update.
-               saveUpdatedNode();
+                saveUpdatedNode();
             } else {
                 if (databaseHandler.checkIfNodeExists(nodeIdEdittext.getText().toString())) {
                     Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_LONG).show();
@@ -521,33 +492,29 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 Intent intent = new Intent(context, NodeListActivity.class);
                 startActivity(intent);
 
-            // If no new fingerprint was taken and no old exists
+                // If no new fingerprint was taken and no old exists
             } else {
 
-            //if (nodeToUpdate.getFingerprint() == null) {
+                //if (nodeToUpdate.getFingerprint() == null) {
                 new AlertDialog.Builder(this)
                         .setTitle(getString(R.string.no_fingerprint_title_text))
                         .setMessage("Soll der Ort \"" + nodeIdEdittext.getText() + "\" wirklich ohne Fingerprint gespeichert werden?")
                         .setCancelable(false)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                final Node node = NodeFactory.createInstance(nodeID, nodeDescription, null, coordinates, picPathToSave, "");
-                                JSONWriter.writeJSON(node);
-                                databaseHandler.updateNode(node, oldNodeId);
-                                Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
-                                deleteOldPictures();
-                                resetUiElements();
-                            }
+                        .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                            final Node node = NodeFactory.createInstance(nodeID, nodeDescription, null, coordinates, picPathToSave, "");
+                            JSONWriter.writeJSON(node);
+                            databaseHandler.updateNode(node, oldNodeId);
+                            Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
+                            deleteOldPictures();
+                            resetUiElements();
                         })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
+                        .setNegativeButton(android.R.string.no, (dialog, which) -> {
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }
 
-        // If a new fingerprint was taken
+            // If a new fingerprint was taken
         } else {
             final Node node = NodeFactory.createInstance(nodeID, nodeDescription, fingerprint, coordinates, picPathToSave, nodeToUpdate.getAdditionalInfo());
             JSONWriter.writeJSON(node);
@@ -600,17 +567,14 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 .setTitle(getString(R.string.record_another_node_title_text))
                 .setMessage(getString(R.string.record_another_node_question))
                 .setCancelable(false)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                        startActivity(getIntent());
-                    }})
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                        Intent intent = new Intent(context, NodeListActivity.class);
-                        startActivity(intent);
-                    }
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    finish();
+                    startActivity(getIntent());
+                })
+                .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                    finish();
+                    Intent intent = new Intent(context, NodeListActivity.class);
+                    startActivity(intent);
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
@@ -619,6 +583,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
     /**
      * Check for permissions
+     *
      * @param context the context
      * @return boolean, if all permissions are given
      */

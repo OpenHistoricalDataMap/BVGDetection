@@ -6,15 +6,15 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementType
 
 /**
  * SensorCheckerImpl Class which implements the SensorChecker interface
- *
+ * <p>
  * Used to check if every required sensor is available on the device
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class SensorCheckerImpl implements SensorChecker {
 
-    private Context context;
+    private final Context context;
 
     public SensorCheckerImpl(Context context) {
         this.context = context;
@@ -22,10 +22,10 @@ public class SensorCheckerImpl implements SensorChecker {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -61,17 +61,9 @@ public class SensorCheckerImpl implements SensorChecker {
 
 
         if (indoorMeasurementType == IndoorMeasurementType.VARIANT_A || indoorMeasurementType == IndoorMeasurementType.VARIANT_B) {
-            if (rotation && barometer && stepcounter) {
-                return true;
-            } else {
-                return false;
-            }
+            return rotation && barometer && stepcounter;
         } else if (indoorMeasurementType == IndoorMeasurementType.VARIANT_C || indoorMeasurementType == IndoorMeasurementType.VARIANT_D) {
-            if (magnetometer && accelerometer && barometer && stepcounter) {
-                return true;
-            } else {
-                return false;
-            }
+            return magnetometer && accelerometer && barometer && stepcounter;
         }
 
         return false;

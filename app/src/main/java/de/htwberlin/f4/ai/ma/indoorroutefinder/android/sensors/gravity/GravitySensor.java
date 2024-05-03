@@ -7,17 +7,15 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
 
-import java.sql.Timestamp;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * GravitySensor Class which implements the Sensor and SensorEventListener Interface
- *
+ * <p>
  * Used Android Sensor: Sensor.TYPE_LINEAR_GRAVITY
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
@@ -25,12 +23,11 @@ public class GravitySensor implements SensorEventListener, de.htwberlin.f4.ai.ma
 
     private static final SensorType SENSORTYPE = SensorType.GRAVITY;
 
-    private SensorManager sensorManager;
+    private final SensorManager sensorManager;
+    private final int sensorRate;
     private Sensor gravitySensor;
     private SensorListener listener;
-
     private SensorData sensorData;
-    private int sensorRate;
 
 
     public GravitySensor(Context context, int sensorRate) {
@@ -42,10 +39,10 @@ public class GravitySensor implements SensorEventListener, de.htwberlin.f4.ai.ma
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Sensor Interface Methods                            *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Sensor Interface Methods                            *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -89,11 +86,7 @@ public class GravitySensor implements SensorEventListener, de.htwberlin.f4.ai.ma
      */
     @Override
     public boolean isSensorAvailable() {
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) == null) {
-            return false;
-        }
-
-        return true;
+        return sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) != null;
     }
 
 
@@ -120,23 +113,23 @@ public class GravitySensor implements SensorEventListener, de.htwberlin.f4.ai.ma
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                      SensorEventListener Interface Methods                        *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                      SensorEventListener Interface Methods                        *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
      * Copy sensor values and create SensorData Object with sensortype, correct timestamp and
      * sensor values
-     *
+     * <p>
      * values[0]: Force of gravity along the x axis.
      * values[1]: Force of gravity along the y axis.
      * values[2]: Force of gravity along the z axis.
-     *
+     * <p>
      * Units are m/s^2
      *
-     * @param sensorEvent
+     * @param sensorEvent sensor event
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {

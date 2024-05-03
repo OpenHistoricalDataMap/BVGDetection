@@ -3,8 +3,6 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.dijkstra;
 /**
  * Created by Johann Winter
  */
-
-
 class DijkstraEdge {
 
     private final DijkstraNode source;
@@ -19,6 +17,7 @@ class DijkstraEdge {
 
     /**
      * Getter for the destination DijkstraNode
+     *
      * @return the destination DijkstraNode
      */
     DijkstraNode getDestination() {
@@ -27,6 +26,7 @@ class DijkstraEdge {
 
     /**
      * Getter for the source DijkstraNode
+     *
      * @return the source DijkstraNode
      */
     DijkstraNode getSource() {
@@ -35,7 +35,8 @@ class DijkstraEdge {
 
     /**
      * Getter for the weight (length) of the DijkstraEdge
-     * @return
+     *
+     * @return the weight (length) of the DijkstraEdge
      */
     double getWeight() {
         return weight;
@@ -43,7 +44,8 @@ class DijkstraEdge {
 
     /**
      * Overrides standard toString() method
-     * @return
+     *
+     * @return the source and destination DijkstraNode
      */
     @Override
     public String toString() {

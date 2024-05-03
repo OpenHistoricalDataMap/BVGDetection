@@ -4,11 +4,9 @@ import android.content.Context;
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Factory for creating and retrieving a DatabaseHandler singleton object.
- *
  */
-
 public class DatabaseHandlerFactory {
 
     private static DatabaseHandler databaseHandler;

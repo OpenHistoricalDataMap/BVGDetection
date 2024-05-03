@@ -5,7 +5,6 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors;
  */
 
 public enum SensorType {
-
     ACCELEROMETER_LINEAR,
     ACCELEROMETER_SIMPLE,
     BAROMETER,
@@ -17,5 +16,4 @@ public enum SensorType {
     MAGNETIC_FIELD,
     STEP_DETECTOR,
     THERMOMETER,
-
 }

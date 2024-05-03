@@ -11,32 +11,31 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.gravity.GravitySe
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.gyroscope.Gyroscope;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.gyroscope.GyroscopeUncalibrated;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.magneticfield.MagneticFieldSensor;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.stepcounter.StepDetector;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.temperature.Thermometer;
 
 /**
  * SensorFactoryImpl class which implements the SensorFactory Interface
- *
+ * <p>
  * Used to create the correct sensors
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
-public class SensorFactoryImpl implements SensorFactory{
+public class SensorFactoryImpl implements SensorFactory {
 
-    private Context context;
-
+    private final Context context;
+    
     public SensorFactoryImpl(Context context) {
         this.context = context;
     }
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     @Override

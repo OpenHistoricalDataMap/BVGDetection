@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.4"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -176,7 +177,7 @@
             android:layout_weight="0.45"
             android:weightSum="1">
 
-            <Switch
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/edgedetails_handycap_switch"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

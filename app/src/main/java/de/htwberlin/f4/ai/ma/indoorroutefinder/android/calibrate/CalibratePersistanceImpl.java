@@ -4,20 +4,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.CalibrationData;
 
 /**
  * CalibratePersistanceImpl Class
- *
+ * <p>
  * Save / load calibration from SharedPreferences
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class CalibratePersistanceImpl implements CalibratePersistance {
 
-    private Context context;
+    private final Context context;
 
     public CalibratePersistanceImpl(Context context) {
         this.context = context;
@@ -25,10 +24,10 @@ public class CalibratePersistanceImpl implements CalibratePersistance {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**

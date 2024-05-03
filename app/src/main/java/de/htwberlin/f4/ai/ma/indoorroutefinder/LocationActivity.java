@@ -12,23 +12,24 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculator;
+
+import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.AsyncResponse;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintTask;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculator;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculatorFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * This activity is for locating the user ("Standort ermitteln").
  */
-
-public class LocationActivity extends BaseActivity implements AsyncResponse{
+public class LocationActivity extends BaseActivity implements AsyncResponse {
 
     ImageButton locate1sButton;
     ImageButton locate10sButton;
@@ -38,19 +39,18 @@ public class LocationActivity extends BaseActivity implements AsyncResponse{
     TextView infobox;
     ProgressBar progressBar;
     Context context;
-    private DatabaseHandler databaseHandler;
-    private SharedPreferences sharedPreferences;
-    private WifiManager wifiManager;
     boolean movingAverage;
     boolean kalmanFilter;
     boolean euclideanDistance;
     boolean knnAlgorithm;
-    private boolean verboseMode;
-    private boolean useSSIDfilter;
     int knnValue;
     int movingAverageOrder;
     int kalmanValue;
-
+    private DatabaseHandler databaseHandler;
+    private SharedPreferences sharedPreferences;
+    private WifiManager wifiManager;
+    private boolean verboseMode;
+    private boolean useSSIDfilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,26 +86,21 @@ public class LocationActivity extends BaseActivity implements AsyncResponse{
 
         movingAverageOrder = Integer.parseInt(sharedPreferences.getString("pref_movivngAverageOrder", "3"));
         knnValue = Integer.parseInt(sharedPreferences.getString("pref_knnNeighbours", "3"));
-        kalmanValue = Integer.parseInt(sharedPreferences.getString("pref_kalmanValue","2"));
+        kalmanValue = Integer.parseInt(sharedPreferences.getString("pref_kalmanValue", "2"));
 
         progressBar.setVisibility(View.INVISIBLE);
 
-        locate1sButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    findLocation(1);
-                }
-            });
+        locate1sButton.setOnClickListener(v -> findLocation(1));
 
-        locate10sButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    findLocation(10);
-                }
-            });
+        locate10sButton.setOnClickListener(v -> {
+            progressBar.setVisibility(View.VISIBLE);
+            findLocation(10);
+        });
     }
 
     /**
      * Create a fingerprint
+     *
      * @param seconds the time to measure in seconds
      */
     private void findLocation(final int seconds) {
@@ -139,10 +134,10 @@ public class LocationActivity extends BaseActivity implements AsyncResponse{
     }
 
 
-
     /**
      * If the background FingerprintTask is finished, display results
-     * @param seconds the measured time
+     *
+     * @param seconds     the measured time
      * @param fingerprint the fingerprint measured before
      */
     @Override
@@ -167,14 +162,11 @@ public class LocationActivity extends BaseActivity implements AsyncResponse{
                     Glide.with(context).load(R.drawable.unknown).into(locationImageview);
                 }
 
-                locationImageview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(getApplicationContext(), MaxPictureActivity.class);
-                        intent.putExtra("picturePath", picturePath);
-                        intent.putExtra("nodeID", foundNode);
-                        startActivity(intent);
-                    }
+                locationImageview.setOnClickListener(view -> {
+                    Intent intent = new Intent(getApplicationContext(), MaxPictureActivity.class);
+                    intent.putExtra("picturePath", picturePath);
+                    intent.putExtra("nodeID", foundNode);
+                    startActivity(intent);
                 });
 
 

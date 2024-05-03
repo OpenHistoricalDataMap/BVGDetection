@@ -6,9 +6,9 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * RecordController Interface
- *
+ * <p>
  * used for recording sensor values
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 

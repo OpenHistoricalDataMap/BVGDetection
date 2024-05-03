@@ -4,19 +4,17 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.CalibrationData;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurement;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementFactory;
 
 /**
  * CalibrationControllerImpl Class which implements the CalibrationController Interface.
- *
+ * <p>
  * Used for steplength calibration
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
@@ -36,10 +34,10 @@ public class CalibrateControllerImpl implements CalibrateController {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -54,28 +52,24 @@ public class CalibrateControllerImpl implements CalibrateController {
         stepTimes = new ArrayList<>();
         // create IndoorMeasureMentImpl and register listener
         indoorMeasurement = IndoorMeasurementFactory.getIndoorMeasurement(view.getContext());
-        indoorMeasurement.setSensorListener(new SensorListener() {
-            @Override
-            public void valueChanged(SensorData sensorData) {
-                if (sensorData.getSensorType() == SensorType.STEP_DETECTOR) {
+        indoorMeasurement.setSensorListener(sensorData -> {
+            if (sensorData.getSensorType() == SensorType.STEP_DETECTOR) {
+                // get step count from sensor
+                stepCount++;
+                // handle first step bug
+                if (stepCount == 1) {
                     // get step count from sensor
                     stepCount++;
-                    // handle first step bug
-                    if (stepCount == 1) {
-                        // get step count from sensor
-                        stepCount++;
-                        // update view with new stepcount
-                        view.updateStepCount(stepCount);
-                        // save timestamp of step for later step period calculation
-                        stepTimes.add(sensorData.getTimestamp() - 700);
-                    }
                     // update view with new stepcount
                     view.updateStepCount(stepCount);
                     // save timestamp of step for later step period calculation
-                    stepTimes.add(sensorData.getTimestamp());
+                    stepTimes.add(sensorData.getTimestamp() - 700);
                 }
+                // update view with new stepcount
+                view.updateStepCount(stepCount);
+                // save timestamp of step for later step period calculation
+                stepTimes.add(sensorData.getTimestamp());
             }
-
         });
         // start step_detector sensor
         indoorMeasurement.startSensors(Sensor.SENSOR_RATE_FASTEST, SensorType.STEP_DETECTOR);
@@ -121,13 +115,9 @@ public class CalibrateControllerImpl implements CalibrateController {
 
             if (indoorMeasurement != null) {
                 // register listener for compass sensor
-                indoorMeasurement.setSensorListener(new SensorListener() {
-                    @Override
-                    public void valueChanged(SensorData sensorData) {
-                        if (sensorData.getSensorType() == SensorType.COMPASS_FUSION) {
-                            view.updateAzimuth((int) sensorData.getValues()[0]);
-                        }
-
+                indoorMeasurement.setSensorListener(sensorData -> {
+                    if (sensorData.getSensorType() == SensorType.COMPASS_FUSION) {
+                        view.updateAzimuth((int) sensorData.getValues()[0]);
                     }
 
                 });
@@ -230,12 +220,11 @@ public class CalibrateControllerImpl implements CalibrateController {
     }
 
 
-
     /************************************************************************************
-    *                                                                                   *
-    *                               Class Methods                                       *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Class Methods                                       *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -250,9 +239,9 @@ public class CalibrateControllerImpl implements CalibrateController {
         int result = 0;
 
         // calculate the durations between each step
-        for (int i = 0; i < timestamps.size()-1; i++) {
+        for (int i = 0; i < timestamps.size() - 1; i++) {
             Long start = timestamps.get(i);
-            Long end = timestamps.get(i+1);
+            Long end = timestamps.get(i + 1);
             Long difference = end - start;
             stepDurations.add(difference);
         }
@@ -263,7 +252,7 @@ public class CalibrateControllerImpl implements CalibrateController {
             durationSum += duration;
         }
         // calculate avg
-        if (stepDurations.size() > 0) {
+        if (!stepDurations.isEmpty()) {
             result = (int) (durationSum / (stepDurations.size()));
         }
 

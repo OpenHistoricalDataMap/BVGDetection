@@ -1,5 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.edges;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,15 +11,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
-
 import java.util.List;
+
+import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 
 /**
  * StepListAdapter Class
- *
+ * <p>
  * Stores detailed data for each step of an edge
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
@@ -28,6 +29,7 @@ public class StepListAdapter extends ArrayAdapter<StepData> {
         super(context, 0, stepList);
     }
 
+    @SuppressLint("SetTextI18n")
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -39,7 +41,7 @@ public class StepListAdapter extends ArrayAdapter<StepData> {
         TextView stepNumberView = (TextView) convertView.findViewById(R.id.listview_group_stepname);
         TextView stepCoordsView = (TextView) convertView.findViewById(R.id.listview_group_step_coords);
         // update step number
-        stepNumberView.setText("# " + String.valueOf(position+1));
+        stepNumberView.setText("# " + (position + 1));
         // retrieve stepdata from list
         StepData stepData = getItem(position);
         // round coordinates

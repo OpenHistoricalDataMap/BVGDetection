@@ -205,7 +205,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.1" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/coordinates_measure_stairs"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -214,7 +214,7 @@
 
 
     </LinearLayout>
-    
+
     <!-- Layout for Start and Target Node -->
     <!-- divide into 3 parts horizontal -->
     <LinearLayout

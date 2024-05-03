@@ -15,7 +15,6 @@ public class EditTextPreference extends android.preference.EditTextPreference {
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
-
         setSummary(getSummary());
     }
 

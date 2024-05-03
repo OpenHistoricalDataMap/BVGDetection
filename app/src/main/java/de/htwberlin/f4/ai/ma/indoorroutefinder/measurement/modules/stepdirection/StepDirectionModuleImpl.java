@@ -2,7 +2,6 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirectio
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.Surface;
 
 import java.sql.Timestamp;
@@ -15,27 +14,24 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorDataModel;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorDataModelImpl;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorFactoryImpl;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * StepDirectionModuleImpl Class which implements the StepDirectionModule Interface
- *
+ * <p>
  * used to detect the last step direction by analyzing the accelerometer_linear data
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public class StepDirectionModuleImpl implements StepDirectionModule {
-
-    private long lastStepTimestamp;
-    private SensorFactory sensorFactory;
-    private Sensor sensor;
-    private SensorDataModel dataModel;
-    private Context context;
 
     private static final float THRESHOLD_POSITIVE = 2.75f;
     private static final float THRESHOLD_NEGATIVE = -2.75f;
+    private final SensorFactory sensorFactory;
+    private final SensorDataModel dataModel;
+    private final Context context;
+    private long lastStepTimestamp;
+    private Sensor sensor;
 
 
     public StepDirectionModuleImpl(Context context) {
@@ -46,17 +42,12 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
         initSensor();
     }
 
-    // constructor for testing purpose, remove later
-    public StepDirectionModuleImpl(long lastStepTimestamp) {
-        this.lastStepTimestamp = lastStepTimestamp;
-    }
-
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -67,7 +58,7 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
     @Override
     public StepDirection getLastStepDirection() {
         long currentStepTimestamp = new Timestamp(System.currentTimeMillis()).getTime();
-        StepDirection direction = StepDirection.FORWARD;
+        StepDirection direction = null;
 
         // get all data from laststep to now
         Map<SensorType, List<SensorData>> intervalMap = dataModel.getDataInInterval(lastStepTimestamp, currentStepTimestamp);
@@ -145,9 +136,7 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
                         }
                     }
                 }
-            }
-
-            else if (screenRotation == Surface.ROTATION_90) {
+            } else if (screenRotation == Surface.ROTATION_90) {
 
                 // check which axis movement happened last
 
@@ -205,9 +194,7 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
                         }
                     }
                 }
-            }
-
-            else if (screenRotation == Surface.ROTATION_180) {
+            } else if (screenRotation == Surface.ROTATION_180) {
                 // check which axis movement happened last
 
                 // movement along y axis happend last -> forward / backward
@@ -264,10 +251,7 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
                         }
                     }
                 }
-            }
-
-
-            else if (screenRotation == Surface.ROTATION_270) {
+            } else if (screenRotation == Surface.ROTATION_270) {
                 // check which axis movement happened last
 
                 // movement along x axis happend last -> forward / backward
@@ -345,10 +329,10 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Class Methods                                       *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Class Methods                                       *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -358,12 +342,7 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
     private void initSensor() {
         // saving data from accelerator_linear sensor, so we can check for step direction
         sensor = sensorFactory.getSensor(SensorType.ACCELEROMETER_LINEAR, Sensor.SENSOR_RATE_FASTEST);
-        sensor.setListener(new SensorListener() {
-            @Override
-            public void valueChanged(SensorData newValue) {
-                dataModel.insertData(newValue);
-            }
-        });
+        sensor.setListener(dataModel::insertData);
 
         sensor.start();
     }
@@ -373,7 +352,7 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
      * find low and highpeaks for the specified axis
      *
      * @param dataList list holding all sensor data
-     * @param axis axis to analyze
+     * @param axis     axis to analyze
      * @return result[0] = highpeak
      * result[1] = lowpeak
      */
@@ -385,7 +364,7 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
         boolean foundHighPeak = false;
 
         // start at the end from data
-        for (int i = dataList.size()-1; i > 0; i--) {
+        for (int i = dataList.size() - 1; i > 0; i--) {
             SensorData data = dataList.get(i);
 
             // check for high peak
@@ -393,7 +372,7 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
             if (data.getValues()[axis] >= THRESHOLD_POSITIVE && data.getValues()[axis] > highPeak.getValues()[axis]) {
                 highPeak = data;
                 // check if the previous data is smaller, so we can be sure it's a highpeak
-                if (dataList.get(i-1).getValues()[axis] < highPeak.getValues()[axis]) {
+                if (dataList.get(i - 1).getValues()[axis] < highPeak.getValues()[axis]) {
                     foundHighPeak = true;
                 }
             }
@@ -401,7 +380,7 @@ public class StepDirectionModuleImpl implements StepDirectionModule {
             else if (data.getValues()[axis] <= THRESHOLD_NEGATIVE && data.getValues()[axis] < lowPeak.getValues()[axis]) {
                 lowPeak = data;
                 // check if the previous data is bigger, so we can be sure it's a lowpeak
-                if (dataList.get(i-1).getValues()[axis] > lowPeak.getValues()[axis]) {
+                if (dataList.get(i - 1).getValues()[axis] > lowPeak.getValues()[axis]) {
                     foundLowPeak = true;
                 }
             }

@@ -1,27 +1,31 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations;
 
+import android.annotation.SuppressLint;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Thanks to Carola Walter
  */
-
 public class MovingAverage {
 
     /**
      * Calculate moving average algorithm depending on the order three or five.
-     * @param order the order (3 or 5)
+     *
+     * @param order              the order (3 or 5)
      * @param restructedNodeList the list of restructed Nodes
      * @return the list of restructed Nodes
      */
+    @SuppressLint("CheckResult")
     public static List<RestructedNode> calculate(List<RestructedNode> restructedNodeList, int order) {
         List<RestructedNode> calculatedNodes = new ArrayList<>();
-        Multimap<String, Double> calculatedMultiMap = null;
+        Multimap<String, Double> calculatedMultiMap;
 
         for (int i = 0; i < restructedNodeList.size(); i++) {
             RestructedNode restructedNode = restructedNodeList.get(i);

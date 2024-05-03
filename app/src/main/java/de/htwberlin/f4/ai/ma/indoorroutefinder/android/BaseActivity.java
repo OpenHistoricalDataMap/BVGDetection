@@ -1,9 +1,11 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,36 +13,33 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import de.htwberlin.f4.ai.ma.indoorroutefinder.EdgesManagerActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.ImportExportActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.LocationActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.NodeListActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.NodeRecordEditActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
-
+import de.htwberlin.f4.ai.ma.indoorroutefinder.RouteFinderActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.SettingsActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate.CalibrateViewImpl;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.MeasureViewImpl;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.edges.EdgeDetailsViewImpl;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.record.RecordViewImpl;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.EdgesManagerActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.LocationActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.RouteFinderActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.NodeListActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.ImportExportActivity;
-//import de.htwberlin.f4.ai.ma.indoorroutefinder.NodeRecordActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.NodeRecordEditActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.SettingsActivity;
 
 /**
  * BasicActivity Class
- *
+ * <p>
  * All Activities inherit from this class. That's required because of the NavigationDrawer
  */
 
 public class BaseActivity extends AppCompatActivity {
 
-    private ActionBarDrawerToggle actionBarDrawerToggle;
-    private DrawerLayout drawerLayout;
-
     // for passing start and targetnode to our edgedetails activity
     protected static final String STARTNODE_KEY = "startnode";
     protected static final String TARGETNODE_KEY = "targetnode";
     protected static final String EDGE_DETAILS_BUNDLE = "nodeinfos";
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +56,9 @@ public class BaseActivity extends AppCompatActivity {
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
 
                     case R.id.nav_location_record:

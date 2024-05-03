@@ -7,9 +7,9 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 
 /**
  * MeasureView Interface
- *
+ * <p>
  * View for showing Measuring details, nodes..
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 

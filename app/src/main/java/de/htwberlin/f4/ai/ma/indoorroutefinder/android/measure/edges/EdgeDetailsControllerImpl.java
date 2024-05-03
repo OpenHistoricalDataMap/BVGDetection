@@ -1,10 +1,8 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.edges;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
@@ -12,26 +10,25 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
 
 /**
  * EdgeDetailsControllerImpl Class which implements the EdgeDetailsController Interface
- *
+ * <p>
  * Used for managing edge details
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class EdgeDetailsControllerImpl implements EdgeDetailsController {
 
     private EdgeDetailsView view;
-
     private Node startNode;
     private Node targetNode;
     private Edge edge;
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -49,7 +46,7 @@ public class EdgeDetailsControllerImpl implements EdgeDetailsController {
      * set start and target node.
      * The nodes will be retrieved from database using the ids
      *
-     * @param startNodeId id of the start node
+     * @param startNodeId  id of the start node
      * @param targetNodeId id of the target node
      */
     @Override
@@ -62,7 +59,7 @@ public class EdgeDetailsControllerImpl implements EdgeDetailsController {
 
     /**
      * triggered by clicking on delete button
-     *
+     * <p>
      * Show Dialog to make sure the user wants to delete the edge
      */
     @Override
@@ -76,20 +73,14 @@ public class EdgeDetailsControllerImpl implements EdgeDetailsController {
             alertDialogBuilder.setIcon(R.drawable.trash);
 
             // yes, user wants to delete the edge
-            alertDialogBuilder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    deleteEdge();
-                    dialog.dismiss();
-                    view.finish();
-                }
+            alertDialogBuilder.setPositiveButton("Ja", (dialog, id) -> {
+                deleteEdge();
+                dialog.dismiss();
+                view.finish();
             });
 
             // no, user doesn't want to delete the edge
-            alertDialogBuilder.setNegativeButton("Nein", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
+            alertDialogBuilder.setNegativeButton("Nein", (dialog, id) -> dialog.dismiss());
 
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
@@ -99,7 +90,7 @@ public class EdgeDetailsControllerImpl implements EdgeDetailsController {
 
     /**
      * triggered by clicking on save button
-     *
+     * <p>
      * Save the changed Edge into database and finish the activity
      */
     @Override
@@ -140,7 +131,7 @@ public class EdgeDetailsControllerImpl implements EdgeDetailsController {
 
     /**
      * activity event
-     *
+     * <p>
      * update view and load edge from database
      */
     @Override
@@ -160,10 +151,10 @@ public class EdgeDetailsControllerImpl implements EdgeDetailsController {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Class Methods                                       *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Class Methods                                       *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**

@@ -1,79 +1,52 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android.record;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * RecordViewImpl Class which implements the RecordView Interface
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class RecordViewImpl extends BaseActivity implements RecordView {
 
-    private RecordController controller;
-
+    private final RecordController controller;
     private TextView accelerationX;
     private TextView accelerationY;
     private TextView accelerationZ;
-
     private TextView accelerationLinearX;
     private TextView accelerationLinearY;
     private TextView accelerationLinearZ;
-
     private TextView gravityX;
     private TextView gravityY;
     private TextView gravityZ;
-
     private TextView gyroscopeX;
     private TextView gyroscopeY;
     private TextView gyroscopeZ;
-
     private TextView gyroscopeUncalibratedX;
     private TextView gyroscopeUncalibratedY;
     private TextView gyroscopeUncalibratedZ;
-    private TextView gyroscopeUncalibratedDriftX;
-    private TextView gyroscopeUncalibratedDriftY;
-    private TextView gyroscopeUncalibratedDriftZ;
-
     private TextView magneticFieldX;
     private TextView magneticFieldY;
     private TextView magneticFieldZ;
-
     private TextView compassFusion;
     private TextView compassSimple;
-
     private TextView barometer;
-
     private TextView periodValue;
-
-    private SeekBar periodSeekbar;
-
-    private CheckBox cbAccelerometer;
-    private CheckBox cbAcceleromterLinear;
-    private CheckBox cbGravity;
-    private CheckBox cbGyroscope;
-    private CheckBox cbGyroscopeUncalibrated;
-    private CheckBox cbMagneticField;
-    private CheckBox cbCompassFusion;
-    private CheckBox cbCompassSimple;
-    private CheckBox cbPressure;
-
     private List<SensorType> sensorList;
 
 
@@ -84,10 +57,10 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Activity Events                                     *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Activity Events                                     *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     @Override
@@ -135,14 +108,12 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
 
         periodValue = (TextView) findViewById(R.id.fragment_record_period);
 
-        periodSeekbar = (SeekBar) findViewById(R.id.fragment_record_period_seekbar);
+        SeekBar periodSeekbar = (SeekBar) findViewById(R.id.fragment_record_period_seekbar);
         periodSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 periodValue.setText(String.valueOf(i));
-                if (controller != null) {
-                    controller.onSavePeriodChanged(i);
-                }
+                controller.onSavePeriodChanged(i);
             }
 
             @Override
@@ -158,128 +129,97 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
         periodSeekbar.setProgress(250);
 
         Button btnStart = (Button) findViewById(R.id.fragment_record_start_btn);
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (controller != null) {
-                    controller.onStartClicked(sensorList);
-                }
+        btnStart.setOnClickListener(v -> {
+            if (controller != null) {
+                controller.onStartClicked(sensorList);
             }
         });
 
         Button btnStop = (Button) findViewById(R.id.fragment_record_stop_btn);
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (controller != null) {
-                    controller.onStopClicked();
-                }
+        btnStop.setOnClickListener(v -> {
+            if (controller != null) {
+                controller.onStopClicked();
             }
         });
 
-        cbAccelerometer = (CheckBox) findViewById(R.id.fragment_record_cb_accelerometer);
-        cbAccelerometer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    sensorList.add(SensorType.ACCELEROMETER_SIMPLE);
-                } else {
-                    sensorList.remove(SensorType.ACCELEROMETER_SIMPLE);
-                }
+        CheckBox cbAccelerometer = (CheckBox) findViewById(R.id.fragment_record_cb_accelerometer);
+        cbAccelerometer.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                sensorList.add(SensorType.ACCELEROMETER_SIMPLE);
+            } else {
+                sensorList.remove(SensorType.ACCELEROMETER_SIMPLE);
             }
         });
 
-        cbAcceleromterLinear = (CheckBox) findViewById(R.id.fragment_record_cb_accelerometer_linear);
-        cbAcceleromterLinear.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    sensorList.add(SensorType.ACCELEROMETER_LINEAR);
-                } else {
-                    sensorList.remove(SensorType.ACCELEROMETER_LINEAR);
-                }
+        CheckBox cbAcceleromterLinear = (CheckBox) findViewById(R.id.fragment_record_cb_accelerometer_linear);
+        cbAcceleromterLinear.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                sensorList.add(SensorType.ACCELEROMETER_LINEAR);
+            } else {
+                sensorList.remove(SensorType.ACCELEROMETER_LINEAR);
             }
         });
 
-        cbGravity = (CheckBox) findViewById(R.id.fragment_record_cb_gravity);
-        cbGravity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    sensorList.add(SensorType.GRAVITY);
-                } else {
-                    sensorList.remove(SensorType.GRAVITY);
-                }
+        CheckBox cbGravity = (CheckBox) findViewById(R.id.fragment_record_cb_gravity);
+        cbGravity.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                sensorList.add(SensorType.GRAVITY);
+            } else {
+                sensorList.remove(SensorType.GRAVITY);
             }
         });
 
-        cbGyroscope = (CheckBox) findViewById(R.id.fragment_record_cb_gyroscope);
-        cbGyroscope.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    sensorList.add(SensorType.GYROSCOPE);
-                } else {
-                    sensorList.remove(SensorType.GYROSCOPE);
-                }
+        CheckBox cbGyroscope = (CheckBox) findViewById(R.id.fragment_record_cb_gyroscope);
+        cbGyroscope.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                sensorList.add(SensorType.GYROSCOPE);
+            } else {
+                sensorList.remove(SensorType.GYROSCOPE);
             }
         });
 
-        cbGyroscopeUncalibrated = (CheckBox) findViewById(R.id.fragment_record_cb_gyroscope_uncalibrated);
-        cbGyroscopeUncalibrated.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    sensorList.add(SensorType.GYROSCOPE_UNCALIBRATED);
-                } else {
-                    sensorList.remove(SensorType.GYROSCOPE_UNCALIBRATED);
-                }
+        CheckBox cbGyroscopeUncalibrated = (CheckBox) findViewById(R.id.fragment_record_cb_gyroscope_uncalibrated);
+        cbGyroscopeUncalibrated.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                sensorList.add(SensorType.GYROSCOPE_UNCALIBRATED);
+            } else {
+                sensorList.remove(SensorType.GYROSCOPE_UNCALIBRATED);
             }
         });
 
-        cbMagneticField = (CheckBox) findViewById(R.id.fragment_record_cb_magneticfield);
-        cbMagneticField.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    sensorList.add(SensorType.MAGNETIC_FIELD);
-                } else {
-                    sensorList.remove(SensorType.MAGNETIC_FIELD);
-                }
+        CheckBox cbMagneticField = (CheckBox) findViewById(R.id.fragment_record_cb_magneticfield);
+        cbMagneticField.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                sensorList.add(SensorType.MAGNETIC_FIELD);
+            } else {
+                sensorList.remove(SensorType.MAGNETIC_FIELD);
             }
         });
 
-        cbCompassFusion = (CheckBox) findViewById(R.id.fragment_record_cb_compassfusion);
-        cbCompassFusion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    sensorList.add(SensorType.COMPASS_FUSION);
-                } else {
-                    sensorList.remove(SensorType.COMPASS_FUSION);
-                }
+        CheckBox cbCompassFusion = (CheckBox) findViewById(R.id.fragment_record_cb_compassfusion);
+        cbCompassFusion.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                sensorList.add(SensorType.COMPASS_FUSION);
+            } else {
+                sensorList.remove(SensorType.COMPASS_FUSION);
             }
         });
 
-        cbCompassSimple = (CheckBox) findViewById(R.id.fragment_record_cb_compasssimple);
-        cbCompassSimple.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    sensorList.add(SensorType.COMPASS_SIMPLE);
-                } else {
-                    sensorList.remove(SensorType.COMPASS_SIMPLE);
-                }
+        CheckBox cbCompassSimple = (CheckBox) findViewById(R.id.fragment_record_cb_compasssimple);
+        cbCompassSimple.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                sensorList.add(SensorType.COMPASS_SIMPLE);
+            } else {
+                sensorList.remove(SensorType.COMPASS_SIMPLE);
             }
         });
 
-        cbPressure = (CheckBox) findViewById(R.id.fragment_record_cb_pressure);
-        cbPressure.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    sensorList.add(SensorType.BAROMETER);
-                } else {
-                    sensorList.remove(SensorType.BAROMETER);
-                }
+        CheckBox cbPressure = (CheckBox) findViewById(R.id.fragment_record_cb_pressure);
+        cbPressure.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                sensorList.add(SensorType.BAROMETER);
+            } else {
+                sensorList.remove(SensorType.BAROMETER);
             }
         });
     }
@@ -295,10 +235,10 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -306,6 +246,7 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
      *
      * @param values new acceleration sensor values
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateAcceleration(float[] values) {
         accelerationX.setText(getString(R.string.x_caption) + " " + values[0]);
@@ -319,6 +260,7 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
      *
      * @param values new acceleration_linear sensor values
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateAccelerationLinear(float[] values) {
         accelerationLinearX.setText(getString(R.string.x_caption) + " " + values[0]);
@@ -332,6 +274,7 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
      *
      * @param values new gravity sensor values
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateGravity(float[] values) {
         gravityX.setText(getString(R.string.x_caption) + " " + values[0]);
@@ -345,6 +288,7 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
      *
      * @param values new gyroscope sensor values
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateGyroscope(float[] values) {
         gyroscopeX.setText(getString(R.string.x_caption) + " " + values[0]);
@@ -358,6 +302,7 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
      *
      * @param values new gyroscope_uncalibrated sensor values
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateGyroscopeUncalibrated(float[] values) {
         gyroscopeUncalibratedX.setText(getString(R.string.x_caption) + " " + values[0]);
@@ -371,6 +316,7 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
      *
      * @param values new magneticfield sensor values
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateMagneticField(float[] values) {
         magneticFieldX.setText(getString(R.string.x_caption) + " " + values[0]);
@@ -406,6 +352,7 @@ public class RecordViewImpl extends BaseActivity implements RecordView {
      *
      * @param value new barometer sensor values
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updatePressure(float value) {
         barometer.setText(value + " hPa");

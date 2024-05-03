@@ -7,16 +7,15 @@ import java.util.Map;
 
 /**
  * SensorDataModelImpl Class which implements the SensorDataModel Interface
- *
+ * <p>
  * Model Class for storing all sensor data in a map (by sensortype)
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class SensorDataModelImpl implements SensorDataModel {
 
-
-    private Map<SensorType, List<SensorData>> data;
+    private final Map<SensorType, List<SensorData>> data;
 
     public SensorDataModelImpl() {
         data = new HashMap<>();
@@ -24,10 +23,10 @@ public class SensorDataModelImpl implements SensorDataModel {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -47,7 +46,7 @@ public class SensorDataModelImpl implements SensorDataModel {
      * start and timestamp <= end
      *
      * @param start start timestamp
-     * @param end end timestamp
+     * @param end   end timestamp
      * @return filtered map
      */
     @Override
@@ -61,7 +60,7 @@ public class SensorDataModelImpl implements SensorDataModel {
             List<SensorData> sensorDataUnfiltered = entry.getValue();
             // check if sensordata is in interval
             for (SensorData data : sensorDataUnfiltered) {
-                if ( (data.getTimestamp() >= start) && (data.getTimestamp() <= end) ) {
+                if ((data.getTimestamp() >= start) && (data.getTimestamp() <= end)) {
                     // add sensordata to filtered list
                     sensorDataFiltered.add(data);
                 }
@@ -104,11 +103,4 @@ public class SensorDataModelImpl implements SensorDataModel {
     }
 
 
-    /**
-     * remove all data from model
-     */
-    @Override
-    public void clearData() {
-        data.clear();
-    }
 }

@@ -4,12 +4,11 @@ import android.content.Context;
 
 /**
  * IndoorMeasurementFactory Class
- *
+ * <p>
  * Create IndoorMeasurement Instance
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public class IndoorMeasurementFactory {
 
     public static IndoorMeasurement getIndoorMeasurement(Context context) {

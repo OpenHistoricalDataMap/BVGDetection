@@ -4,13 +4,13 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementType
 
 /**
  * CalibrationData Class
- *
+ * <p>
  * stores everything we need for the IndoorMeasurement component
- *
+ * <p>
  * -> steplength, stepperiod, airpressure, start coordinates,
- *    measurementType, lowpassfilter value, stepdirectionmodule usage,
- *    stairs handling, barometer threshold
- *
+ * measurementType, lowpassfilter value, stepdirectionmodule usage,
+ * stairs handling, barometer threshold
+ * <p>
  * Author: Benjamin Kneer
  */
 
@@ -36,10 +36,10 @@ public class CalibrationData {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Constructors                                        *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Constructors                                        *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     public CalibrationData() {
@@ -67,10 +67,10 @@ public class CalibrationData {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Getter & Setter                                     *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Getter & Setter                                     *
+     *                                                                                   *
+     *************************************************************************************/
 
     public boolean isStairs() {
         return stairs;

@@ -1,7 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,15 +27,11 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
  * <p>
  * This activity is used to manage (create and delete) edges ("Wege verwalten").
  */
-
 public class EdgesManagerActivity extends BaseActivity {
 
     private Spinner spinnerA;
     private Spinner spinnerB;
     private ImageButton connectNodesButton;
-    private ListView edgesListView;
-    private List<Node> allNodes;
-    private List<String> itemsSpinnerA;
     private List<String> itemsSpinnerB;
     private List<String> itemsEdgesList;
     private List<Edge> allEdges;
@@ -55,20 +50,20 @@ public class EdgesManagerActivity extends BaseActivity {
         spinnerA = (Spinner) findViewById(R.id.nodeA_spinner);
         spinnerB = (Spinner) findViewById(R.id.nodeB_spinner);
         connectNodesButton = (ImageButton) findViewById(R.id.connect_nodes_imagebutton);
-        edgesListView = (ListView) findViewById(R.id.edges_listview);
+        ListView edgesListView = (ListView) findViewById(R.id.edges_listview);
         accessibilityCheckbox = (CheckBox) findViewById(R.id.accessibility_checkbox);
 
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
 
         connectNodesButton.setImageResource(R.drawable.ways);
 
-        itemsSpinnerA = new ArrayList<>();
+        List<String> itemsSpinnerA = new ArrayList<>();
         itemsSpinnerB = new ArrayList<>();
         itemsEdgesList = new ArrayList<>();
         allEdges = new ArrayList<>();
         lastSelectedItemA = "";
 
-        allNodes = databaseHandler.getAllNodes();
+        List<Node> allNodes = databaseHandler.getAllNodes();
 
         // Fill the spinners with Nodes
         for (Node node : allNodes) {
@@ -88,7 +83,7 @@ public class EdgesManagerActivity extends BaseActivity {
         final ArrayAdapter<String> adapterB = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, itemsSpinnerB);
         spinnerB.setAdapter(adapterB);
 
-        final ArrayAdapter<String> edgesListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, itemsEdgesList);
+        final ArrayAdapter<String> edgesListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, itemsEdgesList);
         edgesListView.setAdapter(edgesListAdapter);
 
 
@@ -100,7 +95,7 @@ public class EdgesManagerActivity extends BaseActivity {
                 String selectedA = spinnerA.getSelectedItem().toString();
 
                 if (!selectedA.equals(lastSelectedItemA)) {
-                    if (!lastSelectedItemA.equals("")) {
+                    if (!lastSelectedItemA.isEmpty()) {
                         itemsSpinnerB.add(lastSelectedItemA);
                     }
                     itemsSpinnerB.remove(selectedA);
@@ -126,58 +121,48 @@ public class EdgesManagerActivity extends BaseActivity {
 
 
         // Save new edge
-        connectNodesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectNodesButton.setImageResource(R.drawable.ways_inactive);
-                boolean accessible = accessibilityCheckbox.isChecked();
+        connectNodesButton.setOnClickListener(view -> {
+            connectNodesButton.setImageResource(R.drawable.ways_inactive);
+            boolean accessible = accessibilityCheckbox.isChecked();
 
-                Node nodeA = databaseHandler.getNode(spinnerA.getSelectedItem().toString());
-                Node nodeB = databaseHandler.getNode(spinnerB.getSelectedItem().toString());
+            Node nodeA = databaseHandler.getNode(spinnerA.getSelectedItem().toString());
+            Node nodeB = databaseHandler.getNode(spinnerB.getSelectedItem().toString());
 
-                Edge edge = EdgeFactory.createInstance(nodeA, nodeB, accessible, 0);
+            Edge edge = EdgeFactory.createInstance(nodeA, nodeB, accessible, 0);
 
-                if (databaseHandler.checkIfEdgeExists(edge)) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.edge_already_exists), Toast.LENGTH_SHORT).show();
+            if (databaseHandler.checkIfEdgeExists(edge)) {
+                Toast.makeText(getApplicationContext(), getString(R.string.edge_already_exists), Toast.LENGTH_SHORT).show();
+            } else {
+                databaseHandler.insertEdge(edge);
+                allEdges.add(edge);
+
+                if (accessible) {
+                    itemsEdgesList.add(edge.getNodeA().getId() + " <---> " + edge.getNodeB().getId() + ",     " + getString(R.string.accessibility_checkbox_text));
                 } else {
-                    databaseHandler.insertEdge(edge);
-                    allEdges.add(edge);
-
-                    if (accessible) {
-                        itemsEdgesList.add(edge.getNodeA().getId() + " <---> " + edge.getNodeB().getId() + ",     " + getString(R.string.accessibility_checkbox_text));
-                    } else {
-                        itemsEdgesList.add(edge.getNodeA().getId() + " <---> " + edge.getNodeB().getId());
-                    }
-                    edgesListAdapter.notifyDataSetChanged();
+                    itemsEdgesList.add(edge.getNodeA().getId() + " <---> " + edge.getNodeB().getId());
                 }
-                connectNodesButton.setImageResource(R.drawable.ways);
+                edgesListAdapter.notifyDataSetChanged();
             }
+            connectNodesButton.setImageResource(R.drawable.ways);
         });
 
 
         // Long click on item -> delete item
-        edgesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
-                new AlertDialog.Builder(view.getContext())
-                        .setTitle(getString(R.string.delete_entry_title_question))
-                        .setMessage(getString(R.string.delete_entry_question))
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                databaseHandler.deleteEdge(allEdges.get(position));
-                                allEdges.remove(position);
-                                itemsEdgesList.remove(position);
-                                edgesListAdapter.notifyDataSetChanged();
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-                return false;
-            }
+        edgesListView.setOnItemLongClickListener((parent, view, position, id) -> {
+            new AlertDialog.Builder(view.getContext())
+                    .setTitle(getString(R.string.delete_entry_title_question))
+                    .setMessage(getString(R.string.delete_entry_question))
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        databaseHandler.deleteEdge(allEdges.get(position));
+                        allEdges.remove(position);
+                        itemsEdgesList.remove(position);
+                        edgesListAdapter.notifyDataSetChanged();
+                    })
+                    .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+            return false;
         });
     }
 }

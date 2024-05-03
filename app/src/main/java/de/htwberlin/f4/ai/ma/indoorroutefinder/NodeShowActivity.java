@@ -6,7 +6,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
@@ -14,11 +16,10 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Activity to show a detailed view of a node which was tapped on in the ListView
  * of the RouteFinderActivity.
  */
-
 public class NodeShowActivity extends BaseActivity {
 
     TextView idTextview;
@@ -28,9 +29,8 @@ public class NodeShowActivity extends BaseActivity {
     TextView coordinatesTextview;
     TextView coordinatesLabelTextview;
     ImageView cameraImageView;
-    private Node node;
     DatabaseHandler databaseHandler;
-
+    private Node node;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,7 @@ public class NodeShowActivity extends BaseActivity {
             }
         }
 
-        if (!node.getCoordinates().equals("")) {
+        if (!node.getCoordinates().isEmpty()) {
             coordinatesLabelTextview.setVisibility(View.VISIBLE);
             coordinatesTextview.setVisibility(View.VISIBLE);
             coordinatesTextview.setText(node.getCoordinates());
@@ -85,14 +85,11 @@ public class NodeShowActivity extends BaseActivity {
             Glide.with(this).load(R.drawable.unknown).into(cameraImageView);
         }
 
-        cameraImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MaxPictureActivity.class);
-                intent.putExtra("picturePath", node.getPicturePath());
-                intent.putExtra("nodeID", node.getId());
-                startActivity(intent);
-            }
+        cameraImageView.setOnClickListener(view -> {
+            Intent intent1 = new Intent(getApplicationContext(), MaxPictureActivity.class);
+            intent1.putExtra("picturePath", node.getPicturePath());
+            intent1.putExtra("nodeID", node.getId());
+            startActivity(intent1);
         });
     }
 }

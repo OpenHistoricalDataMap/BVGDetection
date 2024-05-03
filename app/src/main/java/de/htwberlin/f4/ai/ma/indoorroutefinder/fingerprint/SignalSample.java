@@ -6,15 +6,13 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_informati
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * A SignalSample consists of a timestamp and a list of AccessPointInformation at that time.
  */
-
-
 public class SignalSample {
 
-    private String timestamp;
-    private List<AccessPointInformation> accessPointInformationList;
+    private final String timestamp;
+    private final List<AccessPointInformation> accessPointInformationList;
 
     public SignalSample(String timestamp, List<AccessPointInformation> accessPointInformations) {
         this.timestamp = timestamp;
@@ -23,6 +21,7 @@ public class SignalSample {
 
     /**
      * Getter for the timestamp
+     *
      * @return the timestamp
      */
     public String getTimestamp() {
@@ -31,6 +30,7 @@ public class SignalSample {
 
     /**
      * Getter for the list of SignalStrengths
+     *
      * @return the list of SignalStrengths
      */
     public List<AccessPointInformation> getAccessPointInformationList() {

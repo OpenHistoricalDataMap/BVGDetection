@@ -2,32 +2,32 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.View;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import java.io.File;
 import java.io.IOException;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Activity for import / export of the database
  */
-
 public class ImportExportActivity extends BaseActivity {
 
+    public static final String IMPORT_EXPORT_ACTIVITY = "ImportExportActivity";
     ImageButton importButton;
     ImageButton exportButton;
     private DatabaseHandler databaseHandler;
     private Context context;
-    private static final int PICKFILE_REQUEST_CODE = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,18 +48,8 @@ public class ImportExportActivity extends BaseActivity {
         importButton.setImageResource(R.drawable.import_icon);
         exportButton.setImageResource(R.drawable.export_icon);
 
-        importButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                importDatabase();
-            }
-        });
-        exportButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                exportDatabase();
-            }
-        });
+        importButton.setOnClickListener(view -> importDatabase());
+        exportButton.setOnClickListener(view -> exportDatabase());
     }
 
 
@@ -72,18 +62,17 @@ public class ImportExportActivity extends BaseActivity {
                 .setTitle(getString(R.string.import_title_question))
                 .setMessage(getString(R.string.import_database_warining))
                 .setCancelable(true)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            boolean importSuccessful = DatabaseHandlerFactory.getInstance(context).importDatabase();
-                            if (importSuccessful) {
-                                Toast.makeText(context, getString(R.string.database_imported_toast), Toast.LENGTH_LONG).show();
-                            }
-                        } catch (IOException e) {e.printStackTrace();}
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    try {
+                        boolean importSuccessful = DatabaseHandlerFactory.getInstance(context).importDatabase();
+                        if (importSuccessful) {
+                            Toast.makeText(context, getString(R.string.database_imported_toast), Toast.LENGTH_LONG).show();
+                        }
+                    } catch (IOException e) {
+                        Log.d(IMPORT_EXPORT_ACTIVITY, "Error importing database: " + e);
                     }
                 })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {}
+                .setNegativeButton(android.R.string.no, (dialog, which) -> {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
@@ -103,16 +92,13 @@ public class ImportExportActivity extends BaseActivity {
                     .setTitle(getString(R.string.export_title_question))
                     .setMessage(getString(R.string.export_database_warning))
                     .setCancelable(true)
-                    .setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            boolean exportSuccessful = databaseHandler.exportDatabase();
-                            if (exportSuccessful) {
-                                Toast.makeText(context, getString(R.string.database_exported_toast), Toast.LENGTH_LONG).show();
-                            }
+                    .setPositiveButton(getString(android.R.string.yes), (dialog, which) -> {
+                        boolean exportSuccessful = databaseHandler.exportDatabase();
+                        if (exportSuccessful) {
+                            Toast.makeText(context, getString(R.string.database_exported_toast), Toast.LENGTH_LONG).show();
                         }
                     })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {}
+                    .setNegativeButton(android.R.string.no, (dialog, which) -> {
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();

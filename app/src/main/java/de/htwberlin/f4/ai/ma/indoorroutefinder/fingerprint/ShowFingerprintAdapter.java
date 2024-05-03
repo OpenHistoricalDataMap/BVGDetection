@@ -1,24 +1,21 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
-
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Adapter to fill the ListView in ShowFingerprintActivity with fingerprint data
  */
+public class ShowFingerprintAdapter extends BaseExpandableListAdapter {
 
-
-public class ShowFingerprintAdapter extends BaseExpandableListAdapter{
-
-    private Fingerprint fingerprint;
-    private Context context;
+    private final Fingerprint fingerprint;
+    private final Context context;
 
     public ShowFingerprintAdapter(Context context, Fingerprint fingerprint) {
         this.context = context;
@@ -61,16 +58,18 @@ public class ShowFingerprintAdapter extends BaseExpandableListAdapter{
         return false;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
 
         TextView textView = new TextView(context);
-        textView.setText((i+1) + ". Sekunde");
+        textView.setText((i + 1) + ". Sekunde");
         textView.setPadding(100, 0, 0, 0);
         textView.setTextSize(20);
         return textView;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View getChildView(int i, int i1, boolean b, View view, ViewGroup viewGroup) {
         TextView textView = new TextView(context);

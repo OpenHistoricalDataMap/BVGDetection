@@ -2,14 +2,12 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.measurement;
 
 /**
  * WKT Class
- *
+ * <p>
  * Used to create / transform coordinates <-> WKT String
  */
-
 public class WKT {
 
     public static final String POINT_Z = "POINT Z";
-
 
 
     /**
@@ -32,7 +30,7 @@ public class WKT {
 
     /**
      * Convert wkt string to float[]
-     *
+     * <p>
      * expects a string containing 3 coordinate values
      * for example: POINT Z(1.0 2.0 3.0)
      *
@@ -50,9 +48,9 @@ public class WKT {
 
         if (splitted.length == 3) {
             coordinates = new float[3];
-            coordinates[0] = Float.valueOf(splitted[0]);
-            coordinates[1] = Float.valueOf(splitted[1]);
-            coordinates[2] = Float.valueOf(splitted[2]);
+            coordinates[0] = Float.parseFloat(splitted[0]);
+            coordinates[1] = Float.parseFloat(splitted[1]);
+            coordinates[2] = Float.parseFloat(splitted[2]);
         }
 
         return coordinates;

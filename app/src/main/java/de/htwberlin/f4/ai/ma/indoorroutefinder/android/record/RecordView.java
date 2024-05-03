@@ -4,9 +4,9 @@ import android.content.Context;
 
 /**
  * RecordView Interface
- *
+ * <p>
  * Used for displaying sensor values
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 

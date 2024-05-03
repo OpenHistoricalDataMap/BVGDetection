@@ -4,8 +4,10 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
+
 import java.util.List;
+
+import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner.WifiScanner;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner.WifiScannerFactory;
 
@@ -14,7 +16,6 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner.WifiScannerFactory;
  * When SettingsActivity is launched, scan for available WiFi networks which have more
  * than one access point for providing a WiFi filter selection in settings.
  */
-
 public class SettingsFragment extends PreferenceFragment {
 
     @Override

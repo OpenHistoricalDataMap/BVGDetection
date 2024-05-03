@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
 
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Thanks to Carola Walter
  */
 public class EuclideanDistance {
@@ -17,7 +18,8 @@ public class EuclideanDistance {
 
     /**
      * Calculate the euclidean distances
-     * @param restructedNodes a list of restructed Nodes
+     *
+     * @param restructedNodes         a list of restructed Nodes
      * @param accessPointInformations a list of measured AccesspointInformations
      * @return a sorted list of distances
      */
@@ -29,7 +31,7 @@ public class EuclideanDistance {
             List<Collection<Double>> matchingSignalStrengths = new ArrayList<>();
             List<Integer> measuredSignalStrength = new ArrayList<>();
             for (int j = 0; j < accessPointInformations.size(); j++) {
-                Boolean contains = restructedNodes.get(i).restructedSignals.containsKey(accessPointInformations.get(j).getMacAddress());
+                boolean contains = restructedNodes.get(i).restructedSignals.containsKey(accessPointInformations.get(j).getMacAddress());
                 if (contains) {
                     matchingSignalStrengths.add(restructedNodes.get(i).restructedSignals.get(accessPointInformations.get(j).getMacAddress()));
                     measuredSignalStrength.add(accessPointInformations.get(j).getRssi());
@@ -66,6 +68,7 @@ public class EuclideanDistance {
 
     /**
      * Sort euclidean distances
+     *
      * @param distanceList list of DistanceClasses to sort
      * @return the sorted list
      */

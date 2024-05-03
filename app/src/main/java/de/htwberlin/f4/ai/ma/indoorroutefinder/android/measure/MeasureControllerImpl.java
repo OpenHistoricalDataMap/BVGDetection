@@ -1,5 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,9 +13,9 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import de.htwberlin.f4.ai.ma.indoorroutefinder.MaxPictureActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate.CalibratePersistance;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate.CalibratePersistanceImpl;
@@ -33,13 +36,13 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.edges.StepData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorChecker;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorCheckerImpl;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorDataModel;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorDataModelImpl;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.EdgeFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.SignalSample;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformationFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculator;
@@ -47,31 +50,26 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.Loca
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurement;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementType;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.WKT;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirection;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirectionDetectListener;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.SignalSample;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.node.NodeFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.MaxPictureActivity;
 
 /**
  * MeasureControllerImpl Class which implements the MeasureController Interface
- *
+ * <p>
  * used for measuring the distance / calculate coordinates of nodes
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class MeasureControllerImpl implements MeasureController {
 
+    public static final String MEASURE_CONTROLLER_IMPL = "MeasureControllerImpl";
     // timeperiod in ms for airpressure calibration
     private static final int CALIBRATION_TIME = 3000;
-
     private MeasureView view;
     private IndoorMeasurement indoorMeasurement;
     private Handler timerHandler;
@@ -93,8 +91,6 @@ public class MeasureControllerImpl implements MeasureController {
 
     private Node startNode;
     private Node targetNode;
-    // node retrieved from wifi
-    private Node measuredNode;
 
     private List<StepData> stepList;
     private float[] coords = new float[3];
@@ -105,10 +101,10 @@ public class MeasureControllerImpl implements MeasureController {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Activity Events                                     *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Activity Events                                     *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     @Override
@@ -127,11 +123,11 @@ public class MeasureControllerImpl implements MeasureController {
         handleNodeSelection(startNode, targetNode);
         // get settings from default sharedpreferences and store it for later usage
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
-        lowpassFilterValue = Float.valueOf(sharedPreferences.getString("pref_lowpass_value", "0.1"));
+        lowpassFilterValue = Float.parseFloat(sharedPreferences.getString("pref_lowpass_value", "0.1"));
         String type = sharedPreferences.getString("pref_measurement_type", "Variante B");
         measurementType = IndoorMeasurementType.fromString(type);
         useStepDirectionDetect = sharedPreferences.getBoolean("pref_stepdirection", false);
-        barometerThreshold = Float.valueOf(sharedPreferences.getString("pref_barometer_threshold", "0.14"));
+        barometerThreshold = Float.parseFloat(sharedPreferences.getString("pref_barometer_threshold", "0.14"));
         // load steplength and stepperiod calibration
         CalibratePersistance calibratePersistance = new CalibratePersistanceImpl(view.getContext());
         calibrationData = calibratePersistance.load();
@@ -139,10 +135,10 @@ public class MeasureControllerImpl implements MeasureController {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -191,7 +187,7 @@ public class MeasureControllerImpl implements MeasureController {
         view.updateDistance(edgeDistance);
 
         // check if the startnode already got coordinates
-        if (startNode.getCoordinates().length() > 0) {
+        if (!startNode.getCoordinates().isEmpty()) {
             coords = WKT.strToCoord(startNode.getCoordinates());
             // update coordinates in view
             view.updateCoordinates(coords[0], coords[1], coords[2]);
@@ -201,53 +197,45 @@ public class MeasureControllerImpl implements MeasureController {
         }
 
         // set sensor listeners
-        indoorMeasurement.setSensorListener(new SensorListener() {
-            @Override
-            public void valueChanged(SensorData sensorData) {
-                SensorType sensorType = sensorData.getSensorType();
-                switch (sensorType) {
+        indoorMeasurement.setSensorListener(sensorData -> {
+            SensorType sensorType = sensorData.getSensorType();
+            switch (sensorType) {
 
-                    case COMPASS_FUSION:
-                        // update the compass with new value
-                        view.updateAzimuth(sensorData.getValues()[0]);
-                        break;
+                case COMPASS_FUSION:
+                    // update the compass with new value
+                    view.updateAzimuth(sensorData.getValues()[0]);
+                    break;
 
-                    case COMPASS_SIMPLE:
-                        // update the compass with new value
-                        view.updateAzimuth(sensorData.getValues()[0]);
-                        break;
+                case COMPASS_SIMPLE:
+                    // update the compass with new value
+                    view.updateAzimuth(sensorData.getValues()[0]);
+                    break;
 
-                    case BAROMETER:
-                        // store barometer data in model, while calibration
-                        // isn't finished
-                        if (!calibrated) {
-                            sensorDataModel.insertData(sensorData);
-                        }
-                        break;
+                case BAROMETER:
+                    // store barometer data in model, while calibration
+                    // isn't finished
+                    if (!calibrated) {
+                        sensorDataModel.insertData(sensorData);
+                    }
+                    break;
 
-                    case STEP_DETECTOR:
+                case STEP_DETECTOR:
+                    handleNewStep();
+                    // fix first step bug...
+                    // first step won't get recognized by sensor so we just fake the step
+                    // and assume the user walks atleast for the two first steps in  the
+                    // same direction
+                    if (stepCount == 1) {
                         handleNewStep();
-                        // fix first step bug...
-                        // first step won't get recognized by sensor so we just fake the step
-                        // and assume the user walks atleast for the two first steps in  the
-                        // same direction
-                        if (stepCount == 1) {
-                            handleNewStep();
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                    }
+                    break;
+                default:
+                    break;
             }
         });
 
         // set listener for stepdirection module
-        indoorMeasurement.setStepDirectionListener(new StepDirectionDetectListener() {
-            @Override
-            public void onDirectionDetect(final StepDirection stepDirection) {
-                showStepDirectionDialog(stepDirection);
-            }
-        });
+        indoorMeasurement.setStepDirectionListener(this::showStepDirectionDialog);
 
         // determine which compasstype we are gonna use (compassFusion / compassSimple)
         SensorType compassType = null;
@@ -262,7 +250,7 @@ public class MeasureControllerImpl implements MeasureController {
 
         // start barometer sensor for upcoming airpressure calibration
         indoorMeasurement.startSensors(Sensor.SENSOR_RATE_MEASUREMENT,
-                                       SensorType.BAROMETER);
+                SensorType.BAROMETER);
 
         // start compass sensor with ui delay
         indoorMeasurement.startSensors(Sensor.SENSOR_RATE_UI, compassType);
@@ -276,7 +264,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered by clicking stop button
-     *
+     * <p>
      * stop sensors and show finish dialog
      */
     @Override
@@ -295,7 +283,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered by clicking step button
-     *
+     * <p>
      * in case a step was missed by sensor, the user can manually add a step
      */
     @Override
@@ -306,7 +294,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered when user selects a start node
-     *
+     * <p>
      * check if start and target node are not identical,
      * deactive start / stop button if needed
      *
@@ -321,7 +309,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered when user selects a target node
-     *
+     * <p>
      * check if start and target node are not identical,
      * deactive start / stop button if needed
      *
@@ -336,7 +324,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered by clicking on the arrow between start and target node
-     *
+     * <p>
      * if there is an existing edge between the nodes, load the EdgeDetailsView
      */
     @Override
@@ -357,7 +345,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered by clicking on the startnode image
-     *
+     * <p>
      * open view with fullscreen picture of the start node
      */
     @Override
@@ -375,7 +363,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered by clicking on the targetnode image
-     *
+     * <p>
      * open view with fullscreen picture of the target node
      */
     @Override
@@ -393,10 +381,11 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered by clicking on wifi icon
-     *
+     * <p>
      * Open dialog with all available wifi networks to choose from.
      * Try to find a location / node using wifi fingerprinting
      */
+    @SuppressLint("MissingPermission")
     @Override
     public void onLocateWifiClicked() {
         // if the measurement isnt active
@@ -408,45 +397,39 @@ public class MeasureControllerImpl implements MeasureController {
             alertDialogBuilder.setIcon(R.drawable.locate_wifi);
 
             // ask user if he really wants to find a location using wifi fingerprinting
-            alertDialogBuilder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // scan for available wifi networks
-                    WifiManager wifiManager = (WifiManager) view.getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    wifiManager.startScan();
-                    List<ScanResult> wifiScanList = wifiManager.getScanResults();
+            alertDialogBuilder.setPositiveButton("Ja", (dialog, id) -> {
+                // scan for available wifi networks
+                WifiManager wifiManager = (WifiManager) view.getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                wifiManager.startScan();
+                List<ScanResult> wifiScanList = wifiManager.getScanResults();
 
-                    // store wifi ssids
-                    final ArrayList<String> wifiNamesList = new ArrayList<>();
-                    for (ScanResult sr : wifiScanList) {
-                        if (!wifiNamesList.contains(sr.SSID) && !sr.SSID.equals("")) {
-                            wifiNamesList.add(sr.SSID);
-                        }
+                // store wifi ssids
+                final ArrayList<String> wifiNamesList = new ArrayList<>();
+                for (ScanResult sr : wifiScanList) {
+                    if (!wifiNamesList.contains(sr.SSID) && !sr.SSID.isEmpty()) {
+                        wifiNamesList.add(sr.SSID);
                     }
-
-                    // fill array with wifi ssids
-                    final CharSequence wifiArray[] = new CharSequence[wifiNamesList.size()-1];
-                    for (int i = 0; i < wifiArray.length; i++) {
-                        wifiArray[i] = wifiNamesList.get(i);
-                    }
-
-                    // create dialog with found wifis
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle("WLAN wählen");
-                    builder.setItems(wifiArray, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            getMeasuredNode(wifiNamesList.get(which), 3);
-                        }
-                    });
-                    builder.show();
                 }
+
+                // fill array with wifi ssids
+                final CharSequence[] wifiArray = new CharSequence[wifiNamesList.size() - 1];
+                for (int i = 0; i < wifiArray.length; i++) {
+                    wifiArray[i] = wifiNamesList.get(i);
+                }
+
+                // create dialog with found wifis
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setTitle("WLAN wählen");
+                builder.setItems(wifiArray, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getMeasuredNode(wifiNamesList.get(which));
+                    }
+                });
+                builder.show();
             });
 
-            alertDialogBuilder.setNegativeButton("Nein", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
+            alertDialogBuilder.setNegativeButton("Nein", (dialog, id) -> dialog.dismiss());
 
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
@@ -456,7 +439,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered by clicking on QR icon
-     *
+     * <p>
      * try to find a location / node using a qr code.
      * this qr code has to contain a valid json string with node id
      * and coordinates
@@ -472,19 +455,13 @@ public class MeasureControllerImpl implements MeasureController {
             alertDialogBuilder.setCancelable(true);
             alertDialogBuilder.setIcon(R.drawable.locate_qr);
             // if the user wants to find location using qr code
-            alertDialogBuilder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(view.getContext().getApplicationContext(), BarcodeCaptureActivity.class);
-                    Activity activity = (Activity) view;
-                    activity.startActivityForResult(intent, 1);
-                }
+            alertDialogBuilder.setPositiveButton("Ja", (dialog, id) -> {
+                Intent intent = new Intent(view.getContext().getApplicationContext(), BarcodeCaptureActivity.class);
+                Activity activity = (Activity) view;
+                activity.startActivityForResult(intent, 1);
             });
             // cancel
-            alertDialogBuilder.setNegativeButton("Nein", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
+            alertDialogBuilder.setNegativeButton("Nein", (dialog, id) -> dialog.dismiss());
 
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
@@ -494,9 +471,9 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered when qr code is recognized
-     *
+     * <p>
      * the qr code should contain a valid json string like:
-     *
+     * <p>
      * {"id": "nodeid","coordinates": "POINT Z(0.1 0.2 0.3)"}
      *
      * @param qr qr code content
@@ -546,7 +523,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered when user marks the startnode as nullpoint
-     *
+     * <p>
      * thats required because it's not allowed to change the coordinates
      * of a nullpoint node or start a measurement between two
      * nullpoint nodes (each train station got 1 nullpoint and usually
@@ -573,7 +550,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * triggered by stairs switch
-     *
+     * <p>
      * tells the indoormeasurement component if the next step is
      * a stair or not. depending on that, the distance is calculated
      *
@@ -588,21 +565,21 @@ public class MeasureControllerImpl implements MeasureController {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Class Methods                                       *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Class Methods                                       *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
      * from johann, modifed
-     *
+     * <p>
      * find a node from a wifi ssid using wifi fingerprinting
      *
      * @param wlanName wifi ssid
-     * @param times how often we should scan
      */
-    private void getMeasuredNode(final String wlanName, final int times) {
+    @SuppressLint({"MissingPermission", "CheckResult"})
+    private void getMeasuredNode(final String wlanName) {
         // get the wifi manager
         WifiManager wifiManager = (WifiManager) view.getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         IntentFilter intentFilter = new IntentFilter();
@@ -610,15 +587,11 @@ public class MeasureControllerImpl implements MeasureController {
 
         // scan
         Multimap<String, Integer> multiMap = ArrayListMultimap.create();
-        for (int i = 0; i < times; i++) {
+        for (int i = 0; i < 3; i++) {
 
             wifiManager.startScan();
 
             List<ScanResult> wifiScanList = wifiManager.getScanResults();
-
-            if(wifiScanList.get(0).timestamp == 0 && times == 1) {
-                return;
-            }
 
 
             for (final ScanResult sr : wifiScanList) {
@@ -632,7 +605,7 @@ public class MeasureControllerImpl implements MeasureController {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.d(MEASURE_CONTROLLER_IMPL, e.toString());
             }
         }
 
@@ -640,10 +613,10 @@ public class MeasureControllerImpl implements MeasureController {
         Node node = makeFingerprint(multiMap);
         // if we found a node
         if (node != null) {
-            measuredNode = node;
+            // node retrieved from wifi
             Toast toast = Toast.makeText(view.getContext(), "Ort gefunden: " + node.getId(), Toast.LENGTH_SHORT);
             toast.show();
-            view.setStartNode(measuredNode);
+            view.setStartNode(node);
         }
         // if we didnt find a node
         else {
@@ -653,10 +626,9 @@ public class MeasureControllerImpl implements MeasureController {
     }
 
 
-
     /**
      * from johann, modified
-     *
+     * <p>
      * get a node by fingerprint
      *
      * @param multiMap map with scanresults
@@ -665,7 +637,7 @@ public class MeasureControllerImpl implements MeasureController {
     private Node makeFingerprint(Multimap<String, Integer> multiMap) {
         Set<String> bssid = multiMap.keySet();
         DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
-        final List<Node> actuallyNode = new ArrayList<>();
+        // final List<Node> actuallyNode = new ArrayList<>();
         final List<SignalSample> signalSampleList = new ArrayList<>();
 
         for (String s : bssid) {
@@ -699,9 +671,8 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * Method for handling a new step registered by the step_detector sensor
-     *
+     * <p>
      * calculate distance, save step data informations and update ui
-     *
      */
     private void handleNewStep() {
         // with each step we get the new position
@@ -718,7 +689,7 @@ public class MeasureControllerImpl implements MeasureController {
             view.updateCoordinates(newStepCoords[0], newStepCoords[1], newStepCoords[2]);
             // save step data for later usage
             StepData stepData = new StepData();
-            stepData.setStepName("Step " + stepCount);
+            stepData.setStepName();
             coords = new float[newStepCoords.length];
             System.arraycopy(newStepCoords, 0, coords, 0, newStepCoords.length);
             stepData.setCoords(newStepCoords);
@@ -731,24 +702,24 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * handle the selection of start / target node from dropdown in view
-     *
+     * <p>
      * update view, enable / disable buttons if required
      *
-     * @param start start node
+     * @param start  start node
      * @param target target node
      */
     private void handleNodeSelection(Node start, Node target) {
         // check if startnode and targetnode was selected
         if (start != null && target != null) {
             // update coordinates of startnode
-            if (start.getCoordinates().length() > 0) {
+            if (!start.getCoordinates().isEmpty()) {
                 float[] coordinates = WKT.strToCoord(start.getCoordinates());
                 view.updateStartNodeCoordinates(coordinates[0], coordinates[1], coordinates[2]);
             } else {
                 view.updateStartNodeCoordinates(0f, 0f, 0f);
             }
             // update coordinates of targetnode
-            if (target.getCoordinates().length() > 0) {
+            if (!target.getCoordinates().isEmpty()) {
                 float[] coordinates = WKT.strToCoord(target.getCoordinates());
                 view.updateTargetNodeCoordinates(coordinates[0], coordinates[1], coordinates[2]);
             } else {
@@ -802,24 +773,20 @@ public class MeasureControllerImpl implements MeasureController {
      *
      * @param node1 start node
      * @param node2 target node
-     * @return
+     * @return nodes different yes / no
      */
     private boolean checkNodesDifferent(Node node1, Node node2) {
         // since id is unique, we just check for id
-        if (!node1.getId().equals(node2.getId())) {
-            return true;
-        }
-        return false;
+        return !node1.getId().equals(node2.getId());
     }
 
 
     /**
      * calibrate the airpressure, calculate average.
-     *
+     * <p>
      * measurement and calculation is done using a thread
-     *
+     * <p>
      * could be improved using AsyncTask
-     *
      */
     private void calibrate() {
         // create new thread handler and calibration runnable
@@ -827,40 +794,37 @@ public class MeasureControllerImpl implements MeasureController {
         pressureCalibration = new MeasureCalibration(sensorDataModel);
 
         // set listener
-        pressureCalibration.setListener(new MeasureCalibrationListener() {
-            @Override
-            public void onFinish(float airPressure) {
-                calibrationDialog.dismiss();
-                // stop thread
-                timerHandler.removeCallbacks(pressureCalibration);
-                calibrated = true;
+        pressureCalibration.setListener(airPressure -> {
+            calibrationDialog.dismiss();
+            // stop thread
+            timerHandler.removeCallbacks(pressureCalibration);
+            calibrated = true;
 
-                if (calibrationData != null) {
-                    // get coordinates from startnode and initialize measurement with those.
-                    // if the node doesn't have any coordinates we initialize with 0,0,0
-                    String startCoordinatesStr = startNode.getCoordinates();
-                    if (startCoordinatesStr != null && startCoordinatesStr.length() > 0) {
-                        float[] startCoordinates = WKT.strToCoord(startCoordinatesStr);
-                        calibrationData.setCoordinates(startCoordinates);
-                    } else {
-                        calibrationData.setCoordinates(new float[]{0f, 0f, 0f});
-                    }
-
-                    // set settings loaded from defaultsharedpreferences
-                    calibrationData.setIndoorMeasurementType(measurementType);
-                    calibrationData.setLowpassFilterValue(lowpassFilterValue);
-                    calibrationData.setUseStepDirection(useStepDirectionDetect);
-                    calibrationData.setBarometerThreshold(barometerThreshold);
-                    // save new calibrated airpressure
-                    calibrationData.setAirPressure(airPressure);
-                    // calibrate the indoormeasurement
-                    indoorMeasurement.calibrate(calibrationData);
-                    // start step detector with 0 delay
-                    indoorMeasurement.startSensors(Sensor.SENSOR_RATE_FASTEST,
-                            SensorType.STEP_DETECTOR);
-                    // start measurement
-                    indoorMeasurement.start();
+            if (calibrationData != null) {
+                // get coordinates from startnode and initialize measurement with those.
+                // if the node doesn't have any coordinates we initialize with 0,0,0
+                String startCoordinatesStr = startNode.getCoordinates();
+                if (startCoordinatesStr != null && !startCoordinatesStr.isEmpty()) {
+                    float[] startCoordinates = WKT.strToCoord(startCoordinatesStr);
+                    calibrationData.setCoordinates(startCoordinates);
+                } else {
+                    calibrationData.setCoordinates(new float[]{0f, 0f, 0f});
                 }
+
+                // set settings loaded from defaultsharedpreferences
+                calibrationData.setIndoorMeasurementType(measurementType);
+                calibrationData.setLowpassFilterValue(lowpassFilterValue);
+                calibrationData.setUseStepDirection(useStepDirectionDetect);
+                calibrationData.setBarometerThreshold(barometerThreshold);
+                // save new calibrated airpressure
+                calibrationData.setAirPressure(airPressure);
+                // calibrate the indoormeasurement
+                indoorMeasurement.calibrate(calibrationData);
+                // start step detector with 0 delay
+                indoorMeasurement.startSensors(Sensor.SENSOR_RATE_FASTEST,
+                        SensorType.STEP_DETECTOR);
+                // start measurement
+                indoorMeasurement.start();
             }
         });
 
@@ -885,16 +849,16 @@ public class MeasureControllerImpl implements MeasureController {
     /**
      * calculate the distance from 2 points in 3 dimensions
      *
-     * @param x1    x1 value
-     * @param y1    y1 value
-     * @param z1    z1 value
-     * @param x2    x2 value
-     * @param y2    y2 value
-     * @param z2    z2 value
-     * @return      distance
+     * @param x1 x1 value
+     * @param y1 y1 value
+     * @param z1 z1 value
+     * @param x2 x2 value
+     * @param y2 y2 value
+     * @param z2 z2 value
+     * @return distance
      */
     private float calcDistance(float x1, float y1, float z1, float x2, float y2, float z2) {
-        return (float) Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2) + Math.pow((z1-z2),2));
+        return (float) Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2) + Math.pow((z1 - z2), 2));
     }
 
 
@@ -906,9 +870,8 @@ public class MeasureControllerImpl implements MeasureController {
      */
     private boolean sensorsAvailable(IndoorMeasurementType indoorMeasurementType) {
         SensorChecker sensorChecker = new SensorCheckerImpl(view.getContext());
-        boolean result = sensorChecker.checkSensor(indoorMeasurementType);
 
-        return result;
+        return sensorChecker.checkSensor(indoorMeasurementType);
     }
 
 
@@ -982,20 +945,16 @@ public class MeasureControllerImpl implements MeasureController {
         alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.setIcon(R.drawable.barrierefrei);
 
-        alertDialogBuilder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                handycapFriendly = true;
-                saveMeasurementData();
-                dialog.dismiss();
-            }
+        alertDialogBuilder.setPositiveButton("Ja", (dialog, id) -> {
+            handycapFriendly = true;
+            saveMeasurementData();
+            dialog.dismiss();
         });
 
-        alertDialogBuilder.setNegativeButton("Nein", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                handycapFriendly = false;
-                saveMeasurementData();
-                dialog.dismiss();
-            }
+        alertDialogBuilder.setNegativeButton("Nein", (dialog, id) -> {
+            handycapFriendly = false;
+            saveMeasurementData();
+            dialog.dismiss();
         });
 
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -1005,7 +964,7 @@ public class MeasureControllerImpl implements MeasureController {
 
     /**
      * Dialog for detected Stepdirection
-     *
+     * <p>
      * When there is a step != forward, inform the user
      *
      * @param stepDirection detected stepdirection
@@ -1034,7 +993,7 @@ public class MeasureControllerImpl implements MeasureController {
                     view.enableStart();
 
                     // check if the startnode already got coordinates
-                    if (startNode.getCoordinates().length() > 0) {
+                    if (!startNode.getCoordinates().isEmpty()) {
                         coords = WKT.strToCoord(startNode.getCoordinates());
                         // update coordinates in view
                         view.updateCoordinates(coords[0], coords[1], coords[2]);
@@ -1048,11 +1007,7 @@ public class MeasureControllerImpl implements MeasureController {
             });
 
             // ignore warning
-            alertDialogBuilder.setNegativeButton("Nein, weiter", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
+            alertDialogBuilder.setNegativeButton("Nein, weiter", (dialog, id) -> dialog.dismiss());
 
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();

@@ -16,6 +16,7 @@ class DijkstraNode {
 
     /**
      * Getter for the ID
+     *
      * @return the ID
      */
     public String getId() {
@@ -49,16 +50,14 @@ class DijkstraNode {
             return false;
         DijkstraNode other = (DijkstraNode) object;
         if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        return true;
+            return other.id == null;
+        } else return id.equals(other.id);
     }
 
 
     /**
      * Overrides standard toString() method
+     *
      * @return the id of the DijkstraNode
      */
     @Override

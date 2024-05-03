@@ -2,9 +2,9 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors;
 
 /**
  * SensorData Class
- *
+ * <p>
  * small model class to store sensor values, sensortype and corrected unix timestamp
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
@@ -21,7 +21,7 @@ public class SensorData {
     }
 
     // little helper constructor for testing data
-    public SensorData(SensorType sensorType,long timestamp, float x, float y, float z) {
+    public SensorData(SensorType sensorType, long timestamp, float x, float y, float z) {
         this.sensorType = sensorType;
         values = new float[3];
         this.timestamp = timestamp;
@@ -32,10 +32,10 @@ public class SensorData {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Get & Set                                           *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Get & Set                                           *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     public long getTimestamp() {

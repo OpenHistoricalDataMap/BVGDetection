@@ -1,5 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.nodelist;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,24 +11,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
+
 import java.util.List;
+
+import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 
 /**
  * Created Johann Winter
- *
+ * <p>
  * Custom adapter for the NodeListActivity's node list.
  */
-
 public class NodeListAdapter extends ArrayAdapter {
 
-    private Activity context;
-    private List<String> nodeNames;
-    private List<String> nodeDescriptions;
-    private List<String> nodePicturePaths;
-
     private final int REGULAR_ITEM = 0;   // For "normal" Nodes
-    private final int DISTANCE_ITEM = 1;  // For distances between Nodes in ListView of RouteFinderActivity
+    private final Activity context;
+    private final List<String> nodeNames;
+    private final List<String> nodeDescriptions;
+    private final List<String> nodePicturePaths;
 
 
     public NodeListAdapter(Activity context, List<String> nodeNames, List<String> nodeDescriptions, List<String> nodePicturePaths) {
@@ -39,11 +39,12 @@ public class NodeListAdapter extends ArrayAdapter {
         this.nodePicturePaths = nodePicturePaths;
     }
 
+    @SuppressLint("InflateParams")
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
-        ViewHolder viewHolder = null;
+        ViewHolder viewHolder;
 
         if (row == null) {
 
@@ -57,9 +58,7 @@ public class NodeListAdapter extends ArrayAdapter {
 
             viewHolder = new ViewHolder(row);
             row.setTag(viewHolder);
-        }
-
-        else {
+        } else {
             viewHolder = (ViewHolder) row.getTag();
         }
 
@@ -72,7 +71,7 @@ public class NodeListAdapter extends ArrayAdapter {
             if (nodePicturePaths.get(position) == null) {
                 viewHolder.nodeImageView.setVisibility(View.VISIBLE);
                 Glide.with(getContext()).load(R.drawable.unknown).into(viewHolder.nodeImageView);
-            } else if (!nodePicturePaths.get(position).equals("")) {
+            } else if (!nodePicturePaths.get(position).isEmpty()) {
                 viewHolder.nodeImageView.setVisibility(View.VISIBLE);
                 Glide.with(getContext()).load(nodePicturePaths.get(position)).into(viewHolder.nodeImageView);
             } else {
@@ -90,6 +89,8 @@ public class NodeListAdapter extends ArrayAdapter {
     @Override
     public int getItemViewType(int position) {
         if (nodeNames.get(position).startsWith("\t")) {
+            // For distances between Nodes in ListView of RouteFinderActivity
+            int DISTANCE_ITEM = 1;
             return DISTANCE_ITEM;
         } else {
             return REGULAR_ITEM;

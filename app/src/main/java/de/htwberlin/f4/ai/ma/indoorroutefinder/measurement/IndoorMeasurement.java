@@ -11,14 +11,13 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection
 
 /**
  * IndoorMeasurement Interface
- *
+ * <p>
  * Used to determine the position and handle all sensor stuff
- *
+ * <p>
  * Calculate position in cartesian coordinate system using dead reckoning
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public interface IndoorMeasurement {
 
     // calibrate steplength (m), stepperiod (ms), airpressure and some other stuff

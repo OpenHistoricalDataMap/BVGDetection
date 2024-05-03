@@ -5,9 +5,9 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 
 /**
  * MeasureController Interface
- *
+ * <p>
  * used for measuring the distance / calculate coordinates of nodes
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 

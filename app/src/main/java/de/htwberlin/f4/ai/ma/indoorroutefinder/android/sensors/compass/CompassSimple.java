@@ -9,8 +9,6 @@ import android.hardware.SensorManager;
 import android.os.SystemClock;
 import android.view.Surface;
 
-import java.sql.Timestamp;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
@@ -18,32 +16,26 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * CompassSimple Class which implements the Sensor and SensorEventListener Interface
- *
+ * <p>
  * Used Android Sensor: Sensor.TYPE_ACCELEROMETER and Sensor.TYPE_MAGNETIC_FIELD
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
-public class CompassSimple implements SensorEventListener, de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor{
+public class CompassSimple implements SensorEventListener, de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor {
 
     private static final SensorType SENSORTYPE = SensorType.COMPASS_SIMPLE;
-
-    private SensorManager sensorManager;
+    private final SensorManager sensorManager;
+    private final float[] rotationMatrix;
+    private final float[] accelerometerValues;
+    private final float[] magneticValues;
+    private final int sensorRate;
+    private final Context context;
     private SensorListener listener;
     private Sensor accelerometerSensor;
     private Sensor magneticFieldSensor;
-
     private float[] orientation;
-    private float[] rotationMatrix;
-    private float[] accelerometerValues;
-    private float[] magneticValues;
-
-    private float azimuth;
-    private float pitch;
-    private float roll;
     private SensorData sensorData;
-    private int sensorRate;
-    private Context context;
 
 
     public CompassSimple(Context context, int sensorRate) {
@@ -60,10 +52,10 @@ public class CompassSimple implements SensorEventListener, de.htwberlin.f4.ai.ma
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Sensor Interface Methods                            *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Sensor Interface Methods                            *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -111,12 +103,8 @@ public class CompassSimple implements SensorEventListener, de.htwberlin.f4.ai.ma
      */
     @Override
     public boolean isSensorAvailable() {
-        if ((sensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_ACCELEROMETER) == null) ||
-                (sensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_MAGNETIC_FIELD) == null)) {
-            return false;
-        }
-
-        return true;
+        return (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) &&
+                (sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null);
     }
 
 
@@ -143,26 +131,26 @@ public class CompassSimple implements SensorEventListener, de.htwberlin.f4.ai.ma
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                      SensorEventListener Interface Methods                        *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                      SensorEventListener Interface Methods                        *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
      * Copy sensor values and create SensorData Object with sensortype, correct timestamp and
      * sensor values
-     *
+     * <p>
      * Determine a rotation matrix by using the values of both sensors
-     *
+     * <p>
      * The result is used to calculate a rotation matrix to calculate the azimuth, pitch and
      * and roll using the getOrientation() Method
-     *
+     * <p>
      * values[0]: azimuth
      * values[1]: pitch
      * values[2]: roll
      *
-     * @param sensorEvent
+     * @param sensorEvent sensor event
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -215,9 +203,9 @@ public class CompassSimple implements SensorEventListener, de.htwberlin.f4.ai.ma
         // original azimuth values are within [-180,180]
         orientation = SensorManager.getOrientation(remapped, orientation);
 
-        azimuth = (float) (Math.toDegrees(orientation[0]) + 360) % 360;
-        pitch = (float) (Math.toDegrees(orientation[1]));
-        roll = (float) (Math.toDegrees(orientation[2]));
+        float azimuth = (float) (Math.toDegrees(orientation[0]) + 360) % 360;
+        float pitch = (float) (Math.toDegrees(orientation[1]));
+        float roll = (float) (Math.toDegrees(orientation[2]));
 
         // detect if the phone is "standing" (selfie camera on top or bottom edge) and screen is facing the user.
         // the normal camera on the backside of the phone points away from the user.

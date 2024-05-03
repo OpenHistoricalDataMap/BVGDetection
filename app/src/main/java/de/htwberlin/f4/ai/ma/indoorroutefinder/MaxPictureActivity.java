@@ -4,16 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
 import com.bumptech.glide.Glide;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Acitvity for showing a node's picture in fullscreen mode
  */
-
 public class MaxPictureActivity extends BaseActivity {
 
     ImageView maxImageView;

@@ -2,19 +2,20 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.edge;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 
 /**
  * Created by Johann Winter
  */
 
-class EdgeImpl implements Edge{
+class EdgeImpl implements Edge {
 
-    private Node nodeA;
-    private Node nodeB;
+    private final Node nodeA;
+    private final Node nodeB;
+    private final List<String> stepCoordList;
     private boolean accessible;
     private float weight;
-    private List<String> stepCoordList;
     private String additionalInfo;
 
 

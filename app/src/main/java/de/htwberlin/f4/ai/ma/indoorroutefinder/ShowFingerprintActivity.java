@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.ShowFingerprintAdapter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
@@ -13,19 +14,15 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
 /**
  * Created by Johann Winter
  */
-
 public class ShowFingerprintActivity extends BaseActivity {
-
-    private DatabaseHandler databaseHandler;
-    private ExpandableListView fingerprintListview;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FrameLayout contentFrameLayout = (FrameLayout) findViewById(R.id.content_frame);
         getLayoutInflater().inflate(R.layout.activity_show_fingerprint, contentFrameLayout);
 
-        databaseHandler = DatabaseHandlerFactory.getInstance(this);
-        fingerprintListview = (ExpandableListView) findViewById(R.id.fingerprint_expandable_listview);
+        DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(this);
+        ExpandableListView fingerprintListview = (ExpandableListView) findViewById(R.id.fingerprint_expandable_listview);
 
         Intent intent = getIntent();
         String nodeID = (String) intent.getExtras().get("nodeID");

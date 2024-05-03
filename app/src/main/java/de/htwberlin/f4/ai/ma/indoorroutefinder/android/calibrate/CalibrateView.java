@@ -4,16 +4,13 @@ import android.content.Context;
 
 /**
  * CalibrateView Interface
- *
+ * <p>
  * Used for Steplength and Stepperiod calibration
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public interface CalibrateView {
-
-    // set the responsible controller
-    void setController(CalibrateController controller);
 
     // update the step count
     void updateStepCount(int stepCount);

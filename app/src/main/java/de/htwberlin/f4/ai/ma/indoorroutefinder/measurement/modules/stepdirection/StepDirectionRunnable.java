@@ -2,16 +2,15 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirectio
 
 /**
  * StepDirectionRunnable class which implements the Runnable Interface
- *
+ * <p>
  * used for stepdetection in a thread
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public class StepDirectionRunnable implements Runnable {
 
     private StepDirectionDetectListener listener;
-    private StepDirectionModule stepDirectionDetect;
+    private final StepDirectionModule stepDirectionDetect;
 
 
     public StepDirectionRunnable(StepDirectionModule stepDirectionDetect) {
@@ -20,10 +19,10 @@ public class StepDirectionRunnable implements Runnable {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     @Override
@@ -37,10 +36,10 @@ public class StepDirectionRunnable implements Runnable {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Class Methods                                       *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Class Methods                                       *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     public void setListener(StepDirectionDetectListener listener) {

@@ -7,19 +7,18 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.variant_a.Pos
 
 /**
  * PositionModuleC Class which implements the PositionModule Interface
- *
+ * <p>
  * Used for IndoorMeasurementType.VARIANT_C
- *
+ * <p>
  * Orientation: CompassSimple (Accelerometer + Magnetic field sensor)
  * Altitude: Barometer
  * Distance: Steplength
- *
+ * <p>
  * No Lowpass filter used
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
-public class PositionModuleC extends PositionModuleA{
+public class PositionModuleC extends PositionModuleA {
 
     public PositionModuleC(Context context, CalibrationData calibrationData) {
         super(context, calibrationData);

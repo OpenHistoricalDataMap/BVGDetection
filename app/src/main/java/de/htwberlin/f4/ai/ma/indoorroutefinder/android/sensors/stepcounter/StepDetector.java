@@ -5,7 +5,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
-import android.util.Log;
 
 import java.sql.Timestamp;
 
@@ -13,36 +12,32 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate.CalibratePersis
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate.CalibratePersistanceImpl;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate.CalibrateViewImpl;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.CalibrationData;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * StepDetector Class which implements the Sensor and SensorEventListener Interface
- *
+ * <p>
  * Used Android Sensor: Sensor.TYPE_STEP_DETECTOR
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
-public class StepDetector implements Sensor, SensorEventListener{
+public class StepDetector implements Sensor, SensorEventListener {
 
     private static final SensorType SENSORTYPE = SensorType.STEP_DETECTOR;
-
-    private SensorManager sensorManager;
+    private final SensorManager sensorManager;
+    private final int sensorRate;
+    private final Context context;
     private SensorListener listener;
     private android.hardware.Sensor stepCounterSensor;
-
     private Integer stepCount;
     private SensorData sensorData;
-
     private boolean firstRun;
     private long lastStepTimestamp;
-    private int sensorRate;
     private int stepPeriod;
-
-    private Context context;
 
 
     public StepDetector(Context context, int sensorRate) {
@@ -58,7 +53,7 @@ public class StepDetector implements Sensor, SensorEventListener{
     /**
      * load stepperiod from settings
      *
-     * @return
+     * @return period
      */
     private int loadStepPeriod() {
         CalibratePersistance calibratePersistance = new CalibratePersistanceImpl(context);
@@ -79,10 +74,10 @@ public class StepDetector implements Sensor, SensorEventListener{
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Sensor Interface Methods                            *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Sensor Interface Methods                            *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -128,11 +123,7 @@ public class StepDetector implements Sensor, SensorEventListener{
      */
     @Override
     public boolean isSensorAvailable() {
-        if (sensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_STEP_DETECTOR) == null) {
-            return false;
-        }
-
-        return true;
+        return sensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_STEP_DETECTOR) != null;
     }
 
 
@@ -159,19 +150,19 @@ public class StepDetector implements Sensor, SensorEventListener{
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                      SensorEventListener Interface Methods                        *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                      SensorEventListener Interface Methods                        *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
      * Copy sensor values and create SensorData Object with sensortype, correct timestamp and
      * sensor values
-     *
+     * <p>
      * reports step count
      *
-     * @param sensorEvent
+     * @param sensorEvent sensor event
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {

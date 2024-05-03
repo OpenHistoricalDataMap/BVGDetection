@@ -1,8 +1,8 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
@@ -18,57 +18,57 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner.WifiScanner;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner.WifiScannerFactory;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculator;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculatorFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.dijkstra.DijkstraAlgorithm;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.dijkstra.DijkstraAlgorithmFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.AsyncResponse;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintTask;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculator;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculatorFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.nodelist.NodeListAdapter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.dijkstra.DijkstraAlgorithmFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner.WifiScanner;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner.WifiScannerFactory;
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * This activity provides the route finder functionality ("Route finden").
  */
-
 public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
 
-    private Spinner startNodeSpinner;
     Spinner destinationNodeSpinner;
     ImageButton locateButton;
     ImageButton findRouteButton;
     ListView navigationResultListview;
     List<String> itemsStartNodeSpinner;
-    private ArrayList<String> itemsDestNodeSpinner;
     CheckBox accessibilityCheckbox;
-    private TextView totalDistanceTextview;
-    private TextView infobox;
     List<String> navigationResultsList;
     List<Node> allNodes;
     DatabaseHandler databaseHandler;
-    private SharedPreferences sharedPreferences;
-    private String selectedStartNode;
-    private String lastSelectedStartNode;
-    private String defaultWifi;
     NodeListAdapter resultListAdapter;
     List<String> nodeNames;
     List<String> nodeDescriptions;
     List<String> nodePicturePaths;
     boolean verboseMode;
-    private boolean useSSIDfilter;
     WifiManager wifiManager;
-
+    private Spinner startNodeSpinner;
+    private ArrayList<String> itemsDestNodeSpinner;
+    private TextView totalDistanceTextview;
+    private TextView infobox;
+    private SharedPreferences sharedPreferences;
+    private String selectedStartNode;
+    private String lastSelectedStartNode;
+    private String defaultWifi;
+    private boolean useSSIDfilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,7 +132,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
                 selectedStartNode = startNodeSpinner.getSelectedItem().toString();
 
                 if (!selectedStartNode.equals(lastSelectedStartNode)) {
-                    if (!lastSelectedStartNode.equals("")) {
+                    if (!lastSelectedStartNode.isEmpty()) {
                         itemsDestNodeSpinner.add(lastSelectedStartNode);
                     }
                     itemsDestNodeSpinner.remove(selectedStartNode);
@@ -140,51 +140,44 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
                     lastSelectedStartNode = selectedStartNode;
                 }
             }
+
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
 
         // Get WiFis around and ask the user which to use
-        locateButton.setOnClickListener(new View.OnClickListener() {
+        locateButton.setOnClickListener(view -> {
+            locateButton.setImageResource(R.drawable.locate_inactive);
+            if (useSSIDfilter) {
+                // If default WiFi is not set in preferences
+                if (defaultWifi == null) {
+                    locateButton.setEnabled(false);
 
-            @Override
-            public void onClick(View view) {
-                locateButton.setImageResource(R.drawable.locate_inactive);
-                if (useSSIDfilter) {
-                    // If default WiFi is not set in preferences
-                    if (defaultWifi == null) {
-                        locateButton.setEnabled(false);
+                    WifiScanner wifiScanner = WifiScannerFactory.createInstance();
+                    final List<String> wifiNamesList = wifiScanner.getAvailableNetworks(wifiManager, true);
 
-                        WifiScanner wifiScanner = WifiScannerFactory.createInstance();
-                        final List<String> wifiNamesList = wifiScanner.getAvailableNetworks(wifiManager, true);
-
-                        final CharSequence wifiArray[] = new CharSequence[wifiNamesList.size()];
-                        for (int i = 0; i < wifiArray.length; i++) {
-                            wifiArray[i] = wifiNamesList.get(i);
-                        }
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        builder.setTitle(getString(R.string.select_wifi));
-                        builder.setItems(wifiArray, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                findLocation(wifiNamesList.get(which), 1);
-                            }
-                        });
-                        builder.setCancelable(false);
-                        builder.show();
-                        // If default WiFi is set in preferences
-                    } else {
-                        findLocation(defaultWifi, 1);
+                    final CharSequence[] wifiArray = new CharSequence[wifiNamesList.size()];
+                    for (int i = 0; i < wifiArray.length; i++) {
+                        wifiArray[i] = wifiNamesList.get(i);
                     }
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setTitle(getString(R.string.select_wifi));
+                    builder.setItems(wifiArray, (dialog, which) -> findLocation(wifiNamesList.get(which)));
+                    builder.setCancelable(false);
+                    builder.show();
+                    // If default WiFi is set in preferences
                 } else {
-                    findLocation(null, 1);
+                    findLocation(defaultWifi);
                 }
+            } else {
+                findLocation(null);
             }
         });
 
         // Start the route finding process
         findRouteButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View view) {
                 nodeNames.clear();
@@ -211,12 +204,12 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
                         nodePicturePaths.add(databaseHandler.getNode(route.get(i)).getPicturePath());
 
                         // Add distance (weight) to the results list
-                        if (i+1 < route.size()) {
+                        if (i + 1 < route.size()) {
                             Node nodeA = databaseHandler.getNode(route.get(i));
                             Node nodeB = databaseHandler.getNode(route.get(i + 1));
 
                             Edge e = databaseHandler.getEdge(nodeA, nodeB);
-                            nodeNames.add("\t" + String.valueOf(e.getWeight()) + " m");
+                            nodeNames.add("\t" + e.getWeight() + " m");
                             nodeDescriptions.add("");
                             nodePicturePaths.add("");
                             totalDistance += e.getWeight();
@@ -224,18 +217,15 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
                     }
 
                     resultListAdapter.notifyDataSetChanged();
-                    totalDistanceTextview.setText("Gesamtstrecke: " + String.valueOf(totalDistance) + " m");
+                    totalDistanceTextview.setText("Gesamtstrecke: " + totalDistance + " m");
 
                     // Click on Item -> show Node in NodeEditActivity
-                    navigationResultListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            // Only nodes will be clickable, not the separators
-                            if (position % 2 == 0) {
-                                Intent intent = new Intent(getApplicationContext(), NodeShowActivity.class);
-                                intent.putExtra("nodeName", navigationResultListview.getAdapter().getItem(position).toString());
-                                startActivity(intent);
-                            }
+                    navigationResultListview.setOnItemClickListener((parent, view1, position, id) -> {
+                        // Only nodes will be clickable, not the separators
+                        if (position % 2 == 0) {
+                            Intent intent = new Intent(getApplicationContext(), NodeShowActivity.class);
+                            intent.putExtra("nodeName", navigationResultListview.getAdapter().getItem(position).toString());
+                            startActivity(intent);
                         }
                     });
                 }
@@ -246,16 +236,16 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
 
     /**
      * Try to find the location and set it to the start-spinner
+     *
      * @param wifiName the WiFi to measure
-     * @param seconds duration of the measurement in seconds
      */
-    private void findLocation(String wifiName, int seconds) {
+    private void findLocation(String wifiName) {
         verboseMode = sharedPreferences.getBoolean("verbose_mode", false);
         FingerprintTask fingerprintTask;
         if (verboseMode) {
-            fingerprintTask = new FingerprintTask(wifiName, seconds, wifiManager, true, null, null, infobox);
+            fingerprintTask = new FingerprintTask(wifiName, 1, wifiManager, true, null, null, infobox);
         } else {
-            fingerprintTask = new FingerprintTask(wifiName, seconds, wifiManager, true, null, null);
+            fingerprintTask = new FingerprintTask(wifiName, 1, wifiManager, true, null, null);
         }
         fingerprintTask.delegate = this;
         fingerprintTask.execute();
@@ -263,8 +253,9 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
 
     /**
      * When the fingerprinting background task finished
+     *
      * @param fingerprint the Fingerprint from the AsyncTask
-     * @param seconds the time of measurement in seconds
+     * @param seconds     the time of measurement in seconds
      */
     @Override
     public void processFinish(Fingerprint fingerprint, int seconds) {

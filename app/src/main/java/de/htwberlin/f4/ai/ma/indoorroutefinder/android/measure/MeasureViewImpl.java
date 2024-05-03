@@ -1,5 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,15 +11,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.SwitchCompat;
+
 import com.bumptech.glide.Glide;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.barcode.BarcodeCaptureActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
@@ -37,15 +38,17 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
 
 /**
  * MeasureViewImpl Class which implements the MeasureView Interface
- *
+ * <p>
  * View for showing Measuring details, nodes..
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
-public class MeasureViewImpl extends BaseActivity implements MeasureView{
+public class MeasureViewImpl extends BaseActivity implements MeasureView {
 
-    private MeasureController controller;
+    private final List<String> nodeNames = new ArrayList<>();
+    private final List<Node> nodeList = new ArrayList<>();
+    private final MeasureController controller;
     private TextView compassView;
     private ImageView compassImageView;
     private TextView stepCounterView;
@@ -54,29 +57,15 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
     private TextView startNodeCoordinatesView;
     private TextView targetNodeCoordinatesView;
     private TextView edgeDistanceView;
-
     private Button btnStart;
     private Button btnStop;
     private Button btnAdd;
-
     private Spinner startNodeSpinner;
-    private Spinner targetNodeSpinner;
-
     private ImageView startNodeImage;
     private ImageView targetNodeImage;
     private ImageView handycapImage;
-    private ImageView edgeArrow;
-    private ImageView locateWifiImage;
-    private ImageView locateQrImage;
-
     private CheckBox nullpointStartCb;
-
-    private Switch stairsToggle;
-
     private ArrayAdapter<String> startAdapter;
-    private ArrayAdapter<String> targetAdapter;
-    private final List<String> nodeNames = new ArrayList<>();
-    private final List<Node> nodeList = new ArrayList<>();
 
     public MeasureViewImpl() {
         controller = new MeasureControllerImpl();
@@ -85,10 +74,10 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Activity Events                                     *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Activity Events                                     *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     @Override
@@ -121,44 +110,32 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
 
         coordinatesView = (TextView) findViewById(R.id.coordinates_measure_coordinates);
 
-        stairsToggle = (Switch) findViewById(R.id.coordinates_measure_stairs);
-        stairsToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (controller != null) {
-                    controller.onStairsToggle(b);
-                }
+        SwitchCompat stairsToggle = (SwitchCompat) findViewById(R.id.coordinates_measure_stairs);
+        stairsToggle.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (controller != null) {
+                controller.onStairsToggle(b);
             }
         });
 
         startNodeImage = (ImageView) findViewById(R.id.coordinates_measure_start_image);
         targetNodeImage = (ImageView) findViewById(R.id.coordinates_measure_target_image);
-        edgeArrow = (ImageView) findViewById(R.id.coordinates_measure_arrow);
+        ImageView edgeArrow = (ImageView) findViewById(R.id.coordinates_measure_arrow);
 
-        startNodeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onStartNodeImageClicked();
-                }
+        startNodeImage.setOnClickListener(view -> {
+            if (controller != null) {
+                controller.onStartNodeImageClicked();
             }
         });
 
-        targetNodeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onTargetNodeImageClicked();
-                }
+        targetNodeImage.setOnClickListener(view -> {
+            if (controller != null) {
+                controller.onTargetNodeImageClicked();
             }
         });
 
-        edgeArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onEdgeDetailsClicked();
-                }
+        edgeArrow.setOnClickListener(view -> {
+            if (controller != null) {
+                controller.onEdgeDetailsClicked();
             }
         });
 
@@ -168,23 +145,17 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
                 .load(R.drawable.barrierefrei)
                 .into(handycapImage);
 
-        locateWifiImage = (ImageView) findViewById(R.id.coordinates_measure_locate_wifi);
-        locateWifiImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onLocateWifiClicked();
-                }
+        ImageView locateWifiImage = (ImageView) findViewById(R.id.coordinates_measure_locate_wifi);
+        locateWifiImage.setOnClickListener(view -> {
+            if (controller != null) {
+                controller.onLocateWifiClicked();
             }
         });
 
-        locateQrImage = (ImageView) findViewById(R.id.coordinates_measure_locate_qr);
-        locateQrImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onLocateQrClicked();
-                }
+        ImageView locateQrImage = (ImageView) findViewById(R.id.coordinates_measure_locate_qr);
+        locateQrImage.setOnClickListener(view -> {
+            if (controller != null) {
+                controller.onLocateQrClicked();
             }
         });
 
@@ -193,49 +164,40 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
 
         nullpointStartCb = (CheckBox) findViewById(R.id.coordinates_measure_nullpoint_start);
 
-        nullpointStartCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (controller != null) {
-                    controller.onNullpointCheckedStartNode(b);
-                }
+        nullpointStartCb.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (controller != null) {
+                controller.onNullpointCheckedStartNode(b);
             }
         });
 
         btnStart = (Button) findViewById(R.id.coordinates_measure_start);
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (controller != null) {
-                    controller.onStartClicked();
-                }
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(true);
-                btnAdd.setEnabled(true);
-                nullpointStartCb.setEnabled(false);
+        btnStart.setOnClickListener(v -> {
+            if (controller != null) {
+                controller.onStartClicked();
             }
+            btnStart.setEnabled(false);
+            btnStop.setEnabled(true);
+            btnAdd.setEnabled(true);
+            nullpointStartCb.setEnabled(false);
         });
         btnStart.setEnabled(false);
 
         btnStop = (Button) findViewById(R.id.coordinates_measure_stop);
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (controller != null) {
-                    controller.onStopClicked();
-                }
-                btnStart.setEnabled(true);
-                btnStop.setEnabled(false);
-                btnAdd.setEnabled(false);
-                nullpointStartCb.setEnabled(true);
+        btnStop.setOnClickListener(v -> {
+            if (controller != null) {
+                controller.onStopClicked();
             }
+            btnStart.setEnabled(true);
+            btnStop.setEnabled(false);
+            btnAdd.setEnabled(false);
+            nullpointStartCb.setEnabled(true);
         });
         btnStop.setEnabled(false);
 
         btnAdd = (Button) findViewById(R.id.coordinates_measure_add);
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (controller != null) {
-                    controller.onStepClicked();
-                }
+        btnAdd.setOnClickListener(v -> {
+            if (controller != null) {
+                controller.onStepClicked();
             }
         });
         btnAdd.setEnabled(false);
@@ -263,15 +225,9 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
 
                 }
 
-                if (controller != null) {
-                    controller.onStartNodeSelected(startNode);
-                }
+                controller.onStartNodeSelected(startNode);
 
-                if (startNode.getAdditionalInfo() != null && startNode.getAdditionalInfo().contains("NULLPOINT")) {
-                    nullpointStartCb.setChecked(true);
-                } else {
-                    nullpointStartCb.setChecked(false);
-                }
+                nullpointStartCb.setChecked(startNode.getAdditionalInfo() != null && startNode.getAdditionalInfo().contains("NULLPOINT"));
             }
 
             @Override
@@ -280,8 +236,8 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
             }
         });
 
-        targetNodeSpinner = (Spinner) findViewById(R.id.coordinates_measure_targetnode);
-        targetAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, nodeNames);
+        Spinner targetNodeSpinner = (Spinner) findViewById(R.id.coordinates_measure_targetnode);
+        ArrayAdapter<String> targetAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, nodeNames);
         targetNodeSpinner.setAdapter(targetAdapter);
         targetNodeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -302,9 +258,7 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
                     }
                 }
 
-                if (controller != null) {
-                    controller.onTargetNodeSelected(targetNode);
-                }
+                controller.onTargetNodeSelected(targetNode);
 
             }
 
@@ -355,10 +309,10 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -369,7 +323,7 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
     @Override
     public void updateAzimuth(float azimuth) {
         double roundAzimuth = Math.round(azimuth * 100.0) / 100.0;
-        compassView.setText(String.valueOf(roundAzimuth) + " °");
+        compassView.setText(roundAzimuth + " °");
         compassImageView.setRotation(-azimuth);
     }
 
@@ -404,6 +358,7 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
      * @param y y coordinate
      * @param z z coordinate
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateCoordinates(float x, float y, float z) {
         double roundX = Math.round(x * 100.0) / 100.0;
@@ -421,6 +376,7 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
      * @param y y coordinate
      * @param z z coordinate
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateStartNodeCoordinates(float x, float y, float z) {
         double roundX = Math.round(x * 100.0) / 100.0;
@@ -438,6 +394,7 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
      * @param y y coordinate
      * @param z z coordinate
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateTargetNodeCoordinates(float x, float y, float z) {
         double roundX = Math.round(x * 100.0) / 100.0;
@@ -540,7 +497,7 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
             nodeList.add(node);
             // set node as selected
             startNodeSpinner.setSelection(nodeList.indexOf(node));
-            if (node.getCoordinates() != null && node.getCoordinates().length() > 0) {
+            if (node.getCoordinates() != null && !node.getCoordinates().isEmpty()) {
                 float[] coordinates = WKT.strToCoord(node.getCoordinates());
                 updateStartNodeCoordinates(coordinates[0], coordinates[1], coordinates[2]);
             } else {
@@ -560,7 +517,7 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
             }
             // set node as selected
             startNodeSpinner.setSelection(nodeList.indexOf(foundNode));
-            if (node.getCoordinates() != null && node.getCoordinates().length() > 0) {
+            if (node.getCoordinates() != null && !node.getCoordinates().isEmpty()) {
                 float[] coordinates = WKT.strToCoord(node.getCoordinates());
                 updateStartNodeCoordinates(coordinates[0], coordinates[1], coordinates[2]);
             } else {
@@ -568,11 +525,7 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView{
             }
         }
         // check if the node is a nullpoint
-        if (node.getAdditionalInfo() != null && node.getAdditionalInfo().contains("NULLPOINT")) {
-            nullpointStartCb.setChecked(true);
-        } else {
-            nullpointStartCb.setChecked(false);
-        }
+        nullpointStartCb.setChecked(node.getAdditionalInfo() != null && node.getAdditionalInfo().contains("NULLPOINT"));
     }
 
 

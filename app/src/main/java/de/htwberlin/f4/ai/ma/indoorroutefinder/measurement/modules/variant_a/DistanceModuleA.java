@@ -6,19 +6,17 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.DistanceModul
 
 /**
  * DistanceModuleA Class which implements the DistanceModule Interface
- *
+ * <p>
  * Simply calculate distance by using the previously calibrated
  * step length. Change distance if stair toggle is active
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public class DistanceModuleA implements DistanceModule {
 
+    private static final float STAIRHIGH = 0.17f;
     protected float stepLength;
     protected Context context;
-
-    private static final float STAIRHIGH = 0.17f;
 
     public DistanceModuleA(Context context, float stepLength) {
         this.context = context;
@@ -27,10 +25,10 @@ public class DistanceModuleA implements DistanceModule {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**

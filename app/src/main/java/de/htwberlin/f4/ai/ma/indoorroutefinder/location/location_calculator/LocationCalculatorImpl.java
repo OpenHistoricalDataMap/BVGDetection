@@ -1,36 +1,38 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.SignalSample;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformationFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.EuclideanDistance;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.KNearestNeighbor;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.KalmanFilter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.MovingAverage;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.RestructedNode;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
 /**
  * Created by Johann Winter
- *
  */
-
 class LocationCalculatorImpl implements LocationCalculator {
 
+    private final DatabaseHandler databaseHandler;
+    private final SharedPreferences sharedPreferences;
     Context context;
-    private DatabaseHandler databaseHandler;
-    private SharedPreferences sharedPreferences;
 
     LocationCalculatorImpl(Context context) {
         this.context = context;
@@ -40,6 +42,7 @@ class LocationCalculatorImpl implements LocationCalculator {
 
     /**
      * Calculate a node from a fingerprint
+     *
      * @param fingerprint the input fingerprint to be compared with all existent nodes' fingerprints to get the position
      * @return the ID (name) of the resulting Node
      */
@@ -54,7 +57,7 @@ class LocationCalculatorImpl implements LocationCalculator {
 
         int movingAverageOrder = Integer.parseInt(sharedPreferences.getString("pref_movivngAverageOrder", "3"));
         int knnValue = Integer.parseInt(sharedPreferences.getString("pref_knnNeighbours", "3"));
-        int kalmanValue = Integer.parseInt(sharedPreferences.getString("pref_kalmanValue","2"));
+        int kalmanValue = Integer.parseInt(sharedPreferences.getString("pref_kalmanValue", "2"));
 
         String foundNode = null;
 
@@ -80,7 +83,7 @@ class LocationCalculatorImpl implements LocationCalculator {
             if (euclideanDistance) {
                 List<AccessPointInformation> accessPointInformations = getSignalStrengths(signalSampleList);
 
-                if (accessPointInformations.size() == 0) {
+                if (accessPointInformations.isEmpty()) {
                     return null;
                 }
                 List<String> distanceNames = EuclideanDistance.calculateDistance(calculatedNodeList, accessPointInformations);
@@ -100,6 +103,7 @@ class LocationCalculatorImpl implements LocationCalculator {
 
     /**
      * Get a list of AccessPointInformations by passing a list of SignalSample (unwrap).
+     *
      * @param signalSampleList a list of SignalSamples
      * @return a list of AccessPointInformations
      */
@@ -118,19 +122,19 @@ class LocationCalculatorImpl implements LocationCalculator {
     }
 
 
-
-
     /**
      * Rewrite the nodelist to restrucetd Nodes and delete weak MAC addresses
+     *
      * @param allNodes list of all nodes
      * @return restructed node list
      */
+    @SuppressLint("CheckResult")
     public List<RestructedNode> calculateNewNodeDataset(List<Node> allNodes) {
         List<String> macAddresses;
-        int count = 0;
+        int count;
 
         List<RestructedNode> restructedNodes = new ArrayList<>();
-        Multimap<String, Double> multiMap = null;
+        Multimap<String, Double> multiMap;
 
         for (Node node : allNodes) {
             count = node.getFingerprint().getSignalSampleList().size();
@@ -161,10 +165,12 @@ class LocationCalculatorImpl implements LocationCalculator {
 
     /**
      * Create a multimap with MAC address and signal strength values
-     * @param node input node
+     *
+     * @param node        input node
      * @param macAdresses list of MAC addresses
      * @return multimap with mac addresses and signal strengths
      */
+    @SuppressLint("CheckResult")
     public Multimap<String, Double> getMultiMap(Node node, List<String> macAdresses) {
         Multimap<String, Double> multiMap = ArrayListMultimap.create();
         for (SignalSample signalInfo : node.getFingerprint().getSignalSampleList()) {
@@ -185,11 +191,12 @@ class LocationCalculatorImpl implements LocationCalculator {
 
     /**
      * Get all mac addresses of a specific node
+     *
      * @param node the node
      * @return list of unique MAC addresses
      */
     public List<String> getMacAddresses(Node node) {
-        HashSet<String> macAdresses = new HashSet<String>();
+        HashSet<String> macAdresses = new HashSet<>();
         for (SignalSample signalSample : node.getFingerprint().getSignalSampleList()) {
             for (AccessPointInformation accessPointInformation : signalSample.getAccessPointInformationList()) {
                 macAdresses.add(accessPointInformation.getMacAddress());

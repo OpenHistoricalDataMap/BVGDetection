@@ -1,26 +1,29 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations;
 
+import android.annotation.SuppressLint;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
-
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Thanks to Carola Walter
- *
+ * <p>
  * The Kalman filter
  */
 
 public class KalmanFilter {
 
+    @SuppressLint("CheckResult")
     public static List<RestructedNode> calculateCalman(int kalmanValue, List<RestructedNode> restructedNodeList) {
 
         List<RestructedNode> calculatedNodes = new ArrayList<>();
-        Multimap<String, Double> calculatedMultiMap = null;
+        Multimap<String, Double> calculatedMultiMap;
 
         for (int i = 0; i < restructedNodeList.size(); i++) {
             RestructedNode restructedNode = restructedNodeList.get(i);
@@ -46,12 +49,12 @@ public class KalmanFilter {
                 Xk = average;
                 Pk = kalmanValue;
 
-                deviation = calculateDeviation(Values,average,counter);
+                deviation = calculateDeviation(Values, average, counter);
 
-                for (int j = 0; j < Values.length; j++) {
+                for (Double aDouble : Values) {
 
-                    if (Values[j] != null) {
-                        value = Values[j];
+                    if (aDouble != null) {
+                        value = aDouble;
                     } else {
                         value = average;
                     }
@@ -73,11 +76,11 @@ public class KalmanFilter {
 
     private static double calculateDeviation(Double[] values, double average, double count) {
         int x = 0;
-        for (int i = 0; i < values.length; i++) {
-            if (values[i] != null) {
-                x += Math.pow((values[i] - average), 2);
+        for (Double value : values) {
+            if (value != null) {
+                x += (int) Math.pow((value - average), 2);
             } else {
-                x += Math.pow((average - average), 2);
+                x += (int) Math.pow((0.0), 2);
             }
         }
         double temp = ((double) 1 / ((double) count - 1)) * x;

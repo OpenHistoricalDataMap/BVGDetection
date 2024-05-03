@@ -1,15 +1,17 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint;
 
 import com.google.common.collect.Multimap;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformationFactory;
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Calculate average values from the capture
  */
 

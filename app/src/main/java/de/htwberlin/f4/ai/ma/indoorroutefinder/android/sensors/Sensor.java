@@ -2,9 +2,9 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors;
 
 /**
  * Sensor Interface
- *
+ * <p>
  * used by all sensors
- *
+ * <p>
  * Author: Benjamin Knner
  */
 

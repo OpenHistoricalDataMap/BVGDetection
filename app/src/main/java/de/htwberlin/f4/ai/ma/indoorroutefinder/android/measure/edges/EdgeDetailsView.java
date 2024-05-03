@@ -7,9 +7,9 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 
 /**
  * EdgeDetailsView Interface
- *
+ * <p>
  * Used for managing Edge details
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 

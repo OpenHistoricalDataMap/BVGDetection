@@ -13,20 +13,18 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorDataModel;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorDataModelImpl;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorFactoryImpl;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.AltitudeModule;
 
 /**
  * AltitudeModuleA Class which implements the AltitudeModule interface.
- *
+ * <p>
  * Calculate the relative height using the airpressure from barometer sensor
- *
+ * <p>
  * No lowpass filter used
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public class AltitudeModuleA implements AltitudeModule {
 
 
@@ -57,22 +55,22 @@ public class AltitudeModuleA implements AltitudeModule {
      * @return altitude in meters
      */
     private float calcAltitude(float pressure) {
-        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        return sensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressure);
+        // SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        return SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressure);
     }
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
      * calculate the altitude change
      *
-     * @return
+     * @return altitude difference in meters
      */
     @Override
     public float getAltitude() {
@@ -84,8 +82,8 @@ public class AltitudeModuleA implements AltitudeModule {
         // just picking the last value
         Map<SensorType, List<SensorData>> intervalData = dataModel.getData();
         List<SensorData> dataValues = intervalData.get(SensorType.BAROMETER);
-        if (dataValues != null && dataValues.size() > 0) {
-            currentAirPressure = dataValues.get(dataValues.size()-1).getValues()[0];
+        if (dataValues != null && !dataValues.isEmpty()) {
+            currentAirPressure = dataValues.get(dataValues.size() - 1).getValues()[0];
             currentAltitude = calcAltitude(currentAirPressure);
             altitudeDiff = currentAltitude - lastAltitude;
             // set new values
@@ -107,12 +105,7 @@ public class AltitudeModuleA implements AltitudeModule {
     @Override
     public void start() {
         airPressureSensor = sensorFactory.getSensor(SensorType.BAROMETER, Sensor.SENSOR_RATE_MEASUREMENT);
-        airPressureSensor.setListener(new SensorListener() {
-            @Override
-            public void valueChanged(SensorData newValue) {
-                dataModel.insertData(newValue);
-            }
-        });
+        airPressureSensor.setListener(newValue -> dataModel.insertData(newValue));
         airPressureSensor.start();
 
     }

@@ -2,10 +2,9 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.measurement;
 
 /**
  * enum for different ways to get relative coordinates
- *
+ * <p>
  * AUthor: Benjamin Kneer
  */
-
 public enum IndoorMeasurementType {
 
     VARIANT_A("Variante A"),
@@ -19,10 +18,6 @@ public enum IndoorMeasurementType {
         name = s;
     }
 
-    public String toString() {
-        return this.name;
-    }
-
     // needed, because valueOf() doesn't work correctly
     public static IndoorMeasurementType fromString(String text) {
         for (IndoorMeasurementType b : IndoorMeasurementType.values()) {
@@ -31,5 +26,10 @@ public enum IndoorMeasurementType {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

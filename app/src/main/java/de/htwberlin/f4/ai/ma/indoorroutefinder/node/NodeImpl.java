@@ -5,14 +5,13 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 /**
  * Created by Johann Winter
  */
-
 class NodeImpl implements Node {
 
     private String id;
-    private String description;
-    private Fingerprint fingerprint;
+    private final String description;
+    private final Fingerprint fingerprint;
     private String coordinates;
-    private String picturePath;
+    private final String picturePath;
     private String additionalInfo;
 
 
@@ -26,13 +25,13 @@ class NodeImpl implements Node {
     }
 
     @Override
-    public void setId(String id) {
-        this.id = id;
+    public String getId() {
+        return this.id;
     }
 
     @Override
-    public String getId() {
-        return this.id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

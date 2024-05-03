@@ -8,15 +8,15 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 
 /**
  * MeasureCalibration Class which implements Runnable Interface
- *
+ * <p>
  * measure airpressure and calculates the average
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class MeasureCalibration implements Runnable {
 
-    private SensorDataModel sensorDataModel;
+    private final SensorDataModel sensorDataModel;
     private MeasureCalibrationListener listener;
 
     public MeasureCalibration(SensorDataModel sensorDataModel) {
@@ -25,10 +25,10 @@ public class MeasureCalibration implements Runnable {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     @Override
@@ -58,10 +58,10 @@ public class MeasureCalibration implements Runnable {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Class Methods                                       *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Class Methods                                       *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     public void setListener(MeasureCalibrationListener listener) {

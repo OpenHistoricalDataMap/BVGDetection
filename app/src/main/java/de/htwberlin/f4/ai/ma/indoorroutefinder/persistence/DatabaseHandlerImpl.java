@@ -16,34 +16,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.EdgeFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.EdgeFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.node.NodeFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.JSON.JSONConverter;
 
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Handles the SQLite Database operations for inserting, editing and deleting
  * nodes and edges.
  * Handles the import / export functionality.
  */
-
 class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
 
     // Static variables
 
+    public static final String DATABASE_HANDLER_IMPL = "DatabaseHandlerImpl";
     private static final String DATABASE_NAME = "indoor_data.db";
     private static final int DATABASE_VERSION = 1;
-
     private static final String NODES_TABLE = "nodes";
     private static final String EDGES_TABLE = "edges";
-
     private static final String NODE_ID = "id";
     private static final String NODE_DESCRIPTION = "description";
     private static final String NODE_WIFI_NAME = "wifi_name";
@@ -51,7 +49,6 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     private static final String NODE_COORDINATES = "coordinates";
     private static final String NODE_PICTURE_PATH = "picture_path";
     private static final String NODE_ADDITIONAL_INFO = "additional_info";
-
     private static final String EDGE_ID = "id";
     private static final String EDGE_NODE_A = "nodeA";
     private static final String EDGE_NODE_B = "nodeB";
@@ -59,9 +56,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     private static final String EDGE_STEPLIST = "steplist";
     private static final String EDGE_WEIGHT = "weight";
     private static final String EDGE_ADDITIONAL_INFO = "additional_info";
-
-    private JSONConverter jsonConverter = new JSONConverter();
-    private Context context;
+    private final JSONConverter jsonConverter = new JSONConverter();
+    private final Context context;
 
 
     // Constructor
@@ -69,7 +65,6 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
-
 
 
     @Override
@@ -101,7 +96,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) { }
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+    }
 
     @Override
     public SQLiteDatabase getWritableDatabase() {
@@ -114,11 +110,11 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     }
 
 
-
     //----------------- N O D E S ------------------------------------------------------------------------------------------
 
     /**
      * Insert a new Node
+     *
      * @param node the node to insert
      */
     public void insertNode(Node node) {
@@ -147,7 +143,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Update a Node
-     * @param node the new Node
+     *
+     * @param node      the new Node
      * @param oldNodeId the original nodeID (name) which will be changed
      */
     public void updateNode(Node node, String oldNodeId) {
@@ -187,6 +184,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Get a List of all Nodes
+     *
      * @return a list of all Nodes
      */
     public List<Node> getAllNodes() {
@@ -210,6 +208,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
                 allNodes.add(node);
             } while (cursor.moveToNext());
+            cursor.close();
         }
         database.close();
         return allNodes;
@@ -218,6 +217,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Get a single Node
+     *
      * @param nodeID the name of the Node
      */
     public Node getNode(String nodeID) {
@@ -238,6 +238,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
             node = NodeFactory.createInstance(cursor.getString(0), cursor.getString(1), fingerprint, cursor.getString(4), cursor.getString(5), cursor.getString(6));
             Log.d("DB: select_node", nodeID);
+            cursor.close();
         }
         database.close();
         return node;
@@ -246,19 +247,18 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Check if a node already exists
+     *
      * @param nodeID the name of the node
      * @return boolean, if node exists
      */
     public boolean checkIfNodeExists(String nodeID) {
-        if (getNode(nodeID) != null) {
-            return true;
-        }
-        else { return false; }
+        return getNode(nodeID) != null;
     }
 
 
     /**
      * Delete a single node
+     *
      * @param node the node to be deleted
      */
     public void deleteNode(Node node) {
@@ -273,12 +273,11 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     }
 
 
-
-
     //----------- E D G E S -------------------------------------------------------------------------------------
 
     /**
      * Insert an edge
+     *
      * @param edge the edge to be inserted
      */
     public void insertEdge(Edge edge) {
@@ -308,9 +307,10 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Update an edge (only for changing nodeA and nodeB attribute of the edge).
-     * @param edge the edge to be updated
+     *
+     * @param edge            the edge to be updated
      * @param nodeToBeUpdated the edge's nodeA or nodeB
-     * @param value the ID (name) of the node
+     * @param value           the ID (name) of the node
      */
     public void updateEdge(Edge edge, String nodeToBeUpdated, String value) {
         SQLiteDatabase database = this.getWritableDatabase();
@@ -344,6 +344,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Update an edge (everything but edge's nodeA and nodeB attribute)
+     *
      * @param edge the edge to be updated
      */
     public void updateEdge(Edge edge) {
@@ -369,6 +370,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Get single edge
+     *
      * @param nodeA the startnode of the edge
      * @param nodeB the endnode of the edge
      * @return the edge
@@ -380,10 +382,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         Cursor cursor = database.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
-            boolean accessible = false;
-            if (cursor.getInt(3) == 1) {
-                accessible = true;
-            }
+            boolean accessible = cursor.getInt(3) == 1;
             Node node1 = getNode(cursor.getString(1));
             Node node2 = getNode(cursor.getString(2));
 
@@ -392,6 +391,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
             Edge edge = EdgeFactory.createInstance(node1, node2, accessible, stepList, cursor.getFloat(5), cursor.getString(6));
 
+            cursor.close();
             database.close();
             return edge;
         }
@@ -401,6 +401,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Get a list of all edges
+     *
      * @return the list of edges
      */
     public List<Edge> getAllEdges() {
@@ -412,11 +413,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         if (cursor.moveToFirst()) {
             do {
 
-                boolean accessible = false;
-
-                if (cursor.getInt(3) == 1) {
-                    accessible = true;
-                }
+                boolean accessible = cursor.getInt(3) == 1;
 
                 Node nodeA = getNode(cursor.getString(1));
                 Node nodeB = getNode(cursor.getString(2));
@@ -429,6 +426,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                 allEdges.add(edge);
 
             } while (cursor.moveToNext());
+            cursor.close();
             database.close();
         }
         return allEdges;
@@ -437,6 +435,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Check if an edge already exists
+     *
      * @param edge the edge to be checked
      * @return boolean, if edge exists
      */
@@ -449,8 +448,9 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
         if (cursor.moveToFirst()) {
             return true;
-        } while (cursor.moveToNext());
+        }
 
+        cursor.close();
         database.close();
         return false;
     }
@@ -458,19 +458,19 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
     /**
      * Delete a single edge
+     *
      * @param edge the edge to be deleted
      */
     public void deleteEdge(Edge edge) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String deleteQuery = "DELETE FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + " ='" + edge.getNodeA().getId() + "' AND "+ EDGE_NODE_B + " ='" + edge.getNodeB().getId() + "'"
+        String deleteQuery = "DELETE FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + " ='" + edge.getNodeA().getId() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeB().getId() + "'"
                 + " OR " + EDGE_NODE_A + " ='" + edge.getNodeB().getId() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeA().getId() + "' ";
 
-        Log.d("DB: delete_EDGE", "" + edge.getNodeA().getId() + " " + edge.getNodeB().getId());
+        Log.d("DB: delete_EDGE", edge.getNodeA().getId() + " " + edge.getNodeB().getId());
 
         database.execSQL(deleteQuery);
         database.close();
     }
-
 
 
     //------------- I M P O R T ------------------------------------------------------------------
@@ -502,12 +502,12 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     }
 
 
-
     //------------------- E X P O R T ------------------------------------------------------------
 
 
     /**
      * Export the database to SDCARD location "/IndoorPositioning/Exported/indoor_data.db".
+     *
      * @return boolean, if action was successful
      */
     public boolean exportDatabase() {
@@ -531,7 +531,9 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                 }
 
             }
-        } catch(Exception e) {e.printStackTrace();}
+        } catch (Exception e) {
+            Log.d(DATABASE_HANDLER_IMPL, e.toString());
+        }
         return false;
     }
 

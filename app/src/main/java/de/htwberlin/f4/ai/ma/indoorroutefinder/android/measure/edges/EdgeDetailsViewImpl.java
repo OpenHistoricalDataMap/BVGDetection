@@ -1,64 +1,54 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.edges;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.SwitchCompat;
+
 import com.bumptech.glide.Glide;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.WKT;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.WKT;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 
 /**
  * EdgeDetailsViewImpl class which implements the EdgeDetailsView Interface
- *
+ * <p>
  * Used for managing edge details
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
-public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView{
+public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView {
 
+    private final EdgeDetailsController controller;
     private ImageView startNodeImage;
     private ImageView targetNodeImage;
-
     private TextView startNodeCoordsView;
     private TextView targetNodeCoordsView;
     private TextView startNodeIdView;
     private TextView targetNodeIdView;
     private TextView distanceValueView;
-
     private EditText infoView;
-
-    private Switch handycapSwitch;
-
-    private Button deleteBtn;
-    private Button saveBtn;
-
-    // shows all individual steps for the edge
-    private ListView stepListView;
+    private SwitchCompat handycapSwitch;
     // stores all individual steps for the edge
     private StepListAdapter stepListAdapter;
-
-    private EdgeDetailsController controller;
 
 
     public EdgeDetailsViewImpl() {
@@ -68,18 +58,18 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Activity Methods                                    *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Activity Methods                                    *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
      * Activity Event
-     *
+     * <p>
      * Load layout and register listeners
      *
-     * @param savedInstanceState
+     * @param savedInstanceState Bundle
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,37 +106,29 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
 
         infoView = (EditText) findViewById(R.id.edgedetails_info_edit);
 
-        handycapSwitch = (Switch) findViewById(R.id.edgedetails_handycap_switch);
+        handycapSwitch = (SwitchCompat) findViewById(R.id.edgedetails_handycap_switch);
 
-        deleteBtn = (Button) findViewById(R.id.edgedetails_delete);
-        saveBtn = (Button) findViewById(R.id.edgedetails_save);
+        Button deleteBtn = (Button) findViewById(R.id.edgedetails_delete);
+        Button saveBtn = (Button) findViewById(R.id.edgedetails_save);
 
-        stepListView = (ListView) findViewById(R.id.edgedetails_steplist);
+        // shows all individual steps for the edge
+        ListView stepListView = (ListView) findViewById(R.id.edgedetails_steplist);
 
-        deleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onDeleteClicked();
-                }
+        deleteBtn.setOnClickListener(view -> {
+            if (controller != null) {
+                controller.onDeleteClicked();
             }
         });
 
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onSaveClicked();
-                }
+        saveBtn.setOnClickListener(view -> {
+            if (controller != null) {
+                controller.onSaveClicked();
             }
         });
 
-        handycapSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (controller != null) {
-                    controller.onHandycapChanged(b);
-                }
+        handycapSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (controller != null) {
+                controller.onHandycapChanged(b);
             }
         });
 
@@ -171,7 +153,7 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
         });
 
 
-        stepListAdapter = new StepListAdapter(getContext(), new ArrayList<StepData>());
+        stepListAdapter = new StepListAdapter(getContext(), new ArrayList<>());
         stepListView.setAdapter(stepListAdapter);
     }
 
@@ -185,10 +167,10 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -204,11 +186,12 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
 
     /**
      * update start node
-     *
+     * <p>
      * update the picture, coordinate, name
      *
      * @param node start node
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateStartNodeInfo(Node node) {
         // update node name
@@ -230,7 +213,7 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
         }
 
         // check if the node has coordinates
-        if (node.getCoordinates() != null && node.getCoordinates().length() > 0) {
+        if (node.getCoordinates() != null && !node.getCoordinates().isEmpty()) {
             // convert wkt coordinates to float[]
             float[] nodeCoordinates = WKT.strToCoord(node.getCoordinates());
             // round the coordinates to fit ui
@@ -249,11 +232,12 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
 
     /**
      * update target node
-     *
+     * <p>
      * update the picture, coordinate, name
      *
      * @param node start node
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateTargetNodeInfo(Node node) {
         // update name
@@ -276,7 +260,7 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
 
 
         // check if the node has coordinates
-        if (node.getCoordinates() != null && node.getCoordinates().length() > 0) {
+        if (node.getCoordinates() != null && !node.getCoordinates().isEmpty()) {
             // convert wkt string to float[]
             float[] nodeCoordinates = WKT.strToCoord(node.getCoordinates());
             // round coordinates
@@ -293,21 +277,19 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
 
     /**
      * update edge
-     *
+     * <p>
      * updated informations: distance, handycapfriendly, description
-     * @param edge
+     *
+     * @param edge edge
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateEdgeInfo(Edge edge) {
-         float edgeDistance = edge.getWeight();
-        distanceValueView.setText(String.valueOf(Math.round(edgeDistance * 100.0) / 100.0f) + " m");
+        float edgeDistance = edge.getWeight();
+        distanceValueView.setText(Math.round(edgeDistance * 100.0) / 100.0f + " m");
 
         // check for handycap
-        if (edge.getAccessibility()) {
-            handycapSwitch.setChecked(true);
-        } else {
-            handycapSwitch.setChecked(false);
-        }
+        handycapSwitch.setChecked(edge.getAccessibility());
 
         // update view with description
         infoView.setText(edge.getAdditionalInfo());

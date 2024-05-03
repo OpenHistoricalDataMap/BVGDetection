@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,9 +17,6 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorDataModel;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorDataModelImpl;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorFactoryImpl;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurement;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementFactory;
@@ -26,14 +24,15 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementFact
 
 /**
  * RecordControllerImpl Class which implements the RecordController Interface
- *
+ * <p>
  * used for recording sensor values
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class RecordControllerImpl implements RecordController {
 
+    public static final String RECORD_CONTROLLER_IMPL = "RecordControllerImpl";
     private RecordView view;
     private IndoorMeasurement indoorMeasurement;
     private SensorDataModel sensorDataModel;
@@ -48,10 +47,10 @@ public class RecordControllerImpl implements RecordController {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -75,43 +74,40 @@ public class RecordControllerImpl implements RecordController {
         sensorDataModel = new SensorDataModelImpl();
         indoorMeasurement = IndoorMeasurementFactory.getIndoorMeasurement(view.getContext());
         // register sensor listener
-        indoorMeasurement.setSensorListener(new SensorListener() {
-            @Override
-            public void valueChanged(SensorData sensorData) {
-                SensorType sensorType = sensorData.getSensorType();
+        indoorMeasurement.setSensorListener(sensorData -> {
+            SensorType sensorType = sensorData.getSensorType();
 
-                switch (sensorType) {
+            switch (sensorType) {
 
-                    case ACCELEROMETER_SIMPLE:
-                        view.updateAcceleration(sensorData.getValues());
-                        break;
-                    case ACCELEROMETER_LINEAR:
-                        view.updateAccelerationLinear(sensorData.getValues());
-                        break;
-                    case GRAVITY:
-                        view.updateGravity(sensorData.getValues());
-                        break;
-                    case GYROSCOPE:
-                        view.updateGyroscope(sensorData.getValues());
-                        break;
-                    case GYROSCOPE_UNCALIBRATED:
-                        view.updateGyroscopeUncalibrated(sensorData.getValues());
-                        break;
-                    case MAGNETIC_FIELD:
-                        view.updateMagneticField(sensorData.getValues());
-                        break;
-                    case COMPASS_FUSION:
-                        view.updateCompassFusion(sensorData.getValues()[0]);
-                        break;
-                    case COMPASS_SIMPLE:
-                        view.updateCompassSimple(sensorData.getValues()[0]);
-                        break;
-                    case BAROMETER:
-                        view.updatePressure(sensorData.getValues()[0]);
-                        break;
-                    default:
-                        break;
-                }
+                case ACCELEROMETER_SIMPLE:
+                    view.updateAcceleration(sensorData.getValues());
+                    break;
+                case ACCELEROMETER_LINEAR:
+                    view.updateAccelerationLinear(sensorData.getValues());
+                    break;
+                case GRAVITY:
+                    view.updateGravity(sensorData.getValues());
+                    break;
+                case GYROSCOPE:
+                    view.updateGyroscope(sensorData.getValues());
+                    break;
+                case GYROSCOPE_UNCALIBRATED:
+                    view.updateGyroscopeUncalibrated(sensorData.getValues());
+                    break;
+                case MAGNETIC_FIELD:
+                    view.updateMagneticField(sensorData.getValues());
+                    break;
+                case COMPASS_FUSION:
+                    view.updateCompassFusion(sensorData.getValues()[0]);
+                    break;
+                case COMPASS_SIMPLE:
+                    view.updateCompassSimple(sensorData.getValues()[0]);
+                    break;
+                case BAROMETER:
+                    view.updatePressure(sensorData.getValues()[0]);
+                    break;
+                default:
+                    break;
             }
         });
 
@@ -161,10 +157,10 @@ public class RecordControllerImpl implements RecordController {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Class Methods                                       *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Class Methods                                       *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -173,7 +169,7 @@ public class RecordControllerImpl implements RecordController {
     private void startTimer() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         // get lowpass filter value from settings
-        float lowpassFilterValue = Float.valueOf(sharedPreferences.getString("pref_lowpass_value", "0.1"));
+        float lowpassFilterValue = Float.parseFloat(sharedPreferences.getString("pref_lowpass_value", "0.1"));
         // create a new thread handler
         timerHandler = new Handler(Looper.getMainLooper());
         recordRunnable = new RecordRunnable(sensorDataModel, indoorMeasurement, timerHandler, savePeriod, lowpassFilterValue);
@@ -203,19 +199,19 @@ public class RecordControllerImpl implements RecordController {
 
     /**
      * Write Sensordata to file in csv format
-     *
+     * <p>
      * sensortype;timestamp;value[0];value[1];value[2]
      */
     private void saveRecordData() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         File sdCard = Environment.getExternalStorageDirectory();
-        File dir = new File (sdCard.getAbsolutePath() + "/IndoorPositioning/SensorData");
+        File dir = new File(sdCard.getAbsolutePath() + "/IndoorPositioning/SensorData");
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
-        File file = new File(dir, String.valueOf(timestamp.getTime()) + ".txt");
+        File file = new File(dir, timestamp.getTime() + ".txt");
         FileOutputStream outputStream;
 
         try {
@@ -229,10 +225,10 @@ public class RecordControllerImpl implements RecordController {
                 for (SensorData valueEntry : sensorValues) {
                     // build string to write
                     StringBuilder builder = new StringBuilder();
-                    builder.append(sensorType + ";" + valueEntry.getTimestamp());
+                    builder.append(sensorType).append(";").append(valueEntry.getTimestamp());
 
                     for (int i = 0; i < valueEntry.getValues().length; i++) {
-                        builder.append(";" + valueEntry.getValues()[i]);
+                        builder.append(";").append(valueEntry.getValues()[i]);
                     }
 
                     builder.append(";");
@@ -243,7 +239,7 @@ public class RecordControllerImpl implements RecordController {
             }
             outputStream.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d(RECORD_CONTROLLER_IMPL, e.toString());
         }
     }
 }

@@ -1,5 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,35 +13,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
-
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 
 /**
  * CalibrateViewImpl Class which implements the CalibrateView interface
- *
+ * <p>
  * Used for Steplength and Stepperiod calibration
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
 
-    private CalibrateController controller;
-
+    private final CalibrateController controller;
     private TextView stepCountView;
     private TextView stepDistanceView;
     private TextView stepPeriodView;
     private TextView azimuthView;
-
     private ImageView compassView;
-
     private Button btnStepIncStepOne;
     private Button btnStepDecStepOne;
     private Button btnNextStepOne;
     private Button btnStartStepOne;
     private Button btnStopStepOne;
     private Button btnNextStepTwo;
-    private Button btnBackStepTwo;
 
 
     public CalibrateViewImpl() {
@@ -50,10 +46,10 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Activity Methods                                    *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Activity Methods                                    *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     @Override
@@ -74,21 +70,10 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
-
-
-    /**
-     * set the responsible controller
-     *
-     * @param controller CalibrateController
-     */
-    @Override
-    public void setController(CalibrateController controller) {
-        this.controller = controller;
-    }
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -130,6 +115,7 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
      *
      * @param distance average stepdistance
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateAverageStepdistance(float distance) {
         stepDistanceView.setText(getString(R.string.step_setup_average_stepdistance) + " " + distance);
@@ -141,6 +127,7 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
      *
      * @param period average step period
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateAverageStepperiod(int period) {
         stepPeriodView.setText(getString(R.string.step_setup_average_stepperiod) + " " + period + " ms");
@@ -152,6 +139,7 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
      *
      * @param azimuth azimuth value
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void updateAzimuth(int azimuth) {
         azimuthView.setText(azimuth + "°");
@@ -171,10 +159,10 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Class Methods                                       *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Class Methods                                       *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -190,64 +178,53 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
 
         stepCountView = (TextView) view.findViewById(R.id.coordinates_calibrate_tv_step);
 
-        /************        find UI Elements and set listeners          ************/
+        /***********        find UI Elements and set listeners          ************/
 
         btnStepIncStepOne = (Button) view.findViewById(R.id.coordinates_calibrate_btn_stepinc);
-        btnStepIncStepOne.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (controller != null) {
-                    controller.onStepIncreaseClicked();
-                }
+        btnStepIncStepOne.setOnClickListener(v -> {
+            if (controller != null) {
+                controller.onStepIncreaseClicked();
             }
         });
         btnStepIncStepOne.setEnabled(false);
 
         btnStepDecStepOne = (Button) view.findViewById(R.id.coordinates_calibrate_btn_stepdec);
-        btnStepDecStepOne.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (controller != null) {
-                    controller.onStepDecreaseClicked();
-                }
+        btnStepDecStepOne.setOnClickListener(v -> {
+            if (controller != null) {
+                controller.onStepDecreaseClicked();
             }
         });
         btnStepDecStepOne.setEnabled(false);
 
         btnNextStepOne = (Button) view.findViewById(R.id.coordinates_calibrate_next_1);
-        btnNextStepOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onNextClicked(1);
-                }
+        btnNextStepOne.setOnClickListener(view1 -> {
+            if (controller != null) {
+                controller.onNextClicked(1);
             }
         });
         btnNextStepOne.setEnabled(false);
 
         btnStartStepOne = (Button) view.findViewById(R.id.coordinates_calibrate_btn_stepstart);
-        btnStartStepOne.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (controller != null) {
-                    controller.onStartStepSetupClick();
-                }
-                btnStepIncStepOne.setEnabled(false);
-                btnStepDecStepOne.setEnabled(false);
-                btnStartStepOne.setEnabled(false);
-                btnNextStepOne.setEnabled(true);
-                btnStopStepOne.setEnabled(true);
+        btnStartStepOne.setOnClickListener(v -> {
+            if (controller != null) {
+                controller.onStartStepSetupClick();
             }
+            btnStepIncStepOne.setEnabled(false);
+            btnStepDecStepOne.setEnabled(false);
+            btnStartStepOne.setEnabled(false);
+            btnNextStepOne.setEnabled(true);
+            btnStopStepOne.setEnabled(true);
         });
 
         btnStopStepOne = (Button) view.findViewById(R.id.coordinates_calibrate_btn_stepstop);
-        btnStopStepOne.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (controller != null) {
-                    controller.onStopStepSetupClick();
-                }
-                btnStepIncStepOne.setEnabled(true);
-                btnStepDecStepOne.setEnabled(true);
-                btnStartStepOne.setEnabled(true);
-                btnStopStepOne.setEnabled(false);
+        btnStopStepOne.setOnClickListener(v -> {
+            if (controller != null) {
+                controller.onStopStepSetupClick();
             }
+            btnStepIncStepOne.setEnabled(true);
+            btnStepDecStepOne.setEnabled(true);
+            btnStartStepOne.setEnabled(true);
+            btnStopStepOne.setEnabled(false);
         });
         btnStopStepOne.setEnabled(false);
     }
@@ -267,23 +244,17 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
         /************        find UI Elements and set listeners          ************/
 
         btnNextStepTwo = (Button) view.findViewById(R.id.coordinates_calibrate_next_2);
-        btnNextStepTwo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onNextClicked(2);
-                }
+        btnNextStepTwo.setOnClickListener(view1 -> {
+            if (controller != null) {
+                controller.onNextClicked(2);
             }
         });
         btnNextStepTwo.setEnabled(false);
 
-        btnBackStepTwo = (Button) view.findViewById(R.id.coordinates_calibrate_back_2);
-        btnBackStepTwo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onBackClicked(2);
-                }
+        Button btnBackStepTwo = (Button) view.findViewById(R.id.coordinates_calibrate_back_2);
+        btnBackStepTwo.setOnClickListener(view12 -> {
+            if (controller != null) {
+                controller.onBackClicked(2);
             }
         });
 
@@ -301,12 +272,10 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (controller != null) {
-                    // check if there is any text, !.equals() doesn't seem to work
-                    if (etDistance.getText().toString().length() > 0) {
-                        controller.onDistanceChange(Float.valueOf(etDistance.getText().toString()));
-                        btnNextStepTwo.setEnabled(true);
-                    }
+                // check if there is any text, !.equals() doesn't seem to work
+                if (!etDistance.getText().toString().isEmpty()) {
+                    controller.onDistanceChange(Float.parseFloat(etDistance.getText().toString()));
+                    btnNextStepTwo.setEnabled(true);
                 }
             }
         });
@@ -331,23 +300,17 @@ public class CalibrateViewImpl extends BaseActivity implements CalibrateView {
         /************        find UI Elements and set listeners          ************/
 
         Button btnNext = (Button) view.findViewById(R.id.coordinates_calibrate_next_3);
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadMeasurement();
-                if (controller != null) {
-                    controller.onNextClicked(3);
-                }
+        btnNext.setOnClickListener(view1 -> {
+            loadMeasurement();
+            if (controller != null) {
+                controller.onNextClicked(3);
             }
         });
 
         Button btnBack = (Button) view.findViewById(R.id.coordinates_calibrate_back_3);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (controller != null) {
-                    controller.onBackClicked(3);
-                }
+        btnBack.setOnClickListener(view12 -> {
+            if (controller != null) {
+                controller.onBackClicked(3);
             }
         });
 

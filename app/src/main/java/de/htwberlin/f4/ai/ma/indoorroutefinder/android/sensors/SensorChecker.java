@@ -4,9 +4,9 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementType
 
 /**
  * SensorChecker Interface
- *
+ * <p>
  * Used to check if every required sensor is available on the device
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 

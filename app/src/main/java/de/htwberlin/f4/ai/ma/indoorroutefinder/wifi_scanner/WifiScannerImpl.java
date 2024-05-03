@@ -1,7 +1,9 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner;
 
+import android.annotation.SuppressLint;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,10 +11,10 @@ import java.util.List;
 /**
  * Created by Johann Winter
  */
-
 class WifiScannerImpl implements WifiScanner {
 
     @Override
+    @SuppressLint("MissingPermission")
     public List<String> getAvailableNetworks(WifiManager wifiManager, boolean onlyNetworksWithTwoOrMoreAPs) {
 
         wifiManager.startScan();
@@ -24,7 +26,7 @@ class WifiScannerImpl implements WifiScanner {
 
         for (ScanResult sr : wifiScanList) {
             SSIDs.add(sr.SSID);
-            if (!wifiNamesList.contains(sr.SSID) && !sr.SSID.equals("")) {
+            if (!wifiNamesList.contains(sr.SSID) && !sr.SSID.isEmpty()) {
                 wifiNamesList.add(sr.SSID);
             }
         }
@@ -32,7 +34,7 @@ class WifiScannerImpl implements WifiScanner {
         // Filter for SSIDs with more than one BSSID (access point)
         for (String s : SSIDs) {
             int occurrences = Collections.frequency(SSIDs, s);
-            if (occurrences > 1 && !SSIDsWithMoreThanOneBSSID.contains(s) && !s.equals("")) {
+            if (occurrences > 1 && !SSIDsWithMoreThanOneBSSID.contains(s) && !s.isEmpty()) {
                 SSIDsWithMoreThanOneBSSID.add(s);
             }
         }

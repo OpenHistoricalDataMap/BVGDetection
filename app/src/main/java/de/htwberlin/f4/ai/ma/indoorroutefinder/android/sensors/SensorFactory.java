@@ -2,7 +2,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors;
 
 /**
  * SensorFactory interface to create the required sensors
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 

@@ -24,18 +24,13 @@ import com.google.android.gms.vision.barcode.Barcode;
 
 /**
  * BarcodeTracer Class
- *
+ * <p>
  * Used for getting QR-Code content
- *
- * Source: https://github.com/varvet/BarcodeReaderSample
- *
+ * <p>
+ * Source: <a href="https://github.com/varvet/BarcodeReaderSample">...</a>
  */
 class BarcodeTracker extends Tracker<Barcode> {
-    private BarcodeGraphicTrackerCallback mListener;
-
-    public interface BarcodeGraphicTrackerCallback {
-        void onDetectedQrCode(Barcode barcode);
-    }
+    private final BarcodeGraphicTrackerCallback mListener;
 
     BarcodeTracker(Context listener) {
         mListener = (BarcodeGraphicTrackerCallback) listener;
@@ -43,8 +38,10 @@ class BarcodeTracker extends Tracker<Barcode> {
 
     @Override
     public void onNewItem(int id, Barcode item) {
-        if (item.displayValue != null) {
-            mListener.onDetectedQrCode(item);
-        }
+        mListener.onDetectedQrCode(item);
+    }
+
+    public interface BarcodeGraphicTrackerCallback {
+        void onDetectedQrCode(Barcode barcode);
     }
 }

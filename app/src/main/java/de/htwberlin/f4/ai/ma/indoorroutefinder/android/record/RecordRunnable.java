@@ -13,19 +13,19 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.LowPassFilter;
 
 /**
  * RecordRunnable Class
- *
+ * <p>
  * Used to record sensor data in a thread with a fixed period
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 
 public class RecordRunnable implements Runnable {
 
-    private SensorDataModel model;
-    private IndoorMeasurement indoorMeasurement;
-    private Handler handler;
-    private long period;
-    private float lowpassFilterValue;
+    private final SensorDataModel model;
+    private final IndoorMeasurement indoorMeasurement;
+    private final Handler handler;
+    private final long period;
+    private final float lowpassFilterValue;
 
     public RecordRunnable(SensorDataModel model, IndoorMeasurement indoorMeasurement, Handler handler, long period, float lowpassFilterValue) {
         this.model = model;
@@ -45,7 +45,7 @@ public class RecordRunnable implements Runnable {
             // get specific sensor data
             List<SensorData> oldValues = modelMap.get(entry.getKey());
             if (oldValues != null) {
-                float[] latestValue = oldValues.get(oldValues.size()-1).getValues();
+                float[] latestValue = oldValues.get(oldValues.size() - 1).getValues();
                 float[] newValue = entry.getValue().getValues();
                 for (int i = 0; i < latestValue.length; i++) {
                     // apply lowpass filter

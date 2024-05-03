@@ -2,9 +2,9 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate;
 
 /**
  * CalibrateController Interface
- *
+ * <p>
  * Used for steplength calibration.
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 

@@ -2,9 +2,9 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.edges;
 
 /**
  * EdgeDetailsController Interface
- *
+ * <p>
  * Used for managing edge details
- *
+ * <p>
  * Author: Benjamin Kneer
  */
 

@@ -5,12 +5,11 @@ import java.util.Map;
 
 /**
  * SensorDataModel Interface
- *
+ * <p>
  * Model for storing all sensor data in a map (by sensortype)
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public interface SensorDataModel {
 
     // get sensor data mapped by sensortype
@@ -23,7 +22,4 @@ public interface SensorDataModel {
 
     // insert sensor data into model
     void insertData(SensorData sensorData);
-
-    // remove all data from model
-    void clearData();
 }

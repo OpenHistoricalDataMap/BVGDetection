@@ -2,23 +2,23 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirectio
 
 /**
  * Enumeration for the step direction
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public enum StepDirection {
 
-    FORWARD ("Vorwärts"),
-    BACKWARD ("Rückwärts"),
-    LEFT ("Links"),
-    RIGHT ("Rechts");
+    FORWARD("Vorwärts"),
+    BACKWARD("Rückwärts"),
+    LEFT("Links"),
+    RIGHT("Rechts");
 
     private final String name;
 
-    private StepDirection(String s) {
+    StepDirection(String s) {
         name = s;
     }
 
+    @Override
     public String toString() {
         return this.name;
     }

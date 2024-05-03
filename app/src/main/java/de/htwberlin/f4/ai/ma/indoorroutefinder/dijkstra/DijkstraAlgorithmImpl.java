@@ -2,6 +2,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.dijkstra;
 
 import android.content.Context;
 import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
@@ -18,9 +20,9 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
 
 /**
  * Created by Johann Winter
- *
+ * <p>
  * Thanks to tognitos.
- *
+ * <p>
  * The Dijkstra algorithm maps the common node and edge objects to its own DijkstraNode and
  * DijkstraEdge objects in order to avoid loading the model objects to the algorithm's logic.
  */
@@ -30,19 +32,15 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
     // DijkstraNodes and DijkstraEdges
     final List<DijkstraNode> dijkstraNodes;
     private final List<DijkstraEdge> dijkstraEdges;
-
+    private final DatabaseHandler databaseHandler;
+    private final boolean accessible;
     // Settled and unsettled dijkstraNodes (seen / not seen)
     private Set<DijkstraNode> settledNodes;
     private Set<DijkstraNode> unSettledNodes;
-
     // (Smallest) predecessors
     private Map<DijkstraNode, DijkstraNode> predecessors;
-
     // Smallest distance (weight) for the node
     private Map<DijkstraNode, Double> distance;
-
-    private DatabaseHandler databaseHandler;
-    private boolean accessible;
 
 
     DijkstraAlgorithmImpl(Context context, boolean accessible) {
@@ -55,12 +53,13 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
 
     /**
      * Map the normal node objects from the Model to the custom DijkstraNode of the Dijkstra Algorithm.
+     *
      * @param nodes a list of Nodes
      * @return a list of DijkstraNodes
      */
     public List<DijkstraNode> mapNodes(List<Node> nodes) {
         List<DijkstraNode> dijkstraNodes = new ArrayList<>(nodes.size());
-        for(Node node : nodes){
+        for (Node node : nodes) {
             dijkstraNodes.add(new DijkstraNode(node));
         }
         return dijkstraNodes;
@@ -70,6 +69,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
     /**
      * Map the normal Edge objects from the Model to the custom DijkstraEdge of the Dijkstra
      * algorithm. Since the graph is bidirectional, it maps 2 DijkstraEdges: one for nodeA->nodeB, one for nodeB->nodeA.
+     *
      * @param edges a list of edges
      * @return a list of DijkstraEdges
      */
@@ -90,7 +90,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
                     dijkstraEdges.add(sourceToDestination);
                     dijkstraEdges.add(destinationToSource);
                 }
-            // If accessibility doesn't play a role
+                // If accessibility doesn't play a role
             } else {
                 DijkstraEdge sourceToDestination = new DijkstraEdge(source, destination, edge.getWeight());
                 DijkstraEdge destinationToSource = new DijkstraEdge(destination, source, edge.getWeight());
@@ -104,13 +104,14 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
 
     /**
      * Executes all the calculations and the shortest paths from the specified source node.
+     *
      * @param sourceNodeId the startnode for the calculations
      * @throws IllegalArgumentException if the source node does not exist
      */
     public void execute(String sourceNodeId) throws IllegalArgumentException {
         final Node source = databaseHandler.getNode(sourceNodeId);
 
-        if(source == null){
+        if (source == null) {
             throw new IllegalArgumentException("Source Node Id is invalid! Given was:" + sourceNodeId);
         }
         final DijkstraNode sourceNode = new DijkstraNode(databaseHandler.getNode(sourceNodeId));
@@ -120,7 +121,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
         predecessors = new HashMap<>();
         distance.put(sourceNode, 0.0);
         unSettledNodes.add(sourceNode);
-        while (unSettledNodes.size() > 0) {
+        while (!unSettledNodes.isEmpty()) {
             DijkstraNode node = getMinimumDistance(unSettledNodes);
             settledNodes.add(node);
             unSettledNodes.remove(node);
@@ -133,6 +134,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
 
     /**
      * Find the minimal distances from a DijkstraNode to all other DijkstraNodes
+     *
      * @param node the startnode
      */
     public void findMinimalDistances(DijkstraNode node) {
@@ -149,7 +151,8 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
 
     /**
      * Get the distance between the two DijkstraNodes
-     * @param node the start-node
+     *
+     * @param node   the start-node
      * @param target the target-node
      * @return the weight (distance) between start-node and target-node
      */
@@ -166,6 +169,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
 
     /**
      * Get all the neighbours (directly connected DijkstraNodes) for the specified node.
+     *
      * @param node the specified node
      * @return list of neighbor nodes
      */
@@ -183,6 +187,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
 
     /**
      * Get the minimum shortest distance of all the DijkstraNodes.
+     *
      * @param dijkstraNodes a set of DijkstraNodes
      * @return the nearest DijkstraNode
      */
@@ -213,6 +218,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
     /**
      * Gets the shortest distance to the destination, from the calculated start-node (called through
      * the method execute).
+     *
      * @param destinationNode the destination-node
      * @return the shortest distance
      */

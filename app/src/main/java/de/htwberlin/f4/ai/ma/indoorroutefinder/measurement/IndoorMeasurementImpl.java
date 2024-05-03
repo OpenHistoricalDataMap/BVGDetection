@@ -4,56 +4,50 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.CalibrationData;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorData;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorFactoryImpl;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorListener;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.Sensor;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.sensors.SensorType;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.PositionModule;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirectionDetectListener;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirectionModule;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirectionModuleImpl;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirectionRunnable;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.variant_a.PositionModuleA;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.variant_b.PositionModuleB;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.variant_c.PositionModuleC;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.variant_d.PositionModuleD;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirectionModule;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirectionModuleImpl;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirectionDetectListener;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirectionRunnable;
 
 
 /**
  * IndoorMeasurementImpl Class which implements the IndoorMeasurement Interface
- *
+ * <p>
  * Used to determine the position and handle all sensor stuff
- *
+ * <p>
  * Author: Benjamin Kneer
  */
-
 public class IndoorMeasurementImpl implements IndoorMeasurement {
 
-    private SensorFactory sensorFactory;
+    // delay for the direction detection in ms
+    private static final int DIRECTION_DETECT_DELAY = 50;
+    private final SensorFactory sensorFactory;
+    private final List<Sensor> sensorList;
+    private final Context context;
     private SensorListener sensorListener;
-    private List<Sensor> sensorList;
     private CalibrationData calibrationData;
-
     private PositionModule positionModule;
-    private StepDirectionModule directionDetect;
     private StepDirectionDetectListener stepDirectionListener;
-    private Context context;
-
     // for direction detection
     private Handler timerHandler;
     private StepDirectionRunnable stepDirectionRunnable;
-    // delay for the direction detection in ms
-    private static final int DIRECTION_DETECT_DELAY = 50;
 
 
     public IndoorMeasurementImpl(Context context) {
@@ -64,10 +58,10 @@ public class IndoorMeasurementImpl implements IndoorMeasurement {
 
 
     /************************************************************************************
-    *                                                                                   *
-    *                               Interface Methods                                   *
-    *                                                                                   *
-    *************************************************************************************/
+     *                                                                                   *
+     *                               Interface Methods                                   *
+     *                                                                                   *
+     *************************************************************************************/
 
 
     /**
@@ -88,7 +82,7 @@ public class IndoorMeasurementImpl implements IndoorMeasurement {
     public void start() {
         if (calibrationData.getUseStepDirection()) {
             timerHandler = new Handler(Looper.getMainLooper());
-            directionDetect = new StepDirectionModuleImpl(context);
+            StepDirectionModule directionDetect = new StepDirectionModuleImpl(context);
             stepDirectionRunnable = new StepDirectionRunnable(directionDetect);
             if (stepDirectionListener != null) {
                 stepDirectionRunnable.setListener(stepDirectionListener);
@@ -145,12 +139,9 @@ public class IndoorMeasurementImpl implements IndoorMeasurement {
         // start sensors and register listener
         for (final SensorType type : sensorType) {
             Sensor sensor = sensorFactory.getSensor(type, sensorRate);
-            sensor.setListener(new SensorListener() {
-                @Override
-                public void valueChanged(SensorData newValue) {
-                    if (sensorListener != null) {
-                        sensorListener.valueChanged(newValue);
-                    }
+            sensor.setListener(newValue -> {
+                if (sensorListener != null) {
+                    sensorListener.valueChanged(newValue);
                 }
             });
             sensor.start();
