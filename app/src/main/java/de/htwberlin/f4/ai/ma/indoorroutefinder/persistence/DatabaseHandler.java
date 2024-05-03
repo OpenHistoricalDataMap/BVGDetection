@@ -24,7 +24,7 @@ public interface DatabaseHandler {
      *
      * @param room the node
      */
-    void insertOrUpdateRoom(Room room);
+    int insertOrUpdateRoom(Room room);
 
     /**
      * Update a node in the database

@@ -182,7 +182,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      */
     @SuppressLint("Range")
     @Override
-    public void insertOrUpdateRoom(Room room) {
+    public int insertOrUpdateRoom(Room room) {
+        int numberOfNewFingerprints = 0;
         // Open the database for write operations
         SQLiteDatabase database = this.getWritableDatabase();
 
@@ -250,6 +251,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                             measurementRouterValues.put(ROUTER_ID, routerId);
                             measurementRouterValues.put(RSSI, accessPoint.getRSSI());
                             database.insert(TABLE_MEASUREMENT_ROUTER, null, measurementRouterValues);
+                            numberOfNewFingerprints++;
                         }
                     }
                 }
@@ -259,6 +261,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
         // Close the database
         database.close();
+        return numberOfNewFingerprints;
     }
 
 
