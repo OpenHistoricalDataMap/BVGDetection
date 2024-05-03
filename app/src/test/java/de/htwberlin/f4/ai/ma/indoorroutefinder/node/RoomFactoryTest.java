@@ -20,7 +20,7 @@ public class RoomFactoryTest {
 
         String testNodeID = "TestNode";
         String testDescription = "TestDescription";
-        Fingerprint testFingerprint = FingerprintFactory.createInstance("testWifi", null);
+        Fingerprint testFingerprint = FingerprintFactory.createInstance(null);
         String testCoordinates = "testCoordinates";
         String testPicturePath = "/test/test.jpg";
         String testAdditionalInfo = "-PLACEHOLDER-";
