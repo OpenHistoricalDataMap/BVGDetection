@@ -180,6 +180,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      *
      * @param room the room to insert
      */
+    // TODO: Check if the fingerprint is already in the database (deviceID + timestamp)
     @SuppressLint("Range")
     @Override
     public int insertOrUpdateRoom(Room room) {

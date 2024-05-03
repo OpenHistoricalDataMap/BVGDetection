@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 
@@ -124,7 +125,31 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         setTitle(getString(R.string.title_activity_recordedit_rec));
 
 
-        permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA};
+        List<String> permissionList = new ArrayList<>();
+
+        permissionList.add(Manifest.permission.CAMERA);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+            permissionList.add(Manifest.permission.BLUETOOTH_CONNECT);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            permissionList.add(Manifest.permission.BLUETOOTH);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            permissionList.add(Manifest.permission.ACCESS_WIFI_STATE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            permissionList.add(Manifest.permission.ACCESS_WIFI_STATE);
+            permissionList.add(Manifest.permission.CHANGE_WIFI_STATE);
+        } else {
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            permissionList.add(Manifest.permission.ACCESS_WIFI_STATE);
+            permissionList.add(Manifest.permission.CHANGE_WIFI_STATE);
+        }
+
+        String[] permissions = permissionList.toArray(new String[0]);
 
         // Check permissions
         if (!hasPermissions(this, permissions)) {
@@ -189,6 +214,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
 
         // Check if Update-Mode is enabled
+        // TODO: Change nodeId to roomDatabaseID
         Intent intent = getIntent();
         if (intent.hasExtra("nodeId")) {
             updateMode = true;
@@ -307,8 +333,10 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
                 timestamp = new Timestamp(System.currentTimeMillis());
                 File file = FileUtilities.getFile(NodeRecordEditActivity.this, nodeIdEdittext.getText().toString(), timestamp);
-
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                System.out.println(file);
+                Uri photoUri = FileProvider.getUriForFile(NodeRecordEditActivity.this, getPackageName() + ".provider", file);
+                System.out.println(photoUri);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(cameraIntent, CAM_REQUEST);
             }
         });
@@ -377,7 +405,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
             oldPicturePaths.add(picturePath);
 
             long realTimestamp = timestamp.getTime();
-            picturePath = sdCard.getAbsolutePath() + "/IndoorPositioning/Pictures/" + nodeIdEdittext.getText() + "_" + realTimestamp + ".jpg";
+            picturePath = context.getFilesDir() + "/IndoorPositioning/Pictures/" + nodeIdEdittext.getText() + "_" + realTimestamp + ".jpg";
             Glide.with(this).load(picturePath).into(cameraImageview);
         }
     }
@@ -394,7 +422,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
             final String picPathToSave;
             if (pictureTaken) {
                 long realTimestamp = timestamp.getTime();
-                picPathToSave = sdCard.getAbsolutePath() + "/IndoorPositioning/Pictures/" + nodeIdEdittext.getText() + "_" + realTimestamp + ".jpg";
+                picPathToSave = context.getFilesDir() + "/IndoorPositioning/Pictures/" + nodeIdEdittext.getText() + "_" + realTimestamp + ".jpg";
             } else {
                 picPathToSave = null;
             }
@@ -476,7 +504,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
         if (pictureTaken) {
             long realTimestamp = timestamp.getTime();
-            picPathToSave = sdCard.getAbsolutePath() + "/IndoorPositioning/Pictures/" + nodeIdEdittext.getText() + "_" + realTimestamp + ".jpg";
+            picPathToSave = context.getFilesDir() + "/IndoorPositioning/Pictures/" + nodeIdEdittext.getText() + "_" + realTimestamp + ".jpg";
         } else {
             if (picturePath == null) {
                 picPathToSave = null;

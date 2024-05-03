@@ -10,9 +10,12 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+        android:maxSdkVersion="28" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -34,6 +37,10 @@
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.RouteFinderActivity" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.LocationActivity" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.SettingsActivity" />
+        <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.BluetoothActivity" />
+        <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.FingerprintListActivity" />
+        <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.MeasurementsListActivity" />
+        <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.RoomListActivity" />
 
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.MeasureViewImpl" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.barcode.BarcodeCaptureActivity" />

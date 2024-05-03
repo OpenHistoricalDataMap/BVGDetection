@@ -13,12 +13,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import de.htwberlin.f4.ai.ma.indoorroutefinder.BluetoothActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.EdgesManagerActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.FingerprintListActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.ImportExportActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.LocationActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.MeasurementsListActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.NodeListActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.NodeRecordEditActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.RoomListActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.RouteFinderActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.SettingsActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate.CalibrateViewImpl;
@@ -111,6 +115,26 @@ public class BaseActivity extends AppCompatActivity {
                         drawerLayout.closeDrawers();
                         break;
 
+                    case R.id.nav_bluetooth:
+                        loadBluetoothActivity();
+                        drawerLayout.closeDrawers();
+                        break;
+
+                    case R.id.nav_fingerprint_list:
+                        loadFingerprintListActivity();
+                        drawerLayout.closeDrawers();
+                        break;
+
+                    case R.id.nav_measurements_list:
+                        loadMeasurementsListActivity();
+                        drawerLayout.closeDrawers();
+                        break;
+
+                    case R.id.nav_room_list:
+                        loadRoomListActivity();
+                        drawerLayout.closeDrawers();
+                        break;
+
                     default:
                         break;
 
@@ -182,6 +206,30 @@ public class BaseActivity extends AppCompatActivity {
 
     public void loadRecord() {
         Intent intent = new Intent(getApplicationContext(), RecordViewImpl.class);
+        finish();
+        startActivity(intent);
+    }
+
+    public void loadBluetoothActivity() {
+        Intent intent = new Intent(getApplicationContext(), BluetoothActivity.class);
+        finish();
+        startActivity(intent);
+    }
+
+    public void loadFingerprintListActivity() {
+        Intent intent = new Intent(getApplicationContext(), FingerprintListActivity.class);
+        finish();
+        startActivity(intent);
+    }
+
+    public void loadMeasurementsListActivity() {
+        Intent intent = new Intent(getApplicationContext(), MeasurementsListActivity.class);
+        finish();
+        startActivity(intent);
+    }
+
+    public void loadRoomListActivity() {
+        Intent intent = new Intent(getApplicationContext(), RoomListActivity.class);
         finish();
         startActivity(intent);
     }
