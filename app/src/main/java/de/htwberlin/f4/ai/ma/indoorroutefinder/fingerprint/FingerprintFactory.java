@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class FingerprintFactory {
 
-    public static Fingerprint createInstance(String wifiName, List<SignalSample> signalSampleList) {
-        return new FingerprintImpl(wifiName, signalSampleList);
+    public static Fingerprint createInstance(List<SignalSample> signalSampleList) {
+        return new FingerprintImpl(signalSampleList);
     }
 }

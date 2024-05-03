@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
@@ -30,7 +30,7 @@ public class NodeShowActivity extends BaseActivity {
     TextView coordinatesLabelTextview;
     ImageView cameraImageView;
     DatabaseHandler databaseHandler;
-    private Node node;
+    private Room room;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +52,7 @@ public class NodeShowActivity extends BaseActivity {
         final String nodeName = (String) intent.getExtras().get("nodeName");
 
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
-        node = databaseHandler.getNode(nodeName);
+        room = databaseHandler.getNode(nodeName);
 
         wifiLabelTextview.setVisibility(View.INVISIBLE);
         wifiNameTextview.setVisibility(View.INVISIBLE);
@@ -60,35 +60,36 @@ public class NodeShowActivity extends BaseActivity {
         coordinatesTextview.setVisibility(View.INVISIBLE);
 
 
-        idTextview.setText(node.getId());
-        descriptionTextview.setText(node.getDescription());
+        idTextview.setText(room.getRoomName());
+        descriptionTextview.setText(room.getDescription());
 
-        if (node.getFingerprint() != null) {
+        if (room.getFingerprint() != null) {
             wifiLabelTextview.setVisibility(View.VISIBLE);
             wifiNameTextview.setVisibility(View.VISIBLE);
-            if (node.getFingerprint().getSsid() != null) {
-                wifiNameTextview.setText(node.getFingerprint().getSsid());
-            } else {
-                wifiNameTextview.setText(getString(R.string.no_ssid_filter));
-            }
+            wifiNameTextview.setText(getString(R.string.no_ssid_filter));
+//            if (room.getFingerprint().getSsid() != null) {
+//                wifiNameTextview.setText(room.getFingerprint().getSsid());
+//            } else {
+//                wifiNameTextview.setText(getString(R.string.no_ssid_filter));
+//            }
         }
 
-        if (!node.getCoordinates().isEmpty()) {
+        if (!room.getCoordinates().isEmpty()) {
             coordinatesLabelTextview.setVisibility(View.VISIBLE);
             coordinatesTextview.setVisibility(View.VISIBLE);
-            coordinatesTextview.setText(node.getCoordinates());
+            coordinatesTextview.setText(room.getCoordinates());
         }
 
-        if (node.getPicturePath() != null) {
-            Glide.with(this).load(node.getPicturePath()).into(cameraImageView);
+        if (room.getPicturePath() != null) {
+            Glide.with(this).load(room.getPicturePath()).into(cameraImageView);
         } else {
             Glide.with(this).load(R.drawable.unknown).into(cameraImageView);
         }
 
         cameraImageView.setOnClickListener(view -> {
             Intent intent1 = new Intent(getApplicationContext(), MaxPictureActivity.class);
-            intent1.putExtra("picturePath", node.getPicturePath());
-            intent1.putExtra("nodeID", node.getId());
+            intent1.putExtra("picturePath", room.getPicturePath());
+            intent1.putExtra("nodeID", room.getRoomName());
             startActivity(intent1);
         });
     }

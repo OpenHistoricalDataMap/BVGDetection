@@ -2,7 +2,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.edge;
 
 import java.util.List;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * Created by Johann Winter
@@ -18,14 +18,14 @@ public interface Edge {
      *
      * @return the first node
      */
-    Node getNodeA();
+    Room getNodeA();
 
     /**
      * Getter for the second (end-) node
      *
      * @return the second node
      */
-    Node getNodeB();
+    Room getNodeB();
 
     /**
      * Getter for the accessibility of an edge

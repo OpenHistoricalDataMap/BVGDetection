@@ -40,8 +40,8 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.AsyncResponse;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintTask;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.NodeFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.RoomFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.FileUtilities;
@@ -107,7 +107,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     private boolean updateMode = false;
     private boolean verboseMode;
     private boolean useSSIDfilter;
-    private Node nodeToUpdate;
+    private Room roomToUpdate;
     private WifiManager wifiManager;
     private Timestamp timestamp;
     private Fingerprint fingerprint = null;
@@ -191,10 +191,10 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
             updateMode = true;
             setTitle(getString(R.string.title_activity_recordedit_edit));
             oldNodeId = (String) intent.getExtras().get("nodeId");
-            nodeToUpdate = databaseHandler.getNode(oldNodeId);
-            nodeIdEdittext.setText(nodeToUpdate.getId());
-            descriptionEdittext.setText(nodeToUpdate.getDescription());
-            picturePath = nodeToUpdate.getPicturePath();
+            roomToUpdate = databaseHandler.getNode(oldNodeId);
+            nodeIdEdittext.setText(roomToUpdate.getRoomName());
+            descriptionEdittext.setText(roomToUpdate.getDescription());
+            picturePath = roomToUpdate.getPicturePath();
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -205,23 +205,24 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
             deleteNodeButton.setImageResource(R.drawable.trash_node);
             buttonsLayout.addView(deleteNodeButton);
 
-            if (nodeToUpdate.getFingerprint() != null) {
+            if (roomToUpdate.getFingerprint() != null) {
                 recordButton.setImageResource(R.drawable.fingerprint_done);
                 showFingerprintButton.setImageResource(R.drawable.info);
 
-                initialWifiTextview.setText(nodeToUpdate.getFingerprint().getSsid());
+//                initialWifiTextview.setText(roomToUpdate.getFingerprint().getSsid());
+                initialWifiTextview.setText(getString(R.string.no_ssid_filter));
 
-                if (nodeToUpdate.getFingerprint().getSsid() == null) {
-                    initialWifiTextview.setText(getString(R.string.no_ssid_filter));
-                }
+//                if (roomToUpdate.getFingerprint().getSsid() == null) {
+//                    initialWifiTextview.setText(getString(R.string.no_ssid_filter));
+//                }
             } else {
                 initialWifiTextview.setText("-");
             }
 
-            if (!nodeToUpdate.getCoordinates().isEmpty()) {
+            if (!roomToUpdate.getCoordinates().isEmpty()) {
                 coordinatesEdittext.setVisibility(View.VISIBLE);
                 coordinatesLabelTextview.setVisibility(View.VISIBLE);
-                coordinatesEdittext.setText(nodeToUpdate.getCoordinates());
+                coordinatesEdittext.setText(roomToUpdate.getCoordinates());
             }
 
             if (picturePath == null) {
@@ -235,11 +236,11 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                     .setMessage("Soll der Ort \"" + oldNodeId + "\" wirklich gelöscht werden?")
                     .setPositiveButton(android.R.string.yes, (dialog, which) -> {
 
-                        if (nodeToUpdate.getPicturePath() != null) {
-                            File imageFile = new File(nodeToUpdate.getPicturePath());
+                        if (roomToUpdate.getPicturePath() != null) {
+                            File imageFile = new File(roomToUpdate.getPicturePath());
                             imageFile.delete();
                         }
-                        databaseHandler.deleteNode(nodeToUpdate);
+                        databaseHandler.deleteNode(roomToUpdate);
 
                         finish();
                         Intent intent1 = new Intent(context, NodeListActivity.class);
@@ -252,7 +253,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
             showFingerprintButton.setOnClickListener(view -> {
                 Intent intent12 = new Intent(context, ShowFingerprintActivity.class);
-                intent12.putExtra("nodeID", nodeToUpdate.getId());
+                intent12.putExtra("nodeID", roomToUpdate.getRoomName());
                 startActivity(intent12);
             });
         }
@@ -317,11 +318,11 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 intent13.putExtra("picturePath", picturePath);
                 intent13.putExtra("nodeID", nodeIdEdittext.getText().toString());
                 startActivity(intent13);
-            } else if (nodeToUpdate != null && nodeToUpdate.getPicturePath() != null) {
+            } else if (roomToUpdate != null && roomToUpdate.getPicturePath() != null) {
 
                 Intent intent13 = new Intent(getApplicationContext(), MaxPictureActivity.class);
-                intent13.putExtra("picturePath", nodeToUpdate.getPicturePath());
-                intent13.putExtra("nodeID", nodeToUpdate.getId());
+                intent13.putExtra("picturePath", roomToUpdate.getPicturePath());
+                intent13.putExtra("nodeID", roomToUpdate.getRoomName());
                 startActivity(intent13);
             }
         });
@@ -408,9 +409,9 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                             .setMessage("Soll der Ort \"" + nodeIdEdittext.getText().toString() + "\" wirklich ohne Fingerprint erstellt werden?")
                             .setCancelable(false)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                                final Node node = NodeFactory.createInstance(nodeID, nodeDescription, null, "", picPathToSave, "");
-                                JSONWriter.writeJSON(node);
-                                databaseHandler.insertNode(node);
+                                final Room room = RoomFactory.createInstance(nodeID, nodeDescription, null, "", picPathToSave, "");
+                                JSONWriter.writeJSON(room);
+                                databaseHandler.insertNode(room);
                                 Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
                                 deleteOldPictures();
                                 resetUiElements();
@@ -423,9 +424,9 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
                     // If a fingerprint has been captured...
                 } else {
-                    final Node node = NodeFactory.createInstance(nodeID, nodeDescription, fingerprint, "", picPathToSave, "");
-                    JSONWriter.writeJSON(node);
-                    databaseHandler.insertNode(node);
+                    final Room room = RoomFactory.createInstance(nodeID, nodeDescription, fingerprint, "", picPathToSave, "");
+                    JSONWriter.writeJSON(room);
+                    databaseHandler.insertNode(room);
                     progressStatus = 0;
                     progressTextview.setText(String.valueOf(progressStatus));
                     progressBar.setProgress(progressStatus);
@@ -482,10 +483,10 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         // If no new fingerprint was captured
         if (fingerprint == null) {
             // If an old fingerprint exists
-            if (nodeToUpdate.getFingerprint() != null) {
-                final Node node = NodeFactory.createInstance(nodeID, nodeDescription, nodeToUpdate.getFingerprint(), coordinates, picPathToSave, nodeToUpdate.getAdditionalInfo());
-                JSONWriter.writeJSON(node);
-                databaseHandler.updateNode(node, oldNodeId);
+            if (roomToUpdate.getFingerprint() != null) {
+                final Room room = RoomFactory.createInstance(nodeID, nodeDescription, roomToUpdate.getFingerprint(), coordinates, picPathToSave, roomToUpdate.getAdditionalInfo());
+                JSONWriter.writeJSON(room);
+                databaseHandler.updateNode(room, oldNodeId);
                 Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
 
                 finish();
@@ -501,9 +502,9 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                         .setMessage("Soll der Ort \"" + nodeIdEdittext.getText() + "\" wirklich ohne Fingerprint gespeichert werden?")
                         .setCancelable(false)
                         .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                            final Node node = NodeFactory.createInstance(nodeID, nodeDescription, null, coordinates, picPathToSave, "");
-                            JSONWriter.writeJSON(node);
-                            databaseHandler.updateNode(node, oldNodeId);
+                            final Room room = RoomFactory.createInstance(nodeID, nodeDescription, null, coordinates, picPathToSave, "");
+                            JSONWriter.writeJSON(room);
+                            databaseHandler.updateNode(room, oldNodeId);
                             Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
                             deleteOldPictures();
                             resetUiElements();
@@ -516,9 +517,9 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
             // If a new fingerprint was taken
         } else {
-            final Node node = NodeFactory.createInstance(nodeID, nodeDescription, fingerprint, coordinates, picPathToSave, nodeToUpdate.getAdditionalInfo());
-            JSONWriter.writeJSON(node);
-            databaseHandler.updateNode(node, oldNodeId);
+            final Room room = RoomFactory.createInstance(nodeID, nodeDescription, fingerprint, coordinates, picPathToSave, roomToUpdate.getAdditionalInfo());
+            JSONWriter.writeJSON(room);
+            databaseHandler.updateNode(room, oldNodeId);
             Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
             deleteOldPictures();
             finish();

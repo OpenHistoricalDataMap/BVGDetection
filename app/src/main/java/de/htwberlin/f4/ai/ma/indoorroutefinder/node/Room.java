@@ -7,21 +7,21 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
  * <p>
  * This Interface is used to manage nodes ("Orte").
  */
-public interface Node {
+public interface Room {
 
     /**
      * Getter for the ID (name) of a node
      *
      * @return the ID (name)
      */
-    String getId();
+    String getRoomName();
 
     /**
      * Setter for the ID (name) of a node
      *
-     * @param id the ID (name)
+     * @param roomName the ID (name)
      */
-    void setId(String id);
+    void setRoomName(String roomName);
 
     /**
      * Getter for the description of a node
@@ -75,6 +75,22 @@ public interface Node {
      * @param additionalInfo the additional information string
      */
     void setAdditionalInfo(String additionalInfo);
+
+    /**
+     * Getter for the roomDatabaseID of a node.
+     * For later purposes.
+     *
+     * @return the roomDatabaseID
+     */
+    int getRoomDatabaseID();
+
+    /**
+     * Setter for the roomDatabaseID of a node.
+     * For later purposes.
+     *
+     * @param roomDatabaseID the roomDatabaseID
+     */
+    void setRoomDatabaseID(int roomDatabaseID);
 
 }
 

@@ -1,6 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.dijkstra;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * Created by Johann Winter
@@ -10,8 +10,8 @@ class DijkstraNode {
 
     private final String id;
 
-    DijkstraNode(Node node) {
-        this.id = node.getId();
+    DijkstraNode(Room room) {
+        this.id = room.getRoomName();
     }
 
     /**

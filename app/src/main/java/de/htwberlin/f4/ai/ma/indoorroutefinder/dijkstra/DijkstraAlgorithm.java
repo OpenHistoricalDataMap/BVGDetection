@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * Created by Johann Winter
@@ -27,10 +27,10 @@ public interface DijkstraAlgorithm {
     /**
      * Map the normal node objects from the model to the custom DijkstraNode of the Dijkstra Algorithm.
      *
-     * @param nodes a list of nodes
+     * @param rooms a list of nodes
      * @return a list of DijkstraNodes
      */
-    List<DijkstraNode> mapNodes(List<Node> nodes);
+    List<DijkstraNode> mapNodes(List<Room> rooms);
 
     /**
      * Map the normal edge objects from the model to the custom DijkstraEdge of the Dijkstra Algorithm.

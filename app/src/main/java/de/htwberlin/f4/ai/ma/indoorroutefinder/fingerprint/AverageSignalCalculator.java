@@ -35,7 +35,8 @@ class AverageSignalCalculator {
             value = value / counter;
 
             List<AccessPointInformation> accessPointInformations = new ArrayList<>();
-            AccessPointInformation accessPointInformation = AccessPointInformationFactory.createInstance(s, value);
+            // TODO change to real SSID
+            AccessPointInformation accessPointInformation = AccessPointInformationFactory.createInstance(s, value, "");
             accessPointInformations.add(accessPointInformation);
             SignalSample signalSample = new SignalSample("", accessPointInformations);
             signalSampleList.add(signalSample);

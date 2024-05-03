@@ -1,7 +1,7 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure;
 
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * MeasureController Interface
@@ -32,10 +32,10 @@ public interface MeasureController {
     void onResume();
 
     // triggered when user selects a start node
-    void onStartNodeSelected(Node node);
+    void onStartNodeSelected(Room room);
 
     // triggered when user selects a target node
-    void onTargetNodeSelected(Node node);
+    void onTargetNodeSelected(Room room);
 
     // triggered by clicking on the arrow between start and target node
     void onEdgeDetailsClicked();

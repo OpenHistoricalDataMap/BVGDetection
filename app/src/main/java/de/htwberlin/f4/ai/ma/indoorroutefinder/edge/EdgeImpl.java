@@ -3,7 +3,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.edge;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * Created by Johann Winter
@@ -11,8 +11,8 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 
 class EdgeImpl implements Edge {
 
-    private final Node nodeA;
-    private final Node nodeB;
+    private final Room roomA;
+    private final Room roomB;
     private final List<String> stepCoordList;
     private boolean accessible;
     private float weight;
@@ -20,18 +20,18 @@ class EdgeImpl implements Edge {
 
 
     // Constructor for an Edge without given stepCoordList
-    EdgeImpl(Node nodeA, Node nodeB, boolean accessible, float weight) {
-        this.nodeA = nodeA;
-        this.nodeB = nodeB;
+    EdgeImpl(Room roomA, Room roomB, boolean accessible, float weight) {
+        this.roomA = roomA;
+        this.roomB = roomB;
         this.accessible = accessible;
         this.weight = weight;
         this.stepCoordList = new ArrayList<>();
     }
 
     // Constructor for an Edge with given stepCoordList
-    EdgeImpl(Node nodeA, Node nodeB, boolean accessible, List<String> stepCoordList, float weight, String additionalInfo) {
-        this.nodeA = nodeA;
-        this.nodeB = nodeB;
+    EdgeImpl(Room roomA, Room roomB, boolean accessible, List<String> stepCoordList, float weight, String additionalInfo) {
+        this.roomA = roomA;
+        this.roomB = roomB;
         this.accessible = accessible;
         this.weight = weight;
         this.stepCoordList = stepCoordList;
@@ -40,13 +40,13 @@ class EdgeImpl implements Edge {
 
 
     @Override
-    public Node getNodeA() {
-        return this.nodeA;
+    public Room getNodeA() {
+        return this.roomA;
     }
 
     @Override
-    public Node getNodeB() {
-        return this.nodeB;
+    public Room getNodeB() {
+        return this.roomB;
     }
 
     @Override

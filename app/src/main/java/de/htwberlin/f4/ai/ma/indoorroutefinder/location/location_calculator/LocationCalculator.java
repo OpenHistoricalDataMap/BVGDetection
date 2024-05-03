@@ -8,7 +8,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.SignalSample;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.RestructedNode;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * Created by Johann Winter
@@ -38,28 +38,28 @@ public interface LocationCalculator {
     /**
      * Rewrite the nodelist to restrucetd nodes and delete weak MAC addresses
      *
-     * @param allNodes list of all nodes
+     * @param allRooms list of all nodes
      * @return a list of restructed nodes
      */
-    List<RestructedNode> calculateNewNodeDataset(List<Node> allNodes);
+    List<RestructedNode> calculateNewNodeDataset(List<Room> allRooms);
 
 
     /**
      * Create a multimap with MAC address and signal strength values.
      *
-     * @param node        input node
+     * @param room        input node
      * @param macAdresses a list of MAC addresses
      * @return a multimap with mac address and signal strengths
      */
-    Multimap<String, Double> getMultiMap(Node node, List<String> macAdresses);
+    Multimap<String, Double> getMultiMap(Room room, List<String> macAdresses);
 
 
     /**
      * Get (extract) all MAC-addresses from a specific node
      *
-     * @param node the node
+     * @param room the node
      * @return list of unique MAC addresses
      */
-    List<String> getMacAddresses(Node node);
+    List<String> getMacAddresses(Room room);
 
 }

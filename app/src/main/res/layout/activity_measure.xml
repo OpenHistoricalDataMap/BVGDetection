@@ -225,7 +225,7 @@
         android:orientation="horizontal"
         android:weightSum="1">
 
-        <!-- start node -->
+        <!-- start room -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -332,7 +332,7 @@
 
         </LinearLayout>
 
-        <!-- target node -->
+        <!-- target room -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"

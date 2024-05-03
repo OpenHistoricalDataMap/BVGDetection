@@ -31,10 +31,10 @@ public class EuclideanDistance {
             List<Collection<Double>> matchingSignalStrengths = new ArrayList<>();
             List<Integer> measuredSignalStrength = new ArrayList<>();
             for (int j = 0; j < accessPointInformations.size(); j++) {
-                boolean contains = restructedNodes.get(i).restructedSignals.containsKey(accessPointInformations.get(j).getMacAddress());
+                boolean contains = restructedNodes.get(i).restructedSignals.containsKey(accessPointInformations.get(j).getBSSID());
                 if (contains) {
-                    matchingSignalStrengths.add(restructedNodes.get(i).restructedSignals.get(accessPointInformations.get(j).getMacAddress()));
-                    measuredSignalStrength.add(accessPointInformations.get(j).getRssi());
+                    matchingSignalStrengths.add(restructedNodes.get(i).restructedSignals.get(accessPointInformations.get(j).getBSSID()));
+                    measuredSignalStrength.add(accessPointInformations.get(j).getRSSI());
                 }
             }
 

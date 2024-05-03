@@ -147,14 +147,14 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
                             */
 
                         Log.d("Fingerprinting... ", "MAC: " + sr.BSSID + "   Strength: " + sr.level + " dBm         timestamp: " + sr.timestamp);
-                        AccessPointInformation accessPointInformation = AccessPointInformationFactory.createInstance(sr.BSSID, sr.level);
+                        AccessPointInformation accessPointInformation = AccessPointInformationFactory.createInstance(sr.BSSID, sr.level, sr.SSID);
                         accessPointInformationList.add(accessPointInformation);
                         multiMap.put(sr.BSSID, sr.level);
                     }
                     // No SSID filter while scanning
                 } else {
                     Log.d("Fingerprinting... ", "MAC: " + sr.BSSID + "   Strength: " + sr.level + " dBm         timestamp: " + sr.timestamp);
-                    AccessPointInformation accessPointInformation = AccessPointInformationFactory.createInstance(sr.BSSID, sr.level);
+                    AccessPointInformation accessPointInformation = AccessPointInformationFactory.createInstance(sr.BSSID, sr.level, sr.SSID);
                     accessPointInformationList.add(accessPointInformation);
                     multiMap.put(sr.BSSID, sr.level);
                 }
@@ -181,9 +181,9 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
         if (calculateAverage) {
             // Calculate average values
             List<SignalSample> signalSamples = AverageSignalCalculator.calculateAverageSignal(multiMap);
-            return FingerprintFactory.createInstance(wifiName, signalSamples);
+            return FingerprintFactory.createInstance(signalSamples);
         } else {
-            return FingerprintFactory.createInstance(wifiName, signalSampleList);
+            return FingerprintFactory.createInstance(signalSampleList);
         }
 
     }
@@ -216,7 +216,7 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
             for (int i = 0; i < accessPointInformationList.size(); i++) {
                 // Clip the output at 6 Accesspoints, because of the limited space of the infobox.
                 if (i <= 7) {
-                    textviewString.append(accessPointInformationList.get(i).getMacAddress()).append("  ").append(accessPointInformationList.get(i).getRssi()).append("       ");
+                    textviewString.append(accessPointInformationList.get(i).getBSSID()).append("  ").append(accessPointInformationList.get(i).getRSSI()).append("       ");
                 }
             }
             verboseOutputTextview.setText(textviewString.toString());

@@ -1,16 +1,16 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.node;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintFactory;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by Johann Winter
  */
-public class NodeFactoryTest {
+public class RoomFactoryTest {
 
     /**
      * Test for the successful creation of a Node
@@ -25,12 +25,12 @@ public class NodeFactoryTest {
         String testPicturePath = "/test/test.jpg";
         String testAdditionalInfo = "-PLACEHOLDER-";
 
-        Node input = new NodeImpl(testNodeID, testDescription, testFingerprint, testCoordinates, testPicturePath, testAdditionalInfo);
-        Node output;
+        Room input = new RoomImpl(testNodeID, testDescription, testFingerprint, testCoordinates, testPicturePath, testAdditionalInfo);
+        Room output;
 
-        output = NodeFactory.createInstance(testNodeID, testDescription, testFingerprint, testCoordinates, testPicturePath, testAdditionalInfo);
+        output = RoomFactory.createInstance(testNodeID, testDescription, testFingerprint, testCoordinates, testPicturePath, testAdditionalInfo);
 
-        assertEquals(input.getId(), output.getId());
+        assertEquals(input.getRoomName(), output.getRoomName());
         assertEquals(input.getDescription(), output.getDescription());
         assertEquals(input.getFingerprint(), output.getFingerprint());
         assertEquals(input.getCoordinates(), output.getCoordinates());

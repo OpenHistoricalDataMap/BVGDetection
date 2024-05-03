@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
@@ -54,13 +54,13 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
     /**
      * Map the normal node objects from the Model to the custom DijkstraNode of the Dijkstra Algorithm.
      *
-     * @param nodes a list of Nodes
+     * @param rooms a list of Nodes
      * @return a list of DijkstraNodes
      */
-    public List<DijkstraNode> mapNodes(List<Node> nodes) {
-        List<DijkstraNode> dijkstraNodes = new ArrayList<>(nodes.size());
-        for (Node node : nodes) {
-            dijkstraNodes.add(new DijkstraNode(node));
+    public List<DijkstraNode> mapNodes(List<Room> rooms) {
+        List<DijkstraNode> dijkstraNodes = new ArrayList<>(rooms.size());
+        for (Room room : rooms) {
+            dijkstraNodes.add(new DijkstraNode(room));
         }
         return dijkstraNodes;
     }
@@ -109,7 +109,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
      * @throws IllegalArgumentException if the source node does not exist
      */
     public void execute(String sourceNodeId) throws IllegalArgumentException {
-        final Node source = databaseHandler.getNode(sourceNodeId);
+        final Room source = databaseHandler.getNode(sourceNodeId);
 
         if (source == null) {
             throw new IllegalArgumentException("Source Node Id is invalid! Given was:" + sourceNodeId);

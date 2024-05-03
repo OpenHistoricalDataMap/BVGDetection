@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.nodelist.NodeListAdapter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
@@ -27,7 +27,7 @@ public class NodeListActivity extends BaseActivity {
     ArrayList<String> nodeNames;
     ArrayList<String> nodeDescriptions;
     ArrayList<String> nodePicturePaths;
-    ArrayList<Node> allNodes;
+    ArrayList<Room> allRooms;
     NodeListAdapter nodeListAdapter;
     DatabaseHandler databaseHandler;
 
@@ -43,7 +43,7 @@ public class NodeListActivity extends BaseActivity {
 
         nodeListView = (ListView) findViewById(R.id.nodeListListview);
 
-        allNodes = new ArrayList<>();
+        allRooms = new ArrayList<>();
         nodeNames = new ArrayList<>();
         nodeDescriptions = new ArrayList<>();
         nodePicturePaths = new ArrayList<>();
@@ -68,15 +68,15 @@ public class NodeListActivity extends BaseActivity {
             if (!nodeListIsEmpty) {
                 new AlertDialog.Builder(view.getContext())
                         .setTitle(getString(R.string.delete_entry_title_question))
-                        .setMessage("Soll der Ort \"" + allNodes.get(position).getId() + "\" wirklich gelöscht werden?")
+                        .setMessage("Soll der Ort \"" + allRooms.get(position).getRoomName() + "\" wirklich gelöscht werden?")
                         .setCancelable(false)
                         .setPositiveButton(android.R.string.yes, (dialog, which) -> {
 
-                            if (allNodes.get(position).getPicturePath() != null) {
-                                File imageFile = new File(allNodes.get(position).getPicturePath());
+                            if (allRooms.get(position).getPicturePath() != null) {
+                                File imageFile = new File(allRooms.get(position).getPicturePath());
                                 imageFile.delete();
                             }
-                            databaseHandler.deleteNode(allNodes.get(position));
+                            databaseHandler.deleteNode(allRooms.get(position));
                             loadDbData();
                         })
                         .setNegativeButton(android.R.string.no, (dialog, which) -> {
@@ -108,20 +108,20 @@ public class NodeListActivity extends BaseActivity {
         nodeDescriptions.clear();
         nodeNames.clear();
         nodePicturePaths.clear();
-        allNodes.clear();
+        allRooms.clear();
 
-        allNodes.addAll(databaseHandler.getAllNodes());
+        allRooms.addAll(databaseHandler.getAllNodes());
 
         // If no node is available
-        if (allNodes.isEmpty()) {
+        if (allRooms.isEmpty()) {
             nodeListIsEmpty = true;
             nodeNames.add(0, "Keine gespeicherten Orte.");
             nodeDescriptions.add("");
             nodePicturePaths.add("");
 
         } else {
-            for (Node n : allNodes) {
-                nodeNames.add(n.getId());
+            for (Room n : allRooms) {
+                nodeNames.add(n.getRoomName());
                 nodeDescriptions.add(n.getDescription());
                 nodePicturePaths.add(n.getPicturePath());
             }

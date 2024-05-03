@@ -8,7 +8,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_informat
 
 public class AccessPointInformationFactory {
 
-    public static AccessPointInformation createInstance(String macAddress, int RSSI) {
-        return new AccessPointInformationImpl(macAddress, RSSI);
+    public static AccessPointInformation createInstance(String bssid, int rssi, String ssid) {
+        return new AccessPointInformationImpl(bssid, rssi, ssid);
     }
 }

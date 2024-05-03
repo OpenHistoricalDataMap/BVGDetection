@@ -10,10 +10,10 @@
     <!-- TODO: Update blank fragment layout -->
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.3"
+        android:orientation="vertical"
         android:weightSum="1">
 
         <LinearLayout
@@ -25,9 +25,9 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.5"
                 android:orientation="vertical"
-                android:weightSum="1"
-                android:layout_weight="0.5">
+                android:weightSum="1">
 
                 <ImageView
                     android:id="@+id/coordinates_measure_compass_iv"
@@ -42,15 +42,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:weightSum="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:weightSum="1">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:orientation="horizontal"
                     android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
                     android:weightSum="1">
 
                     <!-- schritte -->
@@ -58,26 +58,26 @@
                         android:id="@+id/coordinates_measure_stephint"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/measure_steps"
                         android:layout_weight="0.7"
-                        android:textSize="20sp"/>
+                        android:text="@string/measure_steps"
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/coordinates_measure_stepvalue"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="0"
                         android:layout_weight="0.3"
-                        android:textSize="20sp"/>
+                        android:text="0"
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
                     android:weightSum="1">
 
                     <!-- meter -->
@@ -86,9 +86,9 @@
                         android:id="@+id/coordinates_measure_distancehint"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/measure_distance"
                         android:layout_weight="0.7"
-                        android:textSize="20sp"/>
+                        android:text="@string/measure_distance"
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/coordinates_measure_distancevalue"
@@ -96,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
                         android:text="0"
-                        android:textSize="20sp"/>
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -117,8 +117,6 @@
                 </RelativeLayout>
 
 
-
-
             </LinearLayout>
 
         </LinearLayout>
@@ -128,28 +126,27 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.11"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.11">
 
         <TextView
             android:id="@+id/coordinates_measure_coordinates"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="0.0 | 0.0 | 0.0"
             android:layout_centerHorizontal="true"
+            android:text="0.0 | 0.0 | 0.0"
             android:textColor="@android:color/holo_red_light"
-            android:textSize="30sp"/>
+            android:textSize="30sp" />
 
         <Switch
             android:id="@+id/coordinates_measure_stairs"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:text="Treppe"
             android:layout_marginLeft="50dp"
             android:layout_marginTop="5dp"
             android:layout_toRightOf="@id/coordinates_measure_coordinates"
-         />
+            android:layout_weight="0.25"
+            android:text="Treppe" />
 
 
     </RelativeLayout>
@@ -161,9 +158,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="0.125"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
 
         android:weightSum="1">
 
@@ -191,7 +188,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.1"/>
+            android:layout_weight="0.1" />
 
 
         <ImageView
@@ -226,12 +223,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="0.475"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
         android:weightSum="1">
 
-        <!-- start node -->
+        <!-- start room -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -330,7 +327,7 @@
 
         </LinearLayout>
 
-        <!-- target node -->
+        <!-- target room -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"

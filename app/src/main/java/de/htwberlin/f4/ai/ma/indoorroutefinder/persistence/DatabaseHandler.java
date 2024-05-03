@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * Created by Johann Winter
@@ -22,24 +22,24 @@ public interface DatabaseHandler {
     /**
      * Insert a new node to the database
      *
-     * @param node the node
+     * @param room the node
      */
-    void insertNode(Node node);
+    void insertNode(Room room);
 
     /**
      * Update a node in the database
      *
-     * @param node      the node to update, including a potential new name (ID)
+     * @param room      the node to update, including a potential new name (ID)
      * @param oldNodeId the (old) ID (name) of the node which has to be updated
      */
-    void updateNode(Node node, String oldNodeId);
+    void updateNode(Room room, String oldNodeId);
 
     /**
      * Getter for a list of all existent nodes in the database
      *
      * @return the list of all existent nodes
      */
-    List<Node> getAllNodes();
+    List<Room> getAllNodes();
 
     /**
      * Getter for a single node
@@ -47,7 +47,7 @@ public interface DatabaseHandler {
      * @param nodeID the name (ID) of the node
      * @return the node object
      */
-    Node getNode(String nodeID);
+    Room getNode(String nodeID);
 
     /**
      * Checks if a node with the given ID is already existent in database.
@@ -61,9 +61,9 @@ public interface DatabaseHandler {
     /**
      * Delete a single node from the database.
      *
-     * @param node the node to be deleted
+     * @param room the node to be deleted
      */
-    void deleteNode(Node node);
+    void deleteNode(Room room);
 
 
 //-------------------- Edges management -------------------------------
@@ -78,11 +78,11 @@ public interface DatabaseHandler {
     /**
      * Getter for a single edge from the database
      *
-     * @param nodeA the first node of the edge
-     * @param nodeB the second node of the edge
+     * @param roomA the first node of the edge
+     * @param roomB the second node of the edge
      * @return the edge object
      */
-    Edge getEdge(Node nodeA, Node nodeB);
+    Edge getEdge(Room roomA, Room roomB);
 
     /**
      * Getter for all existent edges in the database

@@ -5,18 +5,19 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 /**
  * Created by Johann Winter
  */
-class NodeImpl implements Node {
+class RoomImpl implements Room {
 
-    private String id;
     private final String description;
     private final Fingerprint fingerprint;
-    private String coordinates;
     private final String picturePath;
+    private String roomName;
+    private String coordinates;
     private String additionalInfo;
+    private int roomDatabaseID;
 
 
-    NodeImpl(String id, String description, Fingerprint fingerprint, String coordinates, String picturePath, String additionalInfo) {
-        this.id = id;
+    RoomImpl(String roomName, String description, Fingerprint fingerprint, String coordinates, String picturePath, String additionalInfo) {
+        this.roomName = roomName;
         this.description = description;
         this.coordinates = coordinates;
         this.picturePath = picturePath;
@@ -25,13 +26,13 @@ class NodeImpl implements Node {
     }
 
     @Override
-    public String getId() {
-        return this.id;
+    public String getRoomName() {
+        return this.roomName;
     }
 
     @Override
-    public void setId(String id) {
-        this.id = id;
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
 
     @Override
@@ -66,6 +67,16 @@ class NodeImpl implements Node {
     @Override
     public void setAdditionalInfo(String additionalInfo) {
         this.additionalInfo = additionalInfo;
+    }
+
+    @Override
+    public int getRoomDatabaseID() {
+        return this.roomDatabaseID;
+    }
+
+    @Override
+    public void setRoomDatabaseID(int roomDatabaseID) {
+        this.roomDatabaseID = roomDatabaseID;
     }
 
 }

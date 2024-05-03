@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
@@ -19,8 +19,8 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
 public class EdgeDetailsControllerImpl implements EdgeDetailsController {
 
     private EdgeDetailsView view;
-    private Node startNode;
-    private Node targetNode;
+    private Room startRoom;
+    private Room targetRoom;
     private Edge edge;
 
 
@@ -52,8 +52,8 @@ public class EdgeDetailsControllerImpl implements EdgeDetailsController {
     @Override
     public void setNodes(String startNodeId, String targetNodeId) {
         DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
-        startNode = databaseHandler.getNode(startNodeId);
-        targetNode = databaseHandler.getNode(targetNodeId);
+        startRoom = databaseHandler.getNode(startNodeId);
+        targetRoom = databaseHandler.getNode(targetNodeId);
     }
 
 
@@ -137,13 +137,13 @@ public class EdgeDetailsControllerImpl implements EdgeDetailsController {
     @Override
     public void onResume() {
         // make sure we have a valid start and target node
-        if (startNode != null && targetNode != null) {
+        if (startRoom != null && targetRoom != null) {
             // update view with node infos
-            view.updateStartNodeInfo(startNode);
-            view.updateTargetNodeInfo(targetNode);
+            view.updateStartNodeInfo(startRoom);
+            view.updateTargetNodeInfo(targetRoom);
             // get edge from database
             DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
-            edge = databaseHandler.getEdge(startNode, targetNode);
+            edge = databaseHandler.getEdge(startRoom, targetRoom);
             // update view with edge info
             view.updateEdgeInfo(edge);
         }

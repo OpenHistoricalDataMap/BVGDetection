@@ -7,7 +7,7 @@ import android.widget.FrameLayout;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.ShowFingerprintAdapter;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
@@ -28,12 +28,12 @@ public class ShowFingerprintActivity extends BaseActivity {
         String nodeID = (String) intent.getExtras().get("nodeID");
 
         if (nodeID != null) {
-            Node node = databaseHandler.getNode(nodeID);
-            setTitle(node.getId());
-            ShowFingerprintAdapter adapter = new ShowFingerprintAdapter(this, node.getFingerprint());
+            Room room = databaseHandler.getNode(nodeID);
+            setTitle(room.getRoomName());
+            ShowFingerprintAdapter adapter = new ShowFingerprintAdapter(this, room.getFingerprint());
             fingerprintListview.setAdapter(adapter);
 
-            for (int i = 0; i < node.getFingerprint().getSignalSampleList().size(); i++) {
+            for (int i = 0; i < room.getFingerprint().getSignalSampleList().size(); i++) {
                 fingerprintListview.expandGroup(i);
             }
         }

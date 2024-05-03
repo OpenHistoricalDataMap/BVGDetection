@@ -13,13 +13,19 @@ public interface AccessPointInformation {
      *
      * @return the MAC-address string
      */
-    String getMacAddress();
+    String getBSSID();
 
     /**
      * Getter for the signal strength (RSSI) in dBm of an access point
      *
      * @return the signal strength (RSSI) in dBm
      */
-    int getRssi();
+    int getRSSI();
 
+    /**
+     * Getter for the SSID of an access point
+     *
+     * @return the SSID string
+     */
+    String getSSID();
 }

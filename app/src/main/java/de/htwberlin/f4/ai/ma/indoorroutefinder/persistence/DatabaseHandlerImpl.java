@@ -20,8 +20,8 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.EdgeFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.NodeFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.RoomFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.JSON.JSONConverter;
 
 
@@ -115,28 +115,28 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     /**
      * Insert a new Node
      *
-     * @param node the node to insert
+     * @param room the node to insert
      */
-    public void insertNode(Node node) {
+    public void insertNode(Room room) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(NODE_ID, node.getId());
-        values.put(NODE_DESCRIPTION, node.getDescription());
+        values.put(NODE_ID, room.getRoomName());
+        values.put(NODE_DESCRIPTION, room.getDescription());
 
         // If the Node has a fingerprint
-        if (node.getFingerprint() != null) {
-            values.put(NODE_WIFI_NAME, node.getFingerprint().getSsid());
-            values.put(NODE_SIGNALINFORMATIONLIST, jsonConverter.convertSignalSampleListToJSON(node.getFingerprint().getSignalSampleList()));
+        if (room.getFingerprint() != null) {
+//            values.put(NODE_WIFI_NAME, room.getFingerprint().getSsid());
+            values.put(NODE_SIGNALINFORMATIONLIST, jsonConverter.convertSignalSampleListToJSON(room.getFingerprint().getSignalSampleList()));
         }
 
-        values.put(NODE_COORDINATES, node.getCoordinates());
-        values.put(NODE_PICTURE_PATH, node.getPicturePath());
-        values.put(NODE_ADDITIONAL_INFO, node.getAdditionalInfo());
+        values.put(NODE_COORDINATES, room.getCoordinates());
+        values.put(NODE_PICTURE_PATH, room.getPicturePath());
+        values.put(NODE_ADDITIONAL_INFO, room.getAdditionalInfo());
 
         database.insert(NODES_TABLE, null, values);
 
-        Log.d("DB: insert_node:id:", node.getId());
+        Log.d("DB: insert_node:id:", room.getRoomName());
 
         database.close();
     }
@@ -144,37 +144,37 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     /**
      * Update a Node
      *
-     * @param node      the new Node
+     * @param room      the new Node
      * @param oldNodeId the original nodeID (name) which will be changed
      */
-    public void updateNode(Node node, String oldNodeId) {
+    public void updateNode(Room room, String oldNodeId) {
 
         // At first, update Edges which contain the updated Node
         for (Edge e : getAllEdges()) {
-            if (e.getNodeA().getId().equals(oldNodeId)) {
-                updateEdge(e, EDGE_NODE_A, node.getId());
-            } else if (e.getNodeB().getId().equals(oldNodeId)) {
-                updateEdge(e, EDGE_NODE_B, node.getId());
+            if (e.getNodeA().getRoomName().equals(oldNodeId)) {
+                updateEdge(e, EDGE_NODE_A, room.getRoomName());
+            } else if (e.getNodeB().getRoomName().equals(oldNodeId)) {
+                updateEdge(e, EDGE_NODE_B, room.getRoomName());
             }
         }
 
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(NODE_ID, node.getId());
-        contentValues.put(NODE_DESCRIPTION, node.getDescription());
-        contentValues.put(NODE_COORDINATES, node.getCoordinates());
-        contentValues.put(NODE_ADDITIONAL_INFO, node.getAdditionalInfo());
+        contentValues.put(NODE_ID, room.getRoomName());
+        contentValues.put(NODE_DESCRIPTION, room.getDescription());
+        contentValues.put(NODE_COORDINATES, room.getCoordinates());
+        contentValues.put(NODE_ADDITIONAL_INFO, room.getAdditionalInfo());
 
         // If the Node has a fingerprint
-        if (node.getFingerprint() != null) {
-            contentValues.put(NODE_WIFI_NAME, node.getFingerprint().getSsid());
-            contentValues.put(NODE_SIGNALINFORMATIONLIST, jsonConverter.convertSignalSampleListToJSON(node.getFingerprint().getSignalSampleList()));
+        if (room.getFingerprint() != null) {
+//            contentValues.put(NODE_WIFI_NAME, room.getFingerprint().getSsid());
+            contentValues.put(NODE_SIGNALINFORMATIONLIST, jsonConverter.convertSignalSampleListToJSON(room.getFingerprint().getSignalSampleList()));
         }
 
-        contentValues.put(NODE_PICTURE_PATH, node.getPicturePath());
+        contentValues.put(NODE_PICTURE_PATH, room.getPicturePath());
 
-        Log.d("DB: update_node: id:", node.getId());
+        Log.d("DB: update_node: id:", room.getRoomName());
 
         database.update(NODES_TABLE, contentValues, NODE_ID + "='" + oldNodeId + "'", null);
 
@@ -187,8 +187,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      *
      * @return a list of all Nodes
      */
-    public List<Node> getAllNodes() {
-        List<Node> allNodes = new ArrayList<>();
+    public List<Room> getAllNodes() {
+        List<Room> allRooms = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + NODES_TABLE;
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
@@ -201,17 +201,17 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                 if (cursor.getString(3) == null) {
                     fingerprint = null;
                 } else {
-                    fingerprint = FingerprintFactory.createInstance(cursor.getString(2), jsonConverter.convertJsonToSignalSampleList(cursor.getString(3)));
+                    fingerprint = FingerprintFactory.createInstance(jsonConverter.convertJsonToSignalSampleList(cursor.getString(3)));
                 }
 
-                Node node = NodeFactory.createInstance(cursor.getString(0), cursor.getString(1), fingerprint, cursor.getString(4), cursor.getString(5), cursor.getString(6));
+                Room room = RoomFactory.createInstance(cursor.getString(0), cursor.getString(1), fingerprint, cursor.getString(4), cursor.getString(5), cursor.getString(6));
 
-                allNodes.add(node);
+                allRooms.add(room);
             } while (cursor.moveToNext());
             cursor.close();
         }
         database.close();
-        return allNodes;
+        return allRooms;
     }
 
 
@@ -220,10 +220,10 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      *
      * @param nodeID the name of the Node
      */
-    public Node getNode(String nodeID) {
+    public Room getNode(String nodeID) {
         SQLiteDatabase database = this.getWritableDatabase();
         String selectQuery = "SELECT * FROM " + NODES_TABLE + " WHERE " + NODE_ID + " ='" + nodeID + "'";
-        Node node = null;
+        Room room = null;
         Cursor cursor = database.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
@@ -233,15 +233,15 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
             if (cursor.getString(3) == null) {
                 fingerprint = null;
             } else {
-                fingerprint = FingerprintFactory.createInstance(cursor.getString(2), jsonConverter.convertJsonToSignalSampleList(cursor.getString(3)));
+                fingerprint = FingerprintFactory.createInstance(jsonConverter.convertJsonToSignalSampleList(cursor.getString(3)));
             }
 
-            node = NodeFactory.createInstance(cursor.getString(0), cursor.getString(1), fingerprint, cursor.getString(4), cursor.getString(5), cursor.getString(6));
+            room = RoomFactory.createInstance(cursor.getString(0), cursor.getString(1), fingerprint, cursor.getString(4), cursor.getString(5), cursor.getString(6));
             Log.d("DB: select_node", nodeID);
             cursor.close();
         }
         database.close();
-        return node;
+        return room;
     }
 
 
@@ -259,14 +259,14 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     /**
      * Delete a single node
      *
-     * @param node the node to be deleted
+     * @param room the node to be deleted
      */
-    public void deleteNode(Node node) {
+    public void deleteNode(Room room) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String deleteNodeQuery = "DELETE FROM " + NODES_TABLE + " WHERE " + NODE_ID + " ='" + node.getId() + "'";
-        String deleteBelongingEdgeQuery = "DELETE FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + " ='" + node.getId() + "' OR " + EDGE_NODE_B + " ='" + node.getId() + "'";
+        String deleteNodeQuery = "DELETE FROM " + NODES_TABLE + " WHERE " + NODE_ID + " ='" + room.getRoomName() + "'";
+        String deleteBelongingEdgeQuery = "DELETE FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + " ='" + room.getRoomName() + "' OR " + EDGE_NODE_B + " ='" + room.getRoomName() + "'";
 
-        Log.d("DB: delete_node", node.getId());
+        Log.d("DB: delete_node", room.getRoomName());
 
         database.execSQL(deleteNodeQuery);
         database.execSQL(deleteBelongingEdgeQuery);
@@ -284,8 +284,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(EDGE_NODE_A, edge.getNodeA().getId());
-        values.put(EDGE_NODE_B, edge.getNodeB().getId());
+        values.put(EDGE_NODE_A, edge.getNodeA().getRoomName());
+        values.put(EDGE_NODE_B, edge.getNodeB().getRoomName());
         values.put(EDGE_ACCESSIBILITY, edge.getAccessibility());
 
         StringBuilder stepListSb = new StringBuilder();
@@ -300,7 +300,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
         database.insert(EDGES_TABLE, null, values);
 
-        Log.d("DB: insert_EDGE", edge.getNodeA().getId() + " " + edge.getNodeB().getId());
+        Log.d("DB: insert_EDGE", edge.getNodeA().getRoomName() + " " + edge.getNodeB().getRoomName());
 
         database.close();
     }
@@ -318,11 +318,11 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
         if (nodeToBeUpdated.equals(EDGE_NODE_A)) {
             contentValues.put(EDGE_NODE_A, value);
-            contentValues.put(EDGE_NODE_B, edge.getNodeB().getId());
+            contentValues.put(EDGE_NODE_B, edge.getNodeB().getRoomName());
 
         } else if (nodeToBeUpdated.equals(EDGE_NODE_B)) {
             contentValues.put(EDGE_NODE_B, value);
-            contentValues.put(EDGE_NODE_A, edge.getNodeA().getId());
+            contentValues.put(EDGE_NODE_A, edge.getNodeA().getRoomName());
         }
 
         StringBuilder stepListSb = new StringBuilder();
@@ -336,7 +336,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         contentValues.put(EDGE_WEIGHT, edge.getWeight());
         contentValues.put(EDGE_ADDITIONAL_INFO, edge.getAdditionalInfo());
 
-        database.update(EDGES_TABLE, contentValues, EDGE_NODE_A + "='" + edge.getNodeA().getId() + "' AND " + EDGE_NODE_B + "='" + edge.getNodeB().getId() + "'", null);
+        database.update(EDGES_TABLE, contentValues, EDGE_NODE_A + "='" + edge.getNodeA().getRoomName() + "' AND " + EDGE_NODE_B + "='" + edge.getNodeB().getRoomName() + "'", null);
 
         database.close();
     }
@@ -362,7 +362,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         contentValues.put(EDGE_WEIGHT, edge.getWeight());
         contentValues.put(EDGE_ADDITIONAL_INFO, edge.getAdditionalInfo());
 
-        database.update(EDGES_TABLE, contentValues, EDGE_NODE_A + "='" + edge.getNodeA().getId() + "' AND " + EDGE_NODE_B + "='" + edge.getNodeB().getId() + "'", null);
+        database.update(EDGES_TABLE, contentValues, EDGE_NODE_A + "='" + edge.getNodeA().getRoomName() + "' AND " + EDGE_NODE_B + "='" + edge.getNodeB().getRoomName() + "'", null);
 
         database.close();
     }
@@ -371,25 +371,25 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     /**
      * Get single edge
      *
-     * @param nodeA the startnode of the edge
-     * @param nodeB the endnode of the edge
+     * @param roomA the startnode of the edge
+     * @param roomB the endnode of the edge
      * @return the edge
      */
-    public Edge getEdge(Node nodeA, Node nodeB) {
-        String selectQuery = "SELECT * FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + "='" + nodeA.getId() + "' AND " + EDGE_NODE_B + "='" + nodeB.getId() + "' OR " +
-                EDGE_NODE_A + "='" + nodeB.getId() + "' AND " + EDGE_NODE_B + "='" + nodeA.getId() + "'";
+    public Edge getEdge(Room roomA, Room roomB) {
+        String selectQuery = "SELECT * FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + "='" + roomA.getRoomName() + "' AND " + EDGE_NODE_B + "='" + roomB.getRoomName() + "' OR " +
+                EDGE_NODE_A + "='" + roomB.getRoomName() + "' AND " + EDGE_NODE_B + "='" + roomA.getRoomName() + "'";
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
             boolean accessible = cursor.getInt(3) == 1;
-            Node node1 = getNode(cursor.getString(1));
-            Node node2 = getNode(cursor.getString(2));
+            Room room1 = getNode(cursor.getString(1));
+            Room room2 = getNode(cursor.getString(2));
 
             String stepListString = cursor.getString(4);
             List<String> stepList = new ArrayList<>(Arrays.asList(stepListString.split("\t")));
 
-            Edge edge = EdgeFactory.createInstance(node1, node2, accessible, stepList, cursor.getFloat(5), cursor.getString(6));
+            Edge edge = EdgeFactory.createInstance(room1, room2, accessible, stepList, cursor.getFloat(5), cursor.getString(6));
 
             cursor.close();
             database.close();
@@ -415,13 +415,13 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
                 boolean accessible = cursor.getInt(3) == 1;
 
-                Node nodeA = getNode(cursor.getString(1));
-                Node nodeB = getNode(cursor.getString(2));
+                Room roomA = getNode(cursor.getString(1));
+                Room roomB = getNode(cursor.getString(2));
 
                 String stepListString = cursor.getString(4);
                 List<String> stepList = new ArrayList<>(Arrays.asList(stepListString.split("\t")));
 
-                Edge edge = EdgeFactory.createInstance(nodeA, nodeB, accessible, stepList, cursor.getFloat(5), cursor.getString(6));
+                Edge edge = EdgeFactory.createInstance(roomA, roomB, accessible, stepList, cursor.getFloat(5), cursor.getString(6));
 
                 allEdges.add(edge);
 
@@ -440,8 +440,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      * @return boolean, if edge exists
      */
     public boolean checkIfEdgeExists(Edge edge) {
-        String selectQuery = "SELECT * FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + " ='" + edge.getNodeA().getId() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeB().getId() + "' " +
-                " OR " + EDGE_NODE_A + " ='" + edge.getNodeB().getId() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeA().getId() + "' ";
+        String selectQuery = "SELECT * FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + " ='" + edge.getNodeA().getRoomName() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeB().getRoomName() + "' " +
+                " OR " + EDGE_NODE_A + " ='" + edge.getNodeB().getRoomName() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeA().getRoomName() + "' ";
 
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
@@ -463,10 +463,10 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      */
     public void deleteEdge(Edge edge) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String deleteQuery = "DELETE FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + " ='" + edge.getNodeA().getId() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeB().getId() + "'"
-                + " OR " + EDGE_NODE_A + " ='" + edge.getNodeB().getId() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeA().getId() + "' ";
+        String deleteQuery = "DELETE FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + " ='" + edge.getNodeA().getRoomName() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeB().getRoomName() + "'"
+                + " OR " + EDGE_NODE_A + " ='" + edge.getNodeB().getRoomName() + "' AND " + EDGE_NODE_B + " ='" + edge.getNodeA().getRoomName() + "' ";
 
-        Log.d("DB: delete_EDGE", edge.getNodeA().getId() + " " + edge.getNodeB().getId());
+        Log.d("DB: delete_EDGE", edge.getNodeA().getRoomName() + " " + edge.getNodeB().getRoomName());
 
         database.execSQL(deleteQuery);
         database.close();

@@ -73,8 +73,8 @@ public class ShowFingerprintAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int i, int i1, boolean b, View view, ViewGroup viewGroup) {
         TextView textView = new TextView(context);
-        textView.setText(fingerprint.getSignalSampleList().get(i).getAccessPointInformationList().get(i1).getMacAddress() +
-                "   " + fingerprint.getSignalSampleList().get(i).getAccessPointInformationList().get(i1).getRssi() + " dBm");
+        textView.setText(fingerprint.getSignalSampleList().get(i).getAccessPointInformationList().get(i1).getBSSID() +
+                "   " + fingerprint.getSignalSampleList().get(i).getAccessPointInformationList().get(i1).getRSSI() + " dBm");
         textView.setPadding(140, 0, 0, 0);
         return textView;
     }

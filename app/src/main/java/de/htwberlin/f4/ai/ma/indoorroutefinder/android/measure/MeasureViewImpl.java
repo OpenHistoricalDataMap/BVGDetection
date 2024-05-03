@@ -31,7 +31,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.barcode.BarcodeCaptureActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.WKT;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
@@ -47,7 +47,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
 public class MeasureViewImpl extends BaseActivity implements MeasureView {
 
     private final List<String> nodeNames = new ArrayList<>();
-    private final List<Node> nodeList = new ArrayList<>();
+    private final List<Room> roomList = new ArrayList<>();
     private final MeasureController controller;
     private TextView compassView;
     private ImageView compassImageView;
@@ -92,12 +92,12 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView {
 
         // get all nodes from database
         DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(getContext());
-        List<Node> tmpNodeList = databaseHandler.getAllNodes();
+        List<Room> tmpRoomList = databaseHandler.getAllNodes();
 
         // save the node ids
-        for (Node node : tmpNodeList) {
-            nodeNames.add(node.getId());
-            nodeList.add(node);
+        for (Room room : tmpRoomList) {
+            nodeNames.add(room.getRoomName());
+            roomList.add(room);
         }
 
         /************        find UI Elements and set listeners          ************/
@@ -209,25 +209,25 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView {
         startNodeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Node startNode = nodeList.get(i);
-                if (startNode.getPicturePath() == null) {
+                Room startRoom = roomList.get(i);
+                if (startRoom.getPicturePath() == null) {
                     startNodeImage.setImageResource(R.drawable.unknown);
                 } else {
-                    Uri imageUri = Uri.parse(startNode.getPicturePath());
+                    Uri imageUri = Uri.parse(startRoom.getPicturePath());
                     File image = new File(imageUri.getPath());
 
                     if (image.exists()) {
                         //using glide to reduce ui lag
                         Glide.with(getContext())
-                                .load(startNode.getPicturePath())
+                                .load(startRoom.getPicturePath())
                                 .into(startNodeImage);
                     }
 
                 }
 
-                controller.onStartNodeSelected(startNode);
+                controller.onStartNodeSelected(startRoom);
 
-                nullpointStartCb.setChecked(startNode.getAdditionalInfo() != null && startNode.getAdditionalInfo().contains("NULLPOINT"));
+                nullpointStartCb.setChecked(startRoom.getAdditionalInfo() != null && startRoom.getAdditionalInfo().contains("NULLPOINT"));
             }
 
             @Override
@@ -242,23 +242,23 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView {
         targetNodeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Node targetNode = nodeList.get(i);
-                if (targetNode.getPicturePath() == null) {
+                Room targetRoom = roomList.get(i);
+                if (targetRoom.getPicturePath() == null) {
                     targetNodeImage.setImageResource(R.drawable.unknown);
                 } else {
 
-                    Uri imageUri = Uri.parse(targetNode.getPicturePath());
+                    Uri imageUri = Uri.parse(targetRoom.getPicturePath());
                     File image = new File(imageUri.getPath());
 
                     if (image.exists()) {
                         //using glide to reduce ui lag
                         Glide.with(getContext())
-                                .load(targetNode.getPicturePath())
+                                .load(targetRoom.getPicturePath())
                                 .into(targetNodeImage);
                     }
                 }
 
-                controller.onTargetNodeSelected(targetNode);
+                controller.onTargetNodeSelected(targetRoom);
 
             }
 
@@ -477,14 +477,14 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView {
     /**
      * used when we receive startnode from wifi scan or qr code
      *
-     * @param node found node
+     * @param room found node
      */
     @Override
-    public void setStartNode(Node node) {
+    public void setStartNode(Room room) {
         // check if we know node already and stored it in list
         boolean found = false;
         for (String nodeName : nodeNames) {
-            if (node.getId().equals(nodeName)) {
+            if (room.getRoomName().equals(nodeName)) {
                 found = true;
                 break;
             }
@@ -492,13 +492,13 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView {
         // it is a new node
         if (!found) {
             // update adapter
-            startAdapter.add(node.getId());
+            startAdapter.add(room.getRoomName());
             // update nodename list
-            nodeList.add(node);
+            roomList.add(room);
             // set node as selected
-            startNodeSpinner.setSelection(nodeList.indexOf(node));
-            if (node.getCoordinates() != null && !node.getCoordinates().isEmpty()) {
-                float[] coordinates = WKT.strToCoord(node.getCoordinates());
+            startNodeSpinner.setSelection(roomList.indexOf(room));
+            if (room.getCoordinates() != null && !room.getCoordinates().isEmpty()) {
+                float[] coordinates = WKT.strToCoord(room.getCoordinates());
                 updateStartNodeCoordinates(coordinates[0], coordinates[1], coordinates[2]);
             } else {
                 updateStartNodeCoordinates(0.0f, 0.0f, 0.0f);
@@ -508,24 +508,24 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView {
         // it is an existing node
         else {
             // find correct node object stored in nodelist, so we can set spinner selection
-            Node foundNode = null;
-            for (Node tmpNode : nodeList) {
-                if (tmpNode.getId().equals(node.getId())) {
-                    foundNode = tmpNode;
+            Room foundRoom = null;
+            for (Room tmpRoom : roomList) {
+                if (tmpRoom.getRoomName().equals(room.getRoomName())) {
+                    foundRoom = tmpRoom;
                     break;
                 }
             }
             // set node as selected
-            startNodeSpinner.setSelection(nodeList.indexOf(foundNode));
-            if (node.getCoordinates() != null && !node.getCoordinates().isEmpty()) {
-                float[] coordinates = WKT.strToCoord(node.getCoordinates());
+            startNodeSpinner.setSelection(roomList.indexOf(foundRoom));
+            if (room.getCoordinates() != null && !room.getCoordinates().isEmpty()) {
+                float[] coordinates = WKT.strToCoord(room.getCoordinates());
                 updateStartNodeCoordinates(coordinates[0], coordinates[1], coordinates[2]);
             } else {
                 updateStartNodeCoordinates(0.0f, 0.0f, 0.0f);
             }
         }
         // check if the node is a nullpoint
-        nullpointStartCb.setChecked(node.getAdditionalInfo() != null && node.getAdditionalInfo().contains("NULLPOINT"));
+        nullpointStartCb.setChecked(room.getAdditionalInfo() != null && room.getAdditionalInfo().contains("NULLPOINT"));
     }
 
 

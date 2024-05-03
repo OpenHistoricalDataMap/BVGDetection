@@ -31,7 +31,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintTask;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculator;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculatorFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.nodelist.NodeListAdapter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
@@ -52,7 +52,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
     List<String> itemsStartNodeSpinner;
     CheckBox accessibilityCheckbox;
     List<String> navigationResultsList;
-    List<Node> allNodes;
+    List<Room> allRooms;
     DatabaseHandler databaseHandler;
     NodeListAdapter resultListAdapter;
     List<String> nodeNames;
@@ -99,7 +99,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        allNodes = databaseHandler.getAllNodes();
+        allRooms = databaseHandler.getAllNodes();
 
         useSSIDfilter = sharedPreferences.getBoolean("use_ssid_filter", false);
         defaultWifi = sharedPreferences.getString("default_wifi_network", null);
@@ -107,9 +107,9 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
         locateButton.setImageResource(R.drawable.locate);
 
         // Fill the spinners with Nodes
-        for (Node node : allNodes) {
-            itemsStartNodeSpinner.add(node.getId());
-            itemsDestNodeSpinner.add(node.getId());
+        for (Room room : allRooms) {
+            itemsStartNodeSpinner.add(room.getRoomName());
+            itemsDestNodeSpinner.add(room.getRoomName());
         }
 
         // Disable connect-button if spinnerB has no elements (spinnerA has one or less elements)
@@ -205,10 +205,10 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
 
                         // Add distance (weight) to the results list
                         if (i + 1 < route.size()) {
-                            Node nodeA = databaseHandler.getNode(route.get(i));
-                            Node nodeB = databaseHandler.getNode(route.get(i + 1));
+                            Room roomA = databaseHandler.getNode(route.get(i));
+                            Room roomB = databaseHandler.getNode(route.get(i + 1));
 
-                            Edge e = databaseHandler.getEdge(nodeA, nodeB);
+                            Edge e = databaseHandler.getEdge(roomA, roomB);
                             nodeNames.add("\t" + e.getWeight() + " m");
                             nodeDescriptions.add("");
                             nodePicturePaths.add("");

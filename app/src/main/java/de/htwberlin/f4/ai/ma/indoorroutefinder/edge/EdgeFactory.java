@@ -2,7 +2,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.edge;
 
 import java.util.List;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * Created by Johann Winter
@@ -14,11 +14,11 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
 
 public class EdgeFactory {
 
-    public static Edge createInstance(Node nodeA, Node nodeB, boolean accessible, float weight) {
-        return new EdgeImpl(nodeA, nodeB, accessible, weight);
+    public static Edge createInstance(Room roomA, Room roomB, boolean accessible, float weight) {
+        return new EdgeImpl(roomA, roomB, accessible, weight);
     }
 
-    public static Edge createInstance(Node nodeA, Node nodeB, boolean accessible, List<String> stepCoordList, float weight, String additionalInfo) {
-        return new EdgeImpl(nodeA, nodeB, accessible, stepCoordList, weight, additionalInfo);
+    public static Edge createInstance(Room roomA, Room roomB, boolean accessible, List<String> stepCoordList, float weight, String additionalInfo) {
+        return new EdgeImpl(roomA, roomB, accessible, stepCoordList, weight, additionalInfo);
     }
 }

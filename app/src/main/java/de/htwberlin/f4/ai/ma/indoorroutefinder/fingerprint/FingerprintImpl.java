@@ -8,16 +8,14 @@ import java.util.List;
 
 class FingerprintImpl implements Fingerprint {
 
-    private final String ssid;
     private final List<SignalSample> signalSampleList;
 
     FingerprintImpl(String ssid, List<SignalSample> signalSampleList) {
-        this.ssid = ssid;
         this.signalSampleList = signalSampleList;
     }
 
-    public String getSsid() {
-        return this.ssid;
+    FingerprintImpl(List<SignalSample> signalSampleList) {
+        this.signalSampleList = signalSampleList;
     }
 
     public List<SignalSample> getSignalSampleList() {

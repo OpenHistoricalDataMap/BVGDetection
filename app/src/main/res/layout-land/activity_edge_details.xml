@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:weightSum="1">
 
     <!-- Layout for Start and Target Node -->
@@ -16,7 +15,7 @@
         android:orientation="horizontal"
         android:weightSum="1">
 
-        <!-- start node -->
+        <!-- start room -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -37,7 +36,6 @@
                     android:text="Start Ort"
                     android:textSize="25sp" />
             </RelativeLayout>
-
 
 
             <ImageView
@@ -63,13 +61,10 @@
             </RelativeLayout>
 
 
-
-
         </LinearLayout>
 
 
-
-        <!-- target node -->
+        <!-- target room -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -90,8 +85,6 @@
                     android:text="Ziel Ort"
                     android:textSize="25sp" />
             </RelativeLayout>
-
-
 
 
             <ImageView
@@ -162,11 +155,10 @@
                     android:id="@+id/edgedetails_distance_value"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
                     android:text="0.00"
                     android:textAlignment="center"
-                    android:textSize="20sp"
-                    android:layout_marginTop="10dp"
-                    />
+                    android:textSize="20sp" />
 
 
             </LinearLayout>

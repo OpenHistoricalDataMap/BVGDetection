@@ -18,7 +18,7 @@ import java.util.List;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.EdgeFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
@@ -63,12 +63,12 @@ public class EdgesManagerActivity extends BaseActivity {
         allEdges = new ArrayList<>();
         lastSelectedItemA = "";
 
-        List<Node> allNodes = databaseHandler.getAllNodes();
+        List<Room> allRooms = databaseHandler.getAllNodes();
 
         // Fill the spinners with Nodes
-        for (Node node : allNodes) {
-            itemsSpinnerA.add(node.getId());
-            itemsSpinnerB.add(node.getId());
+        for (Room room : allRooms) {
+            itemsSpinnerA.add(room.getRoomName());
+            itemsSpinnerB.add(room.getRoomName());
         }
 
         // Disable connect-button if spinnerB has no elements (spinnerA has one or less elements)
@@ -113,9 +113,9 @@ public class EdgesManagerActivity extends BaseActivity {
         for (Edge e : databaseHandler.getAllEdges()) {
             allEdges.add(e);
             if (e.getAccessibility()) {
-                itemsEdgesList.add(e.getNodeA().getId() + " <---> " + e.getNodeB().getId() + ",     " + getString(R.string.accessibility_checkbox_text));
+                itemsEdgesList.add(e.getNodeA().getRoomName() + " <---> " + e.getNodeB().getRoomName() + ",     " + getString(R.string.accessibility_checkbox_text));
             } else {
-                itemsEdgesList.add(e.getNodeA().getId() + " <---> " + e.getNodeB().getId());
+                itemsEdgesList.add(e.getNodeA().getRoomName() + " <---> " + e.getNodeB().getRoomName());
             }
         }
 
@@ -125,10 +125,10 @@ public class EdgesManagerActivity extends BaseActivity {
             connectNodesButton.setImageResource(R.drawable.ways_inactive);
             boolean accessible = accessibilityCheckbox.isChecked();
 
-            Node nodeA = databaseHandler.getNode(spinnerA.getSelectedItem().toString());
-            Node nodeB = databaseHandler.getNode(spinnerB.getSelectedItem().toString());
+            Room roomA = databaseHandler.getNode(spinnerA.getSelectedItem().toString());
+            Room roomB = databaseHandler.getNode(spinnerB.getSelectedItem().toString());
 
-            Edge edge = EdgeFactory.createInstance(nodeA, nodeB, accessible, 0);
+            Edge edge = EdgeFactory.createInstance(roomA, roomB, accessible, 0);
 
             if (databaseHandler.checkIfEdgeExists(edge)) {
                 Toast.makeText(getApplicationContext(), getString(R.string.edge_already_exists), Toast.LENGTH_SHORT).show();
@@ -137,9 +137,9 @@ public class EdgesManagerActivity extends BaseActivity {
                 allEdges.add(edge);
 
                 if (accessible) {
-                    itemsEdgesList.add(edge.getNodeA().getId() + " <---> " + edge.getNodeB().getId() + ",     " + getString(R.string.accessibility_checkbox_text));
+                    itemsEdgesList.add(edge.getNodeA().getRoomName() + " <---> " + edge.getNodeB().getRoomName() + ",     " + getString(R.string.accessibility_checkbox_text));
                 } else {
-                    itemsEdgesList.add(edge.getNodeA().getId() + " <---> " + edge.getNodeB().getId());
+                    itemsEdgesList.add(edge.getNodeA().getRoomName() + " <---> " + edge.getNodeB().getRoomName());
                 }
                 edgesListAdapter.notifyDataSetChanged();
             }

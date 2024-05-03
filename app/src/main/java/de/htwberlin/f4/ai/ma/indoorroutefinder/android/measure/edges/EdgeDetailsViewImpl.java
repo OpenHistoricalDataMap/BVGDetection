@@ -25,7 +25,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.WKT;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * EdgeDetailsViewImpl class which implements the EdgeDetailsView Interface
@@ -189,33 +189,33 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
      * <p>
      * update the picture, coordinate, name
      *
-     * @param node start node
+     * @param room start node
      */
     @SuppressLint("SetTextI18n")
     @Override
-    public void updateStartNodeInfo(Node node) {
+    public void updateStartNodeInfo(Room room) {
         // update node name
-        startNodeIdView.setText(node.getId());
+        startNodeIdView.setText(room.getRoomName());
 
         // check if there is a picture saved for this node
-        if (node.getPicturePath() == null) {
+        if (room.getPicturePath() == null) {
             startNodeImage.setImageResource(R.drawable.unknown);
         } else {
-            Uri imageUri = Uri.parse(node.getPicturePath());
+            Uri imageUri = Uri.parse(room.getPicturePath());
             File image = new File(imageUri.getPath());
 
             if (image.exists()) {
                 //using glide to reduce ui lag
                 Glide.with(getContext())
-                        .load(node.getPicturePath())
+                        .load(room.getPicturePath())
                         .into(startNodeImage);
             }
         }
 
         // check if the node has coordinates
-        if (node.getCoordinates() != null && !node.getCoordinates().isEmpty()) {
+        if (room.getCoordinates() != null && !room.getCoordinates().isEmpty()) {
             // convert wkt coordinates to float[]
-            float[] nodeCoordinates = WKT.strToCoord(node.getCoordinates());
+            float[] nodeCoordinates = WKT.strToCoord(room.getCoordinates());
             // round the coordinates to fit ui
             float roundX = Math.round(nodeCoordinates[0] * 100.0) / 100.0f;
             float roundY = Math.round(nodeCoordinates[1] * 100.0) / 100.0f;
@@ -235,34 +235,34 @@ public class EdgeDetailsViewImpl extends BaseActivity implements EdgeDetailsView
      * <p>
      * update the picture, coordinate, name
      *
-     * @param node start node
+     * @param room start node
      */
     @SuppressLint("SetTextI18n")
     @Override
-    public void updateTargetNodeInfo(Node node) {
+    public void updateTargetNodeInfo(Room room) {
         // update name
-        targetNodeIdView.setText(node.getId());
+        targetNodeIdView.setText(room.getRoomName());
 
         // check if there is a picture
-        if (node.getPicturePath() == null) {
+        if (room.getPicturePath() == null) {
             targetNodeImage.setImageResource(R.drawable.unknown);
         } else {
-            Uri imageUri = Uri.parse(node.getPicturePath());
+            Uri imageUri = Uri.parse(room.getPicturePath());
             File image = new File(imageUri.getPath());
 
             if (image.exists()) {
                 //using glide to reduce ui lag
                 Glide.with(getContext())
-                        .load(node.getPicturePath())
+                        .load(room.getPicturePath())
                         .into(targetNodeImage);
             }
         }
 
 
         // check if the node has coordinates
-        if (node.getCoordinates() != null && !node.getCoordinates().isEmpty()) {
+        if (room.getCoordinates() != null && !room.getCoordinates().isEmpty()) {
             // convert wkt string to float[]
-            float[] nodeCoordinates = WKT.strToCoord(node.getCoordinates());
+            float[] nodeCoordinates = WKT.strToCoord(room.getCoordinates());
             // round coordinates
             float roundX = Math.round(nodeCoordinates[0] * 100.0) / 100.0f;
             float roundY = Math.round(nodeCoordinates[1] * 100.0) / 100.0f;

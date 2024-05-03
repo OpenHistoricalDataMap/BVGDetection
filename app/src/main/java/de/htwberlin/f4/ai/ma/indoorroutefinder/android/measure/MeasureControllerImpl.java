@@ -52,8 +52,8 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementFact
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementType;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.WKT;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirection;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.NodeFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.RoomFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
@@ -89,8 +89,8 @@ public class MeasureControllerImpl implements MeasureController {
     // because it's passed to IndoorMeasurement with settings
     private CalibrationData calibrationData;
 
-    private Node startNode;
-    private Node targetNode;
+    private Room startRoom;
+    private Room targetRoom;
 
     private List<StepData> stepList;
     private float[] coords = new float[3];
@@ -120,7 +120,7 @@ public class MeasureControllerImpl implements MeasureController {
     @Override
     public void onResume() {
         // check for selected nodes
-        handleNodeSelection(startNode, targetNode);
+        handleNodeSelection(startRoom, targetRoom);
         // get settings from default sharedpreferences and store it for later usage
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         lowpassFilterValue = Float.parseFloat(sharedPreferences.getString("pref_lowpass_value", "0.1"));
@@ -187,8 +187,8 @@ public class MeasureControllerImpl implements MeasureController {
         view.updateDistance(edgeDistance);
 
         // check if the startnode already got coordinates
-        if (!startNode.getCoordinates().isEmpty()) {
-            coords = WKT.strToCoord(startNode.getCoordinates());
+        if (!startRoom.getCoordinates().isEmpty()) {
+            coords = WKT.strToCoord(startRoom.getCoordinates());
             // update coordinates in view
             view.updateCoordinates(coords[0], coords[1], coords[2]);
         } else {
@@ -298,12 +298,12 @@ public class MeasureControllerImpl implements MeasureController {
      * check if start and target node are not identical,
      * deactive start / stop button if needed
      *
-     * @param node selected start node
+     * @param room selected start node
      */
     @Override
-    public void onStartNodeSelected(Node node) {
-        startNode = node;
-        handleNodeSelection(startNode, targetNode);
+    public void onStartNodeSelected(Room room) {
+        startRoom = room;
+        handleNodeSelection(startRoom, targetRoom);
     }
 
 
@@ -313,12 +313,12 @@ public class MeasureControllerImpl implements MeasureController {
      * check if start and target node are not identical,
      * deactive start / stop button if needed
      *
-     * @param node selected target node
+     * @param room selected target node
      */
     @Override
-    public void onTargetNodeSelected(Node node) {
-        targetNode = node;
-        handleNodeSelection(startNode, targetNode);
+    public void onTargetNodeSelected(Room room) {
+        targetRoom = room;
+        handleNodeSelection(startRoom, targetRoom);
     }
 
 
@@ -331,13 +331,13 @@ public class MeasureControllerImpl implements MeasureController {
     public void onEdgeDetailsClicked() {
         DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
         // make sure both nodes are not null, can happen with fresh app install
-        if (startNode != null && targetNode != null) {
-            Edge edge = EdgeFactory.createInstance(startNode, targetNode, false, 0);
+        if (startRoom != null && targetRoom != null) {
+            Edge edge = EdgeFactory.createInstance(startRoom, targetRoom, false, 0);
             // check if edge between nodes exists
             if (databaseHandler.checkIfEdgeExists(edge)) {
                 // load EdgeDetails View
                 BaseActivity activity = (BaseActivity) view;
-                activity.loadEdgeDetails(startNode.getId(), targetNode.getId());
+                activity.loadEdgeDetails(startRoom.getRoomName(), targetRoom.getRoomName());
             }
         }
     }
@@ -350,11 +350,11 @@ public class MeasureControllerImpl implements MeasureController {
      */
     @Override
     public void onStartNodeImageClicked() {
-        if (startNode != null && startNode.getPicturePath() != null) {
+        if (startRoom != null && startRoom.getPicturePath() != null) {
             // using activity from johann
             Intent intent = new Intent(view.getContext(), MaxPictureActivity.class);
-            intent.putExtra("picturePath", startNode.getPicturePath());
-            intent.putExtra("nodeID", startNode.getId());
+            intent.putExtra("picturePath", startRoom.getPicturePath());
+            intent.putExtra("nodeID", startRoom.getRoomName());
             BaseActivity activity = (BaseActivity) view;
             activity.startActivity(intent);
         }
@@ -368,11 +368,11 @@ public class MeasureControllerImpl implements MeasureController {
      */
     @Override
     public void onTargetNodeImageClicked() {
-        if (targetNode != null && targetNode.getPicturePath() != null) {
+        if (targetRoom != null && targetRoom.getPicturePath() != null) {
             // using activity from johann
             Intent intent = new Intent(view.getContext(), MaxPictureActivity.class);
-            intent.putExtra("picturePath", targetNode.getPicturePath());
-            intent.putExtra("nodeID", startNode.getId());
+            intent.putExtra("picturePath", targetRoom.getPicturePath());
+            intent.putExtra("nodeID", startRoom.getRoomName());
             BaseActivity activity = (BaseActivity) view;
             activity.startActivity(intent);
         }
@@ -490,27 +490,27 @@ public class MeasureControllerImpl implements MeasureController {
             DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
 
             // check if node from qr code already exists
-            Node node = databaseHandler.getNode(id);
+            Room room = databaseHandler.getNode(id);
 
             // node exists
-            if (node != null) {
+            if (room != null) {
                 // update existing node with coords from qr code
-                node.setCoordinates(coordinates);
-                databaseHandler.updateNode(node, node.getId());
+                room.setCoordinates(coordinates);
+                databaseHandler.updateNode(room, room.getRoomName());
                 // update ui
-                view.setStartNode(node);
+                view.setStartNode(room);
             }
             // new node
             else {
                 // create a new node
-                node = NodeFactory.createInstance(id, null, null, coordinates, null, "");
+                room = RoomFactory.createInstance(id, null, null, coordinates, null, "");
                 // save the node into database
-                databaseHandler.insertNode(node);
+                databaseHandler.insertNode(room);
                 // update ui
-                view.setStartNode(node);
+                view.setStartNode(room);
             }
 
-            Toast toast = Toast.makeText(view.getContext(), "Ort gefunden: " + node.getId(), Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(view.getContext(), "Ort gefunden: " + room.getRoomName(), Toast.LENGTH_SHORT);
             toast.show();
 
         } catch (JSONException e) {
@@ -535,16 +535,16 @@ public class MeasureControllerImpl implements MeasureController {
     public void onNullpointCheckedStartNode(boolean checked) {
 
         DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
-        if (startNode != null) {
+        if (startRoom != null) {
             if (checked) {
                 // store nullpoint flag in additional info field
-                startNode.setAdditionalInfo("NULLPOINT");
+                startRoom.setAdditionalInfo("NULLPOINT");
             } else {
-                startNode.setAdditionalInfo("");
+                startRoom.setAdditionalInfo("");
             }
-            databaseHandler.updateNode(startNode, startNode.getId());
+            databaseHandler.updateNode(startRoom, startRoom.getRoomName());
         }
-        handleNodeSelection(startNode, targetNode);
+        handleNodeSelection(startRoom, targetRoom);
     }
 
 
@@ -610,13 +610,13 @@ public class MeasureControllerImpl implements MeasureController {
         }
 
         // find node
-        Node node = makeFingerprint(multiMap);
+        Room room = makeFingerprint(multiMap);
         // if we found a node
-        if (node != null) {
+        if (room != null) {
             // node retrieved from wifi
-            Toast toast = Toast.makeText(view.getContext(), "Ort gefunden: " + node.getId(), Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(view.getContext(), "Ort gefunden: " + room.getRoomName(), Toast.LENGTH_SHORT);
             toast.show();
-            view.setStartNode(node);
+            view.setStartNode(room);
         }
         // if we didnt find a node
         else {
@@ -634,7 +634,7 @@ public class MeasureControllerImpl implements MeasureController {
      * @param multiMap map with scanresults
      * @return matching node
      */
-    private Node makeFingerprint(Multimap<String, Integer> multiMap) {
+    private Room makeFingerprint(Multimap<String, Integer> multiMap) {
         Set<String> bssid = multiMap.keySet();
         DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
         // final List<Node> actuallyNode = new ArrayList<>();
@@ -651,7 +651,8 @@ public class MeasureControllerImpl implements MeasureController {
             value = value / counter;
 
             List<AccessPointInformation> SsiList = new ArrayList<>();
-            AccessPointInformation signal = AccessPointInformationFactory.createInstance(s, value);
+            // TODO: change to real ssid
+            AccessPointInformation signal = AccessPointInformationFactory.createInstance(s, value, "");
             SsiList.add(signal);
             SignalSample signalSample = new SignalSample("", SsiList);
             signalSampleList.add(signalSample);
@@ -659,8 +660,8 @@ public class MeasureControllerImpl implements MeasureController {
         }
 
         LocationCalculator locationCalculator = LocationCalculatorFactory.createInstance(view.getContext());
-        String foundNode = locationCalculator.calculateNodeId(FingerprintFactory.createInstance("", signalSampleList));
-        Node result = null;
+        String foundNode = locationCalculator.calculateNodeId(FingerprintFactory.createInstance(signalSampleList));
+        Room result = null;
         if (foundNode != null) {
             result = databaseHandler.getNode(foundNode);
         }
@@ -708,7 +709,7 @@ public class MeasureControllerImpl implements MeasureController {
      * @param start  start node
      * @param target target node
      */
-    private void handleNodeSelection(Node start, Node target) {
+    private void handleNodeSelection(Room start, Room target) {
         // check if startnode and targetnode was selected
         if (start != null && target != null) {
             // update coordinates of startnode
@@ -739,7 +740,7 @@ public class MeasureControllerImpl implements MeasureController {
                     DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
 
                     // check if edge already exists
-                    Edge existingEdge = databaseHandler.getEdge(startNode, targetNode);
+                    Edge existingEdge = databaseHandler.getEdge(startRoom, targetRoom);
                     if (existingEdge != null) {
                         // if we found the correct edge update view with correct data
                         view.updateEdge(existingEdge);
@@ -771,13 +772,13 @@ public class MeasureControllerImpl implements MeasureController {
     /**
      * check if start and targetnodes are different depending on node id
      *
-     * @param node1 start node
-     * @param node2 target node
+     * @param room1 start node
+     * @param room2 target node
      * @return nodes different yes / no
      */
-    private boolean checkNodesDifferent(Node node1, Node node2) {
+    private boolean checkNodesDifferent(Room room1, Room room2) {
         // since id is unique, we just check for id
-        return !node1.getId().equals(node2.getId());
+        return !room1.getRoomName().equals(room2.getRoomName());
     }
 
 
@@ -803,7 +804,7 @@ public class MeasureControllerImpl implements MeasureController {
             if (calibrationData != null) {
                 // get coordinates from startnode and initialize measurement with those.
                 // if the node doesn't have any coordinates we initialize with 0,0,0
-                String startCoordinatesStr = startNode.getCoordinates();
+                String startCoordinatesStr = startRoom.getCoordinates();
                 if (startCoordinatesStr != null && !startCoordinatesStr.isEmpty()) {
                     float[] startCoordinates = WKT.strToCoord(startCoordinatesStr);
                     calibrationData.setCoordinates(startCoordinates);
@@ -993,8 +994,8 @@ public class MeasureControllerImpl implements MeasureController {
                     view.enableStart();
 
                     // check if the startnode already got coordinates
-                    if (!startNode.getCoordinates().isEmpty()) {
-                        coords = WKT.strToCoord(startNode.getCoordinates());
+                    if (!startRoom.getCoordinates().isEmpty()) {
+                        coords = WKT.strToCoord(startRoom.getCoordinates());
                         // update coordinates in view
                         view.updateCoordinates(coords[0], coords[1], coords[2]);
                     } else {
@@ -1021,8 +1022,8 @@ public class MeasureControllerImpl implements MeasureController {
     private void saveMeasurementData() {
         // make sure the target isnt the nullpoint, nullpoint coordinate change isnt allowed!
         // if its the nullpoint, we just save the edge data and dont update coordinates
-        if (!targetNode.getAdditionalInfo().contains("NULLPOINT")) {
-            targetNode.setCoordinates(WKT.coordToStr(coords));
+        if (!targetRoom.getAdditionalInfo().contains("NULLPOINT")) {
+            targetRoom.setCoordinates(WKT.coordToStr(coords));
             view.updateTargetNodeCoordinates(coords[0], coords[1], coords[2]);
         }
 
@@ -1033,12 +1034,12 @@ public class MeasureControllerImpl implements MeasureController {
         }
 
         DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
-        Edge edge = databaseHandler.getEdge(startNode, targetNode);
+        Edge edge = databaseHandler.getEdge(startRoom, targetRoom);
         boolean edgeFound;
 
         // if there is no edge between start and targetnode yet, we create a new one
         if (edge == null) {
-            edge = EdgeFactory.createInstance(startNode, targetNode, handycapFriendly, stepCoords, 0, "");
+            edge = EdgeFactory.createInstance(startRoom, targetRoom, handycapFriendly, stepCoords, 0, "");
             edgeFound = false;
         }
         // otherwise we update existing edge
@@ -1059,7 +1060,7 @@ public class MeasureControllerImpl implements MeasureController {
             databaseHandler.updateEdge(edge);
         }
         // update our targetnode
-        databaseHandler.updateNode(targetNode, targetNode.getId());
+        databaseHandler.updateNode(targetRoom, targetRoom.getRoomName());
         // update view with new edge data
         view.updateEdge(edge);
     }

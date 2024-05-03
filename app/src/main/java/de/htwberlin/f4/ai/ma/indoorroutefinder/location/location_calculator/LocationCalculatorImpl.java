@@ -21,7 +21,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.KNearestNei
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.KalmanFilter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.MovingAverage;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.RestructedNode;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 
@@ -62,8 +62,8 @@ class LocationCalculatorImpl implements LocationCalculator {
         String foundNode = null;
 
         // Load all nodes which have a fingerprint
-        List<Node> nodesWithFingerprint = new ArrayList<>();
-        for (Node n : databaseHandler.getAllNodes()) {
+        List<Room> nodesWithFingerprint = new ArrayList<>();
+        for (Room n : databaseHandler.getAllNodes()) {
             if (n.getFingerprint() != null) {
                 nodesWithFingerprint.add(n);
             }
@@ -112,9 +112,10 @@ class LocationCalculatorImpl implements LocationCalculator {
 
         for (SignalSample signalSample : signalSampleList) {
             for (AccessPointInformation accessPointInformation : signalSample.getAccessPointInformationList()) {
-                String macAdress = accessPointInformation.getMacAddress();
-                int signalStrength = accessPointInformation.getRssi();
-                AccessPointInformation aps = AccessPointInformationFactory.createInstance(macAdress, signalStrength);
+                String macAdress = accessPointInformation.getBSSID();
+                int signalStrength = accessPointInformation.getRSSI();
+                String ssid = accessPointInformation.getSSID();
+                AccessPointInformation aps = AccessPointInformationFactory.createInstance(macAdress, signalStrength, ssid);
                 accessPointInformations.add(aps);
             }
         }
@@ -125,22 +126,22 @@ class LocationCalculatorImpl implements LocationCalculator {
     /**
      * Rewrite the nodelist to restrucetd Nodes and delete weak MAC addresses
      *
-     * @param allNodes list of all nodes
+     * @param allRooms list of all nodes
      * @return restructed node list
      */
     @SuppressLint("CheckResult")
-    public List<RestructedNode> calculateNewNodeDataset(List<Node> allNodes) {
+    public List<RestructedNode> calculateNewNodeDataset(List<Room> allRooms) {
         List<String> macAddresses;
         int count;
 
         List<RestructedNode> restructedNodes = new ArrayList<>();
         Multimap<String, Double> multiMap;
 
-        for (Node node : allNodes) {
-            count = node.getFingerprint().getSignalSampleList().size();
+        for (Room room : allRooms) {
+            count = room.getFingerprint().getSignalSampleList().size();
             double minValue = (((double) 1 / (double) 3) * (double) count);
-            macAddresses = getMacAddresses(node);
-            multiMap = getMultiMap(node, macAddresses);
+            macAddresses = getMacAddresses(room);
+            multiMap = getMultiMap(room, macAddresses);
 
             //delete weak addresses
             for (String macAddress : macAddresses) {
@@ -156,7 +157,7 @@ class LocationCalculatorImpl implements LocationCalculator {
                 }
             }
             //fill restructed Nodes
-            RestructedNode restructedNode = new RestructedNode(node.getId(), multiMap);
+            RestructedNode restructedNode = new RestructedNode(room.getRoomName(), multiMap);
             restructedNodes.add(restructedNode);
         }
         return restructedNodes;
@@ -166,18 +167,18 @@ class LocationCalculatorImpl implements LocationCalculator {
     /**
      * Create a multimap with MAC address and signal strength values
      *
-     * @param node        input node
+     * @param room        input node
      * @param macAdresses list of MAC addresses
      * @return multimap with mac addresses and signal strengths
      */
     @SuppressLint("CheckResult")
-    public Multimap<String, Double> getMultiMap(Node node, List<String> macAdresses) {
+    public Multimap<String, Double> getMultiMap(Room room, List<String> macAdresses) {
         Multimap<String, Double> multiMap = ArrayListMultimap.create();
-        for (SignalSample signalInfo : node.getFingerprint().getSignalSampleList()) {
+        for (SignalSample signalInfo : room.getFingerprint().getSignalSampleList()) {
             HashSet<String> actuallyMacAdresses = new HashSet<>();
             for (AccessPointInformation accessPointInformation : signalInfo.getAccessPointInformationList()) {
-                multiMap.put(accessPointInformation.getMacAddress(), (double) accessPointInformation.getRssi());
-                actuallyMacAdresses.add(accessPointInformation.getMacAddress());
+                multiMap.put(accessPointInformation.getBSSID(), (double) accessPointInformation.getRSSI());
+                actuallyMacAdresses.add(accessPointInformation.getBSSID());
             }
             for (String checkMacAdress : macAdresses) {
                 if (!actuallyMacAdresses.contains(checkMacAdress)) {
@@ -192,14 +193,14 @@ class LocationCalculatorImpl implements LocationCalculator {
     /**
      * Get all mac addresses of a specific node
      *
-     * @param node the node
+     * @param room the node
      * @return list of unique MAC addresses
      */
-    public List<String> getMacAddresses(Node node) {
+    public List<String> getMacAddresses(Room room) {
         HashSet<String> macAdresses = new HashSet<>();
-        for (SignalSample signalSample : node.getFingerprint().getSignalSampleList()) {
+        for (SignalSample signalSample : room.getFingerprint().getSignalSampleList()) {
             for (AccessPointInformation accessPointInformation : signalSample.getAccessPointInformationList()) {
-                macAdresses.add(accessPointInformation.getMacAddress());
+                macAdresses.add(accessPointInformation.getBSSID());
             }
         }
         return new ArrayList<>(macAdresses);

@@ -3,7 +3,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.edges;
 import android.content.Context;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Node;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 
 /**
  * EdgeDetailsView Interface
@@ -19,10 +19,10 @@ public interface EdgeDetailsView {
     Context getContext();
 
     // update start node
-    void updateStartNodeInfo(Node node);
+    void updateStartNodeInfo(Room room);
 
     // update target node
-    void updateTargetNodeInfo(Node node);
+    void updateTargetNodeInfo(Room room);
 
     // update edge
     void updateEdgeInfo(Edge edge);
