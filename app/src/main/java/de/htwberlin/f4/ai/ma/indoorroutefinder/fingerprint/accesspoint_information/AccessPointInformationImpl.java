@@ -28,4 +28,12 @@ class AccessPointInformationImpl implements AccessPointInformation {
         return this.bssid;
     }
 
+    @Override
+    public String toString() {
+        return "AccessPointInformationImpl{" +
+                "bssid='" + bssid + '\'' +
+                ", rssi=" + rssi +
+                ", ssid='" + ssid + '\'' +
+                '}';
+    }
 }

@@ -16,4 +16,8 @@ public interface Fingerprint {
      * @return the list of SignalSamples
      */
     List<SignalSample> getSignalSampleList();
+
+    String getDeviceID();
+
+    void setDeviceID(String deviceID);
 }

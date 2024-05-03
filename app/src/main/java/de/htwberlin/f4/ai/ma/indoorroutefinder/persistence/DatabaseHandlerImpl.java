@@ -206,7 +206,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
             roomId = database.insert(TABLE_ROOMS, null, roomValues);
             cursor.close();
         }
-        
+
         // Check if the insertion was successful
         if (roomId != -1) {
             // Extract the fingerprint from the room
@@ -220,6 +220,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                     ContentValues sampleValues = new ContentValues();
                     sampleValues.put(TIMESTAMP, sample.getTimestamp());
                     sampleValues.put(ROOM_ID_FK, roomId); // Reference to the corresponding room in the rooms table
+                    sampleValues.put(DEVICE_ID, fingerprint.getDeviceID());
 
                     // Insert the SignalSample into the measurements table
                     long measurementId = database.insert(TABLE_MEASUREMENTS, null, sampleValues);

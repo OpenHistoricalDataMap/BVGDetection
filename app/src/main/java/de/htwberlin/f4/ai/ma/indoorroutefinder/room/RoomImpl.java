@@ -79,4 +79,11 @@ class RoomImpl implements Room {
         this.roomDatabaseID = roomDatabaseID;
     }
 
+    @Override
+    public String toString() {
+        return "RoomImpl{" +
+                "fingerprint=" + fingerprint +
+                ", roomName='" + roomName + '\'' +
+                '}';
+    }
 }

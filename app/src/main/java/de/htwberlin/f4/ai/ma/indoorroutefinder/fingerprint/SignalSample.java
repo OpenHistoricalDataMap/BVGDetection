@@ -37,4 +37,11 @@ public class SignalSample {
         return accessPointInformationList;
     }
 
+    @Override
+    public String toString() {
+        return "SignalSample{" +
+                "timestamp='" + timestamp + '\'' +
+                ", accessPointInformationList=" + accessPointInformationList +
+                '}';
+    }
 }

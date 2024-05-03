@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.deviceID.UniqueIDManager;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.AsyncResponse;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintTask;
@@ -72,6 +74,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.room.RoomFactory;
  */
 public class NodeRecordEditActivity extends BaseActivity implements AsyncResponse {
 
+    public static final String NODE_RECORD_EDIT_ACTIVITY = "NodeRecordEditActivity";
     private static final int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 3;
     private static final int CAM_REQUEST = 1;
     private final File sdCard = Environment.getExternalStorageDirectory();
@@ -116,12 +119,12 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FrameLayout contentFrameLayout = (FrameLayout) findViewById(R.id.content_frame);
+        FrameLayout contentFrameLayout = findViewById(R.id.content_frame);
         getLayoutInflater().inflate(R.layout.activity_node_record_edit, contentFrameLayout);
         setTitle(getString(R.string.title_activity_recordedit_rec));
 
 
-        permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA};
+        permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA};
 
         // Check permissions
         if (!hasPermissions(this, permissions)) {
@@ -135,23 +138,23 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         oldPicturePaths = new ArrayList<>();
 
 
-        recordButton = (ImageButton) findViewById(R.id.record_button);
-        captureButton = (ImageButton) findViewById(R.id.capture_button);
-        saveNodeButton = (ImageButton) findViewById(R.id.save_node_button);
-        showFingerprintButton = (ImageButton) findViewById(R.id.show_fingerprint_button);
-        cameraImageview = (ImageView) findViewById(R.id.camera_imageview);
-        descriptionEdittext = (EditText) findViewById(R.id.description_edittext);
-        nodeIdEdittext = (EditText) findViewById(R.id.record_id_edittext);
-        coordinatesEdittext = (EditText) findViewById(R.id.coordinates_edittext);
-        progressTextview = (TextView) findViewById(R.id.progress_textview);
-        initialWifiTextview = (TextView) findViewById(R.id.initial_wifi_textview);
-        initialWifiLabelTextview = (TextView) findViewById(R.id.initial_wifi_label_textview);
-        coordinatesLabelTextview = (TextView) findViewById(R.id.coordinates_label_textview_editmode);
-        infobox = (TextView) findViewById(R.id.infobox_record_edit);
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        minutesDropdown = (Spinner) findViewById(R.id.minutes_dropdown);
+        recordButton = findViewById(R.id.record_button);
+        captureButton = findViewById(R.id.capture_button);
+        saveNodeButton = findViewById(R.id.save_node_button);
+        showFingerprintButton = findViewById(R.id.show_fingerprint_button);
+        cameraImageview = findViewById(R.id.camera_imageview);
+        descriptionEdittext = findViewById(R.id.description_edittext);
+        nodeIdEdittext = findViewById(R.id.record_id_edittext);
+        coordinatesEdittext = findViewById(R.id.coordinates_edittext);
+        progressTextview = findViewById(R.id.progress_textview);
+        initialWifiTextview = findViewById(R.id.initial_wifi_textview);
+        initialWifiLabelTextview = findViewById(R.id.initial_wifi_label_textview);
+        coordinatesLabelTextview = findViewById(R.id.coordinates_label_textview_editmode);
+        infobox = findViewById(R.id.infobox_record_edit);
+        progressBar = findViewById(R.id.progress_bar);
+        minutesDropdown = findViewById(R.id.minutes_dropdown);
 
-        buttonsLayout = (RelativeLayout) findViewById(R.id.buttons_layout_rec_and_edit);
+        buttonsLayout = findViewById(R.id.buttons_layout_rec_and_edit);
 
         picturePath = null;
 
@@ -280,13 +283,13 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                     if (useSSIDfilter) {
                         ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
                     }
-                    fingerprintTask = new FingerprintTask(ssidFilterString, 60 * recordTime, wifiManager, false, progressBar, progressTextview, infobox);
+                    fingerprintTask = new FingerprintTask(ssidFilterString, 6 * recordTime, wifiManager, false, progressBar, progressTextview, infobox);
                 } else {
                     if (useSSIDfilter) {
                         ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
                     }
                     infobox.setText(getString(R.string.please_stay));
-                    fingerprintTask = new FingerprintTask(ssidFilterString, 60 * recordTime, wifiManager, false, progressBar, progressTextview);
+                    fingerprintTask = new FingerprintTask(ssidFilterString, 6 * recordTime, wifiManager, false, progressBar, progressTextview);
                 }
 
                 fingerprintTask.delegate = NodeRecordEditActivity.this;
@@ -345,6 +348,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     @Override
     public void processFinish(Fingerprint fp, int seconds) {
         fingerprint = fp;
+        fingerprint.setDeviceID(UniqueIDManager.getUniqueID(this));
         infobox.setText(R.string.record_and_edit_infobox);
 
         if (fp == null) {
@@ -426,6 +430,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 } else {
                     final Room room = RoomFactory.createInstance(roomName, nodeDescription, fingerprint, "", picPathToSave, "");
                     JSONWriter.writeJSON(room);
+                    Log.d(NODE_RECORD_EDIT_ACTIVITY, "Fingerprint: " + fingerprint.toString());
                     databaseHandler.insertOrUpdateRoom(room);
                     progressStatus = 0;
                     progressTextview.setText(String.valueOf(progressStatus));
