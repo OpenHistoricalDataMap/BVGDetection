@@ -48,7 +48,7 @@
         android:id="@+id/fragment_record_cb_accelerometer_linear"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
-        android:text="Accelerometer Linear" />/>
+        android:text="Accelerometer Linear" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -84,7 +84,7 @@
         android:id="@+id/fragment_record_cb_gravity"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
-        android:text="Gravity" />/>
+        android:text="Gravity" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -120,7 +120,7 @@
         android:id="@+id/fragment_record_cb_gyroscope"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
-        android:text="Gyroscope" />/>
+        android:text="Gyroscope" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -156,7 +156,7 @@
         android:id="@+id/fragment_record_cb_gyroscope_uncalibrated"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
-        android:text="Gyroscope Uncalibrated" />/>
+        android:text="Gyroscope Uncalibrated" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -191,7 +191,7 @@
         android:id="@+id/fragment_record_cb_magneticfield"
         android:layout_width="wrap_content"
         android:layout_height="19dp"
-        android:text="Magnetic Field" />/>
+        android:text="Magnetic Field" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -234,7 +234,7 @@
             android:layout_width="0dp"
             android:layout_height="19dp"
             android:layout_weight="0.4"
-            android:text="CompassFusion" />/>
+            android:text="CompassFusion" />
 
         <TextView
             android:id="@+id/fragment_record_compass_fusion"
@@ -256,7 +256,7 @@
             android:layout_width="0dp"
             android:layout_height="19dp"
             android:layout_weight="0.4"
-            android:text="CompassSimple" />/>
+            android:text="CompassSimple" />
 
         <TextView
             android:id="@+id/fragment_record_compass_simple"
@@ -278,7 +278,7 @@
             android:layout_width="0dp"
             android:layout_height="19dp"
             android:layout_weight="0.5"
-            android:text="Pressure" />/>
+            android:text="Pressure" />
 
         <TextView
             android:id="@+id/fragment_record_barometer"
