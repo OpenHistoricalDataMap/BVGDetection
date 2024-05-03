@@ -20,6 +20,11 @@ android {
     }
     namespace 'de.htwberlin.f4.ai.ma.indoorroutefinder'
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
 //    tasks.withType(JavaCompile).tap {
 //        configureEach {
 //            options.compilerArgs << "-Xlint:deprecation"
@@ -40,8 +45,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:20.1.3'
     testImplementation 'junit:junit:4.13.2'
 
-    implementation 'com.github.bumptech.glide:glide:4.12.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
 }
