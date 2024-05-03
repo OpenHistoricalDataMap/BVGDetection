@@ -31,10 +31,10 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintTask;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculator;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculatorFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.nodelist.NodeListAdapter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner.WifiScanner;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.wifi_scanner.WifiScannerFactory;
 
@@ -99,7 +99,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        allRooms = databaseHandler.getAllNodes();
+        allRooms = databaseHandler.getAllRooms();
 
         useSSIDfilter = sharedPreferences.getBoolean("use_ssid_filter", false);
         defaultWifi = sharedPreferences.getString("default_wifi_network", null);
@@ -200,13 +200,13 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
                     float totalDistance = 0;
                     for (int i = 0; i < route.size(); i++) {
                         nodeNames.add(route.get(i));
-                        nodeDescriptions.add(databaseHandler.getNode(route.get(i)).getDescription());
-                        nodePicturePaths.add(databaseHandler.getNode(route.get(i)).getPicturePath());
+                        nodeDescriptions.add(databaseHandler.getRoom(route.get(i)).getDescription());
+                        nodePicturePaths.add(databaseHandler.getRoom(route.get(i)).getPicturePath());
 
                         // Add distance (weight) to the results list
                         if (i + 1 < route.size()) {
-                            Room roomA = databaseHandler.getNode(route.get(i));
-                            Room roomB = databaseHandler.getNode(route.get(i + 1));
+                            Room roomA = databaseHandler.getRoom(route.get(i));
+                            Room roomB = databaseHandler.getRoom(route.get(i + 1));
 
                             Edge e = databaseHandler.getEdge(roomA, roomB);
                             nodeNames.add("\t" + e.getWeight() + " m");

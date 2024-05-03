@@ -3,7 +3,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure;
 import android.content.Context;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * MeasureView Interface

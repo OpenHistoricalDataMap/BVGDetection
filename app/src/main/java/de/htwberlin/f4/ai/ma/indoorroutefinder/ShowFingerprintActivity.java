@@ -7,9 +7,9 @@ import android.widget.FrameLayout;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.ShowFingerprintAdapter;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * Created by Johann Winter
@@ -28,7 +28,7 @@ public class ShowFingerprintActivity extends BaseActivity {
         String nodeID = (String) intent.getExtras().get("nodeID");
 
         if (nodeID != null) {
-            Room room = databaseHandler.getNode(nodeID);
+            Room room = databaseHandler.getRoom(nodeID);
             setTitle(room.getRoomName());
             ShowFingerprintAdapter adapter = new ShowFingerprintAdapter(this, room.getFingerprint());
             fingerprintListview.setAdapter(adapter);

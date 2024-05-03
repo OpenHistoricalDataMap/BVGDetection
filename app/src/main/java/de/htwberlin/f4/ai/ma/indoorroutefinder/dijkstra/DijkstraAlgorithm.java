@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * Created by Johann Winter

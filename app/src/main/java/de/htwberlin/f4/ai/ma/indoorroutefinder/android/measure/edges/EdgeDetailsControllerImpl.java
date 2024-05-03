@@ -4,9 +4,9 @@ import android.app.AlertDialog;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * EdgeDetailsControllerImpl Class which implements the EdgeDetailsController Interface
@@ -52,8 +52,8 @@ public class EdgeDetailsControllerImpl implements EdgeDetailsController {
     @Override
     public void setNodes(String startNodeId, String targetNodeId) {
         DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
-        startRoom = databaseHandler.getNode(startNodeId);
-        targetRoom = databaseHandler.getNode(targetNodeId);
+        startRoom = databaseHandler.getRoom(startNodeId);
+        targetRoom = databaseHandler.getRoom(targetNodeId);
     }
 
 

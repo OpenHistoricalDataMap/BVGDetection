@@ -21,9 +21,9 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.KNearestNei
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.KalmanFilter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.MovingAverage;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations.RestructedNode;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * Created by Johann Winter
@@ -63,7 +63,7 @@ class LocationCalculatorImpl implements LocationCalculator {
 
         // Load all nodes which have a fingerprint
         List<Room> nodesWithFingerprint = new ArrayList<>();
-        for (Room n : databaseHandler.getAllNodes()) {
+        for (Room n : databaseHandler.getAllRooms()) {
             if (n.getFingerprint() != null) {
                 nodesWithFingerprint.add(n);
             }

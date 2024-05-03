@@ -1,7 +1,7 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure;
 
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * MeasureController Interface

@@ -31,9 +31,9 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.barcode.BarcodeCaptureActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.WKT;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 
 /**
@@ -92,7 +92,7 @@ public class MeasureViewImpl extends BaseActivity implements MeasureView {
 
         // get all nodes from database
         DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(getContext());
-        List<Room> tmpRoomList = databaseHandler.getAllNodes();
+        List<Room> tmpRoomList = databaseHandler.getAllRooms();
 
         // save the node ids
         for (Room room : tmpRoomList) {

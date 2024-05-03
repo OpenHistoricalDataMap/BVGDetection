@@ -10,10 +10,10 @@ import java.io.File;
 import java.util.ArrayList;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.nodelist.NodeListAdapter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 
 /**
@@ -76,7 +76,7 @@ public class NodeListActivity extends BaseActivity {
                                 File imageFile = new File(allRooms.get(position).getPicturePath());
                                 imageFile.delete();
                             }
-                            databaseHandler.deleteNode(allRooms.get(position));
+                            databaseHandler.deleteRoom(allRooms.get(position));
                             loadDbData();
                         })
                         .setNegativeButton(android.R.string.no, (dialog, which) -> {
@@ -110,7 +110,7 @@ public class NodeListActivity extends BaseActivity {
         nodePicturePaths.clear();
         allRooms.clear();
 
-        allRooms.addAll(databaseHandler.getAllNodes());
+        allRooms.addAll(databaseHandler.getAllRooms());
 
         // If no node is available
         if (allRooms.isEmpty()) {

@@ -40,12 +40,12 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.AsyncResponse;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintTask;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.RoomFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.FileUtilities;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.JSON.JSONWriter;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.RoomFactory;
 
 
 /**
@@ -191,7 +191,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
             updateMode = true;
             setTitle(getString(R.string.title_activity_recordedit_edit));
             oldNodeId = (String) intent.getExtras().get("nodeId");
-            roomToUpdate = databaseHandler.getNode(oldNodeId);
+            roomToUpdate = databaseHandler.getRoom(oldNodeId);
             nodeIdEdittext.setText(roomToUpdate.getRoomName());
             descriptionEdittext.setText(roomToUpdate.getDescription());
             picturePath = roomToUpdate.getPicturePath();
@@ -240,7 +240,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                             File imageFile = new File(roomToUpdate.getPicturePath());
                             imageFile.delete();
                         }
-                        databaseHandler.deleteNode(roomToUpdate);
+                        databaseHandler.deleteRoom(roomToUpdate);
 
                         finish();
                         Intent intent1 = new Intent(context, NodeListActivity.class);
@@ -264,7 +264,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         recordButton.setOnClickListener(v -> {
             if (nodeIdEdittext.getText().toString().isEmpty()) {
                 Toast.makeText(getApplicationContext(), getString(R.string.please_enter_node_name), Toast.LENGTH_SHORT).show();
-            } else if (databaseHandler.checkIfNodeExists(nodeIdEdittext.getText().toString()) && !updateMode) {
+            } else if (databaseHandler.checkIfRoomExists(nodeIdEdittext.getText().toString()) && !updateMode) {
                 Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_SHORT).show();
             } else {
                 recordButton.setEnabled(false);
@@ -398,7 +398,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
             final String nodeID = nodeIdEdittext.getText().toString();
             final String nodeDescription = descriptionEdittext.getText().toString();
 
-            if (databaseHandler.checkIfNodeExists(nodeIdEdittext.getText().toString())) {
+            if (databaseHandler.checkIfRoomExists(nodeIdEdittext.getText().toString())) {
                 Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_LONG).show();
             } else {
 
@@ -411,7 +411,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                                 final Room room = RoomFactory.createInstance(nodeID, nodeDescription, null, "", picPathToSave, "");
                                 JSONWriter.writeJSON(room);
-                                databaseHandler.insertNode(room);
+                                databaseHandler.insertRoom(room);
                                 Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
                                 deleteOldPictures();
                                 resetUiElements();
@@ -426,7 +426,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 } else {
                     final Room room = RoomFactory.createInstance(nodeID, nodeDescription, fingerprint, "", picPathToSave, "");
                     JSONWriter.writeJSON(room);
-                    databaseHandler.insertNode(room);
+                    databaseHandler.insertRoom(room);
                     progressStatus = 0;
                     progressTextview.setText(String.valueOf(progressStatus));
                     progressBar.setProgress(progressStatus);
@@ -450,7 +450,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 // old id == new id -> update.
                 saveUpdatedNode();
             } else {
-                if (databaseHandler.checkIfNodeExists(nodeIdEdittext.getText().toString())) {
+                if (databaseHandler.checkIfRoomExists(nodeIdEdittext.getText().toString())) {
                     Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_LONG).show();
                 } else {
                     saveUpdatedNode();
@@ -486,7 +486,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
             if (roomToUpdate.getFingerprint() != null) {
                 final Room room = RoomFactory.createInstance(nodeID, nodeDescription, roomToUpdate.getFingerprint(), coordinates, picPathToSave, roomToUpdate.getAdditionalInfo());
                 JSONWriter.writeJSON(room);
-                databaseHandler.updateNode(room, oldNodeId);
+                databaseHandler.updateRoom(room, oldNodeId);
                 Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
 
                 finish();
@@ -504,7 +504,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                         .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                             final Room room = RoomFactory.createInstance(nodeID, nodeDescription, null, coordinates, picPathToSave, "");
                             JSONWriter.writeJSON(room);
-                            databaseHandler.updateNode(room, oldNodeId);
+                            databaseHandler.updateRoom(room, oldNodeId);
                             Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
                             deleteOldPictures();
                             resetUiElements();
@@ -519,7 +519,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         } else {
             final Room room = RoomFactory.createInstance(nodeID, nodeDescription, fingerprint, coordinates, picPathToSave, roomToUpdate.getAdditionalInfo());
             JSONWriter.writeJSON(room);
-            databaseHandler.updateNode(room, oldNodeId);
+            databaseHandler.updateRoom(room, oldNodeId);
             Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
             deleteOldPictures();
             finish();

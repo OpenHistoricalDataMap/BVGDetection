@@ -52,10 +52,10 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementFact
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.IndoorMeasurementType;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.WKT;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.measurement.modules.stepdirection.StepDirection;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.RoomFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.RoomFactory;
 
 /**
  * MeasureControllerImpl Class which implements the MeasureController Interface
@@ -490,13 +490,13 @@ public class MeasureControllerImpl implements MeasureController {
             DatabaseHandler databaseHandler = DatabaseHandlerFactory.getInstance(view.getContext());
 
             // check if node from qr code already exists
-            Room room = databaseHandler.getNode(id);
+            Room room = databaseHandler.getRoom(id);
 
             // node exists
             if (room != null) {
                 // update existing node with coords from qr code
                 room.setCoordinates(coordinates);
-                databaseHandler.updateNode(room, room.getRoomName());
+                databaseHandler.updateRoom(room, room.getRoomName());
                 // update ui
                 view.setStartNode(room);
             }
@@ -505,7 +505,7 @@ public class MeasureControllerImpl implements MeasureController {
                 // create a new node
                 room = RoomFactory.createInstance(id, null, null, coordinates, null, "");
                 // save the node into database
-                databaseHandler.insertNode(room);
+                databaseHandler.insertRoom(room);
                 // update ui
                 view.setStartNode(room);
             }
@@ -542,7 +542,7 @@ public class MeasureControllerImpl implements MeasureController {
             } else {
                 startRoom.setAdditionalInfo("");
             }
-            databaseHandler.updateNode(startRoom, startRoom.getRoomName());
+            databaseHandler.updateRoom(startRoom, startRoom.getRoomName());
         }
         handleNodeSelection(startRoom, targetRoom);
     }
@@ -663,7 +663,7 @@ public class MeasureControllerImpl implements MeasureController {
         String foundNode = locationCalculator.calculateNodeId(FingerprintFactory.createInstance(signalSampleList));
         Room result = null;
         if (foundNode != null) {
-            result = databaseHandler.getNode(foundNode);
+            result = databaseHandler.getRoom(foundNode);
         }
 
         return result;
@@ -1060,7 +1060,7 @@ public class MeasureControllerImpl implements MeasureController {
             databaseHandler.updateEdge(edge);
         }
         // update our targetnode
-        databaseHandler.updateNode(targetRoom, targetRoom.getRoomName());
+        databaseHandler.updateRoom(targetRoom, targetRoom.getRoomName());
         // update view with new edge data
         view.updateEdge(edge);
     }

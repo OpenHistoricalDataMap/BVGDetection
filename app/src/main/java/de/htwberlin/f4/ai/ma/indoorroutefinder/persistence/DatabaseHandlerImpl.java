@@ -1,5 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.persistence;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,9 +21,12 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.EdgeFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.RoomFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.SignalSample;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformationFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.JSON.JSONConverter;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.RoomFactory;
 
 
 /**
@@ -40,15 +44,15 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     public static final String DATABASE_HANDLER_IMPL = "DatabaseHandlerImpl";
     private static final String DATABASE_NAME = "indoor_data.db";
     private static final int DATABASE_VERSION = 1;
-    private static final String NODES_TABLE = "nodes";
+    //    private static final String NODES_TABLE = "nodes";
     private static final String EDGES_TABLE = "edges";
-    private static final String NODE_ID = "id";
-    private static final String NODE_DESCRIPTION = "description";
-    private static final String NODE_WIFI_NAME = "wifi_name";
-    private static final String NODE_SIGNALINFORMATIONLIST = "signalinformationlist";
-    private static final String NODE_COORDINATES = "coordinates";
-    private static final String NODE_PICTURE_PATH = "picture_path";
-    private static final String NODE_ADDITIONAL_INFO = "additional_info";
+    //    private static final String NODE_ROOM_NAME = "id";
+//    private static final String NODE_DESCRIPTION = "description"; // DONE
+//    private static final String NODE_WIFI_NAME = "wifi_name";
+//    private static final String NODE_SIGNALINFORMATIONLIST = "signalinformationlist";
+//    private static final String NODE_COORDINATES = "coordinates"; // DONE
+//    private static final String NODE_PICTURE_PATH = "picture_path"; // DONE
+//    private static final String NODE_ADDITIONAL_INFO = "additional_info"; // DONE
     private static final String EDGE_ID = "id";
     private static final String EDGE_NODE_A = "nodeA";
     private static final String EDGE_NODE_B = "nodeB";
@@ -56,6 +60,27 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     private static final String EDGE_STEPLIST = "steplist";
     private static final String EDGE_WEIGHT = "weight";
     private static final String EDGE_ADDITIONAL_INFO = "additional_info";
+    private static final String TABLE_ROOMS = "rooms";
+    private static final String ROOM_ID = "room_id";
+    private static final String ROOM_NAME = "room_name";
+    private static final String ROOM_DESCRIPTION = "description";
+    private static final String ROOM_COORDINATES = "coordinates";
+    private static final String ROOM_PICTURE_PATH = "picture_path";
+    private static final String ROOM_ADDITIONAL_INFO = "additional_info";
+    // Tabelle measurements
+    private static final String TABLE_MEASUREMENTS = "measurements";
+    private static final String MEASUREMENT_ID = "measurement_id";
+    private static final String TIMESTAMP = "timestamp";
+    private static final String ROOM_ID_FK = "room_id";
+    private static final String DEVICE_ID = "device_id";
+    // Tabelle routers
+    private static final String TABLE_ROUTERS = "routers";
+    private static final String ROUTER_ID = "router_id";
+    private static final String SSID = "ssid";
+    private static final String BSSID = "bssid";
+    // Tabelle measurement_router
+    private static final String TABLE_MEASUREMENT_ROUTER = "measurement_router";
+    private static final String RSSI = "signal_strength";
     private final JSONConverter jsonConverter = new JSONConverter();
     private final Context context;
 
@@ -70,15 +95,53 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
+        // Create the rooms table
+        String createRoomsTableQuery = "CREATE TABLE " + TABLE_ROOMS + " (" +
+                ROOM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                ROOM_COORDINATES + " VARCHAR(255)," +
+                ROOM_DESCRIPTION + " VARCHAR(255)," +
+                ROOM_PICTURE_PATH + " VARCHAR(255)," +
+                ROOM_ADDITIONAL_INFO + " VARCHAR(255)," +
+                ROOM_NAME + " VARCHAR(255) UNIQUE)";
+
+        // Create the measurements table
+        String createMeasurementsTableQuery = "CREATE TABLE " + TABLE_MEASUREMENTS + " (" +
+                MEASUREMENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                TIMESTAMP + " TIMESTAMP NOT NULL," +
+                DEVICE_ID + " VARCHAR(255) NOT NULL," +
+                ROOM_ID_FK + " INT NOT NULL," +
+                "FOREIGN KEY(" + ROOM_ID_FK + ") REFERENCES " + TABLE_ROOMS + "(" + ROOM_ID + "))";
+
+        // Create the routers table
+        String createRoutersTableQuery = "CREATE TABLE " + TABLE_ROUTERS + " (" +
+                ROUTER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                SSID + " VARCHAR(255)," +
+                BSSID + " VARCHAR(255) UNIQUE)";
+
+        // Create the measurement_router table
+        String createMeasurementRouterTableQuery = "CREATE TABLE " + TABLE_MEASUREMENT_ROUTER + " (" +
+                MEASUREMENT_ID + " INT," +
+                ROUTER_ID + " INT," +
+                RSSI + " INT," +
+                "PRIMARY KEY (" + MEASUREMENT_ID + ", " + ROUTER_ID + ")," +
+                "FOREIGN KEY(" + MEASUREMENT_ID + ") REFERENCES " + TABLE_MEASUREMENTS + "(" + MEASUREMENT_ID + ")," +
+                "FOREIGN KEY(" + ROUTER_ID + ") REFERENCES " + TABLE_ROUTERS + "(" + ROUTER_ID + "))";
+
+        // Execute the queries
+        db.execSQL(createRoomsTableQuery);
+        db.execSQL(createMeasurementsTableQuery);
+        db.execSQL(createRoutersTableQuery);
+        db.execSQL(createMeasurementRouterTableQuery);
+
         // Nodes table
-        String createNodeTableQuery = "CREATE TABLE " + NODES_TABLE + " (" +
-                NODE_ID + " TEXT PRIMARY KEY," +
-                NODE_DESCRIPTION + " TEXT," +
-                NODE_WIFI_NAME + " TEXT, " +
-                NODE_SIGNALINFORMATIONLIST + " TEXT," +
-                NODE_COORDINATES + " TEXT," +
-                NODE_PICTURE_PATH + " TEXT," +
-                NODE_ADDITIONAL_INFO + " TEXT)";
+//        String createNodeTableQuery = "CREATE TABLE " + NODES_TABLE + " (" +
+//                NODE_ROOM_NAME + " TEXT PRIMARY KEY," +
+//                NODE_DESCRIPTION + " TEXT," +
+//                NODE_WIFI_NAME + " TEXT, " +
+//                NODE_SIGNALINFORMATIONLIST + " TEXT," +
+//                NODE_COORDINATES + " TEXT," +
+//                NODE_PICTURE_PATH + " TEXT," +
+//                NODE_ADDITIONAL_INFO + " TEXT)";
 
         // Edges table
         String createEdgeTableQuery = "CREATE TABLE " + EDGES_TABLE + " (" +
@@ -91,7 +154,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                 EDGE_ADDITIONAL_INFO + " TEXT);";
 
 
-        db.execSQL(createNodeTableQuery);
+//        db.execSQL(createNodeTableQuery);
         db.execSQL(createEdgeTableQuery);
     }
 
@@ -115,69 +178,130 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     /**
      * Insert a new Node
      *
-     * @param room the node to insert
+     * @param room the room to insert
      */
-    public void insertNode(Room room) {
+    @SuppressLint("Range")
+    @Override
+    public void insertRoom(Room room) {
+        // Open the database for write operations
         SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
 
-        values.put(NODE_ID, room.getRoomName());
-        values.put(NODE_DESCRIPTION, room.getDescription());
+        // Check if a room with the same name already exists
+        Cursor cursor = database.rawQuery("SELECT " + ROOM_ID + " FROM " + TABLE_ROOMS + " WHERE " + ROOM_NAME + " = ?", new String[]{room.getRoomName()});
+        if (cursor.getCount() > 0) {
+            // Close the cursor and the database and log an error
+            cursor.close();
+            database.close();
+            Log.d("INSERT_ROOM", "Room with name " + room.getRoomName() + " already exists in the database.");
+            return;
+        }
+        cursor.close();
 
-        // If the Node has a fingerprint
-        if (room.getFingerprint() != null) {
-//            values.put(NODE_WIFI_NAME, room.getFingerprint().getSsid());
-            values.put(NODE_SIGNALINFORMATIONLIST, jsonConverter.convertSignalSampleListToJSON(room.getFingerprint().getSignalSampleList()));
+        // Create a ContentValues object to store the column values of the room
+        ContentValues roomValues = new ContentValues();
+        roomValues.put(ROOM_NAME, room.getRoomName());
+        roomValues.put(ROOM_DESCRIPTION, room.getDescription());
+        roomValues.put(ROOM_COORDINATES, room.getCoordinates());
+        roomValues.put(ROOM_PICTURE_PATH, room.getPicturePath());
+        roomValues.put(ROOM_ADDITIONAL_INFO, room.getAdditionalInfo());
+
+        // Insert the new room into the rooms table
+        long roomId = database.insert(TABLE_ROOMS, null, roomValues);
+
+        // Check if the insertion was successful
+        if (roomId != -1) {
+            // Extract the fingerprint from the room
+            Fingerprint fingerprint = room.getFingerprint();
+
+            // Check if the fingerprint is present
+            if (fingerprint != null) {
+                // Iterate through the SignalSamples of the fingerprint
+                for (SignalSample sample : fingerprint.getSignalSampleList()) {
+                    // Create a ContentValues object to store the column values of the SignalSample
+                    ContentValues sampleValues = new ContentValues();
+                    sampleValues.put(TIMESTAMP, sample.getTimestamp());
+                    sampleValues.put(ROOM_ID_FK, roomId); // Reference to the corresponding room in the rooms table
+
+                    // Insert the SignalSample into the measurements table
+                    long measurementId = database.insert(TABLE_MEASUREMENTS, null, sampleValues);
+
+                    // Check if the insertion was successful
+                    if (measurementId != -1) {
+                        // Iterate through the AccessPointInformation of the SignalSample
+                        for (AccessPointInformation accessPoint : sample.getAccessPointInformationList()) {
+                            // Check if the router already exists in the database
+                            cursor = database.rawQuery("SELECT " + ROUTER_ID + " FROM " + TABLE_ROUTERS + " WHERE " + BSSID + " = ?", new String[]{accessPoint.getBSSID()});
+                            long routerId;
+                            if (cursor.moveToFirst()) {
+                                // The router already exists, use the existing ID
+                                routerId = cursor.getLong(cursor.getColumnIndex(ROUTER_ID));
+                            } else {
+                                // The router does not exist yet, insert it into the routers table
+                                ContentValues routerValues = new ContentValues();
+                                routerValues.put(BSSID, accessPoint.getBSSID());
+                                routerValues.put(SSID, accessPoint.getSSID());
+                                routerId = database.insert(TABLE_ROUTERS, null, routerValues);
+                            }
+                            cursor.close();
+
+                            // Insert the relationship between the SignalSample and the router into the measurement_router table
+                            ContentValues measurementRouterValues = new ContentValues();
+                            measurementRouterValues.put(MEASUREMENT_ID, measurementId);
+                            measurementRouterValues.put(ROUTER_ID, routerId);
+                            measurementRouterValues.put(RSSI, accessPoint.getRSSI());
+                            database.insert(TABLE_MEASUREMENT_ROUTER, null, measurementRouterValues);
+                        }
+                    }
+                }
+            }
         }
 
-        values.put(NODE_COORDINATES, room.getCoordinates());
-        values.put(NODE_PICTURE_PATH, room.getPicturePath());
-        values.put(NODE_ADDITIONAL_INFO, room.getAdditionalInfo());
-
-        database.insert(NODES_TABLE, null, values);
-
-        Log.d("DB: insert_node:id:", room.getRoomName());
-
+        // Close the database
         database.close();
     }
 
+
     /**
-     * Update a Node
+     * Update the information for a room (not the fingerprints!)
      *
-     * @param room      the new Node
-     * @param oldNodeId the original nodeID (name) which will be changed
+     * @param room        the new Node
+     * @param oldRoomName the original nodeID (name) which will be changed
      */
-    public void updateNode(Room room, String oldNodeId) {
+    public void updateRoom(Room room, String oldRoomName) {
 
         // At first, update Edges which contain the updated Node
         for (Edge e : getAllEdges()) {
-            if (e.getNodeA().getRoomName().equals(oldNodeId)) {
+            if (e.getNodeA().getRoomName().equals(oldRoomName)) {
                 updateEdge(e, EDGE_NODE_A, room.getRoomName());
-            } else if (e.getNodeB().getRoomName().equals(oldNodeId)) {
+            } else if (e.getNodeB().getRoomName().equals(oldRoomName)) {
                 updateEdge(e, EDGE_NODE_B, room.getRoomName());
             }
         }
 
+        // Open the database for write operations
         SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
 
-        contentValues.put(NODE_ID, room.getRoomName());
-        contentValues.put(NODE_DESCRIPTION, room.getDescription());
-        contentValues.put(NODE_COORDINATES, room.getCoordinates());
-        contentValues.put(NODE_ADDITIONAL_INFO, room.getAdditionalInfo());
+        // Create a ContentValues object to store the updated column values of the room
+        ContentValues updatedValues = new ContentValues();
+        updatedValues.put(ROOM_NAME, room.getRoomName());
+        updatedValues.put(ROOM_DESCRIPTION, room.getDescription());
+        updatedValues.put(ROOM_COORDINATES, room.getCoordinates());
+        updatedValues.put(ROOM_PICTURE_PATH, room.getPicturePath());
+        updatedValues.put(ROOM_ADDITIONAL_INFO, room.getAdditionalInfo());
 
-        // If the Node has a fingerprint
-        if (room.getFingerprint() != null) {
-//            contentValues.put(NODE_WIFI_NAME, room.getFingerprint().getSsid());
-            contentValues.put(NODE_SIGNALINFORMATIONLIST, jsonConverter.convertSignalSampleListToJSON(room.getFingerprint().getSignalSampleList()));
+        // Update the room data in the rooms table
+        int rowsAffected = database.update(TABLE_ROOMS, updatedValues, ROOM_NAME + " = ?", new String[]{oldRoomName});
+
+        // Check if the update was successful
+        if (rowsAffected > 0) {
+            // Log success message
+            Log.d("UPDATE_ROOM", "Room with name " + oldRoomName + " updated successfully.");
+        } else {
+            // Log error message if no rows were affected (room not found)
+            Log.d("UPDATE_ROOM", "Room with name " + oldRoomName + " not found in the database.");
         }
 
-        contentValues.put(NODE_PICTURE_PATH, room.getPicturePath());
-
-        Log.d("DB: update_node: id:", room.getRoomName());
-
-        database.update(NODES_TABLE, contentValues, NODE_ID + "='" + oldNodeId + "'", null);
-
+        // Close the database
         database.close();
     }
 
@@ -187,60 +311,155 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      *
      * @return a list of all Nodes
      */
-    public List<Room> getAllNodes() {
+    @SuppressLint("Range")
+    @Override
+    public List<Room> getAllRooms() {
         List<Room> allRooms = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + NODES_TABLE;
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
 
+        // Open the database for read operations
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        // Query to retrieve all rooms from the rooms table
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_ROOMS, null);
+
+        // Iterate through the cursor to retrieve each room
         if (cursor.moveToFirst()) {
             do {
-                Fingerprint fingerprint;
+                // Retrieve room data from the cursor
+                String roomName = cursor.getString(cursor.getColumnIndex(ROOM_NAME));
+                String description = cursor.getString(cursor.getColumnIndex(ROOM_DESCRIPTION));
+                String coordinates = cursor.getString(cursor.getColumnIndex(ROOM_COORDINATES));
+                String picturePath = cursor.getString(cursor.getColumnIndex(ROOM_PICTURE_PATH));
+                String additionalInfo = cursor.getString(cursor.getColumnIndex(ROOM_ADDITIONAL_INFO));
 
-                // Check if fingerprintImpl exists, else create null object for fingerprintImpl
-                if (cursor.getString(3) == null) {
-                    fingerprint = null;
-                } else {
-                    fingerprint = FingerprintFactory.createInstance(jsonConverter.convertJsonToSignalSampleList(cursor.getString(3)));
+                // Query to retrieve the fingerprint data for the current room
+                Cursor fingerprintCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENTS + " WHERE " + ROOM_ID_FK + " = ?", new String[]{String.valueOf(roomName)});
+
+                // Create a list to store the SignalSamples for the fingerprint
+                List<SignalSample> signalSamples = new ArrayList<>();
+
+                // Iterate through the fingerprint cursor to retrieve SignalSamples
+                if (fingerprintCursor.moveToFirst()) {
+                    do {
+                        // Retrieve SignalSample data from the fingerprint cursor
+                        String timestamp = fingerprintCursor.getString(fingerprintCursor.getColumnIndex(TIMESTAMP));
+
+                        // Query to retrieve the AccessPointInformation data for the current SignalSample
+                        Cursor accessPointCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENT_ROUTER + " WHERE " + MEASUREMENT_ID + " = ?", new String[]{String.valueOf(fingerprintCursor.getInt(fingerprintCursor.getColumnIndex(MEASUREMENT_ID)))});
+
+                        // Create a list to store the AccessPointInformation for the SignalSample
+                        List<AccessPointInformation> accessPointInformationList = new ArrayList<>();
+
+                        // Iterate through the accessPointCursor to retrieve AccessPointInformation
+                        if (accessPointCursor.moveToFirst()) {
+                            do {
+                                // Retrieve AccessPointInformation data from the accessPointCursor
+                                String bssid = accessPointCursor.getString(accessPointCursor.getColumnIndex(BSSID));
+                                int rssi = accessPointCursor.getInt(accessPointCursor.getColumnIndex(RSSI));
+                                String ssid = ""; // Assuming ssid is stored somewhere
+
+                                // Create an AccessPointInformation object and add it to the list
+                                accessPointInformationList.add(AccessPointInformationFactory.createInstance(bssid, rssi, ssid));
+                            } while (accessPointCursor.moveToNext());
+                        }
+
+                        accessPointCursor.close();
+
+                        // Create a SignalSample object with the retrieved data and add it to the list
+                        signalSamples.add(new SignalSample(timestamp, accessPointInformationList));
+                    } while (fingerprintCursor.moveToNext());
                 }
 
-                Room room = RoomFactory.createInstance(cursor.getString(0), cursor.getString(1), fingerprint, cursor.getString(4), cursor.getString(5), cursor.getString(6));
+                fingerprintCursor.close();
 
+                // Create a Room object with the retrieved data and add it to the list
+                Room room = RoomFactory.createInstance(roomName, description, FingerprintFactory.createInstance(signalSamples), coordinates, picturePath, additionalInfo);
                 allRooms.add(room);
             } while (cursor.moveToNext());
-            cursor.close();
         }
+
+        // Close the cursor and the database
+        cursor.close();
         database.close();
+
+        // Return the list of all rooms
         return allRooms;
     }
 
-
     /**
-     * Get a single Node
+     * Get a single room from the database by its name.
      *
-     * @param nodeID the name of the Node
+     * @param roomName The name of the room to retrieve.
+     * @return The room with the specified name, or null if not found.
      */
-    public Room getNode(String nodeID) {
-        SQLiteDatabase database = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM " + NODES_TABLE + " WHERE " + NODE_ID + " ='" + nodeID + "'";
+    @SuppressLint("Range")
+    @Override
+    public Room getRoom(String roomName) {
         Room room = null;
-        Cursor cursor = database.rawQuery(selectQuery, null);
 
+        // Open the database for read operations
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        // Query to retrieve the room with the specified name from the rooms table
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_ROOMS + " WHERE " + ROOM_NAME + " = ?", new String[]{roomName});
+
+        // Check if a room was found with the specified name
         if (cursor.moveToFirst()) {
-            Fingerprint fingerprint;
+            // Retrieve room data from the cursor
+            String description = cursor.getString(cursor.getColumnIndex(ROOM_DESCRIPTION));
+            String coordinates = cursor.getString(cursor.getColumnIndex(ROOM_COORDINATES));
+            String picturePath = cursor.getString(cursor.getColumnIndex(ROOM_PICTURE_PATH));
+            String additionalInfo = cursor.getString(cursor.getColumnIndex(ROOM_ADDITIONAL_INFO));
 
-            // Check if fingerprint exists, else create NULL object for fingerprint
-            if (cursor.getString(3) == null) {
-                fingerprint = null;
-            } else {
-                fingerprint = FingerprintFactory.createInstance(jsonConverter.convertJsonToSignalSampleList(cursor.getString(3)));
+            // Query to retrieve the fingerprint data for the current room
+            Cursor fingerprintCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENTS + " WHERE " + ROOM_ID_FK + " = ?", new String[]{String.valueOf(roomName)});
+
+            // Create a list to store the SignalSamples for the fingerprint
+            List<SignalSample> signalSamples = new ArrayList<>();
+
+            // Iterate through the fingerprint cursor to retrieve SignalSamples
+            if (fingerprintCursor.moveToFirst()) {
+                do {
+                    // Retrieve SignalSample data from the fingerprint cursor
+                    String timestamp = fingerprintCursor.getString(fingerprintCursor.getColumnIndex(TIMESTAMP));
+
+                    // Query to retrieve the AccessPointInformation data for the current SignalSample
+                    Cursor accessPointCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENT_ROUTER + " WHERE " + MEASUREMENT_ID + " = ?", new String[]{String.valueOf(fingerprintCursor.getInt(fingerprintCursor.getColumnIndex(MEASUREMENT_ID)))});
+
+                    // Create a list to store the AccessPointInformation for the SignalSample
+                    List<AccessPointInformation> accessPointInformationList = new ArrayList<>();
+
+                    // Iterate through the accessPointCursor to retrieve AccessPointInformation
+                    if (accessPointCursor.moveToFirst()) {
+                        do {
+                            // Retrieve AccessPointInformation data from the accessPointCursor
+                            String bssid = accessPointCursor.getString(accessPointCursor.getColumnIndex(BSSID));
+                            int rssi = accessPointCursor.getInt(accessPointCursor.getColumnIndex(RSSI));
+                            String ssid = ""; // Assuming ssid is stored somewhere
+
+                            // Create an AccessPointInformation object and add it to the list
+                            accessPointInformationList.add(AccessPointInformationFactory.createInstance(bssid, rssi, ssid));
+                        } while (accessPointCursor.moveToNext());
+                    }
+
+                    accessPointCursor.close();
+
+                    // Create a SignalSample object with the retrieved data and add it to the list
+                    signalSamples.add(new SignalSample(timestamp, accessPointInformationList));
+                } while (fingerprintCursor.moveToNext());
             }
 
-            room = RoomFactory.createInstance(cursor.getString(0), cursor.getString(1), fingerprint, cursor.getString(4), cursor.getString(5), cursor.getString(6));
-            Log.d("DB: select_node", nodeID);
-            cursor.close();
+            fingerprintCursor.close();
+
+            // Create a Room object with the retrieved data
+            room = RoomFactory.createInstance(roomName, description, FingerprintFactory.createInstance(signalSamples), coordinates, picturePath, additionalInfo);
         }
+
+        // Close the cursor and the database
+        cursor.close();
         database.close();
+
+        // Return the room with the specified name (or null if not found)
         return room;
     }
 
@@ -251,8 +470,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      * @param nodeID the name of the node
      * @return boolean, if node exists
      */
-    public boolean checkIfNodeExists(String nodeID) {
-        return getNode(nodeID) != null;
+    public boolean checkIfRoomExists(String nodeID) {
+        return getRoom(nodeID) != null;
     }
 
 
@@ -261,15 +480,26 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      *
      * @param room the node to be deleted
      */
-    public void deleteNode(Room room) {
+    // TODO: delete edges which contain the node and clean database...
+    @Override
+    public void deleteRoom(Room room) {
+        // Open the database for write operations
         SQLiteDatabase database = this.getWritableDatabase();
-        String deleteNodeQuery = "DELETE FROM " + NODES_TABLE + " WHERE " + NODE_ID + " ='" + room.getRoomName() + "'";
-        String deleteBelongingEdgeQuery = "DELETE FROM " + EDGES_TABLE + " WHERE " + EDGE_NODE_A + " ='" + room.getRoomName() + "' OR " + EDGE_NODE_B + " ='" + room.getRoomName() + "'";
 
-        Log.d("DB: delete_node", room.getRoomName());
+        // Delete the room from the rooms table
+        int rowsAffected = database.delete(TABLE_ROOMS, ROOM_NAME + " = ?", new String[]{room.getRoomName()});
 
-        database.execSQL(deleteNodeQuery);
-        database.execSQL(deleteBelongingEdgeQuery);
+        // Check if the deletion was successful
+        if (rowsAffected > 0) {
+            // Log success message
+            Log.d("DELETE_ROOM", "Room with name " + room.getRoomName() + " deleted successfully.");
+        } else {
+            // Log error message if no rows were affected (room not found)
+            Log.d("DELETE_ROOM", "Room with name " + room.getRoomName() + " not found in the database.");
+        }
+
+        // Close the database
+        database.close();
     }
 
 
@@ -383,8 +613,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
         if (cursor.moveToFirst()) {
             boolean accessible = cursor.getInt(3) == 1;
-            Room room1 = getNode(cursor.getString(1));
-            Room room2 = getNode(cursor.getString(2));
+            Room room1 = getRoom(cursor.getString(1));
+            Room room2 = getRoom(cursor.getString(2));
 
             String stepListString = cursor.getString(4);
             List<String> stepList = new ArrayList<>(Arrays.asList(stepListString.split("\t")));
@@ -415,8 +645,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
                 boolean accessible = cursor.getInt(3) == 1;
 
-                Room roomA = getNode(cursor.getString(1));
-                Room roomB = getNode(cursor.getString(2));
+                Room roomA = getRoom(cursor.getString(1));
+                Room roomB = getRoom(cursor.getString(2));
 
                 String stepListString = cursor.getString(4);
                 List<String> stepList = new ArrayList<>(Arrays.asList(stepListString.split("\t")));

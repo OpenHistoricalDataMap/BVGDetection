@@ -1,6 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.dijkstra;
 
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * Created by Johann Winter

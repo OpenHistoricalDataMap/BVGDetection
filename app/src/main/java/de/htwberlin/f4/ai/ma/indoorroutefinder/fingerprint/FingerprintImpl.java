@@ -10,10 +10,6 @@ class FingerprintImpl implements Fingerprint {
 
     private final List<SignalSample> signalSampleList;
 
-    FingerprintImpl(String ssid, List<SignalSample> signalSampleList) {
-        this.signalSampleList = signalSampleList;
-    }
-
     FingerprintImpl(List<SignalSample> signalSampleList) {
         this.signalSampleList = signalSampleList;
     }

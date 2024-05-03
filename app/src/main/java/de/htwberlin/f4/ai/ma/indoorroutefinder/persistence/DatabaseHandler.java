@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * Created by Johann Winter
@@ -24,7 +24,7 @@ public interface DatabaseHandler {
      *
      * @param room the node
      */
-    void insertNode(Room room);
+    void insertRoom(Room room);
 
     /**
      * Update a node in the database
@@ -32,14 +32,14 @@ public interface DatabaseHandler {
      * @param room      the node to update, including a potential new name (ID)
      * @param oldNodeId the (old) ID (name) of the node which has to be updated
      */
-    void updateNode(Room room, String oldNodeId);
+    void updateRoom(Room room, String oldNodeId);
 
     /**
      * Getter for a list of all existent nodes in the database
      *
      * @return the list of all existent nodes
      */
-    List<Room> getAllNodes();
+    List<Room> getAllRooms();
 
     /**
      * Getter for a single node
@@ -47,7 +47,7 @@ public interface DatabaseHandler {
      * @param nodeID the name (ID) of the node
      * @return the node object
      */
-    Room getNode(String nodeID);
+    Room getRoom(String nodeID);
 
     /**
      * Checks if a node with the given ID is already existent in database.
@@ -56,14 +56,14 @@ public interface DatabaseHandler {
      * @param nodeID the ID to be checked
      * @return true if a node already exists, false if not
      */
-    boolean checkIfNodeExists(String nodeID);
+    boolean checkIfRoomExists(String nodeID);
 
     /**
      * Delete a single node from the database.
      *
      * @param room the node to be deleted
      */
-    void deleteNode(Room room);
+    void deleteRoom(Room room);
 
 
 //-------------------- Edges management -------------------------------

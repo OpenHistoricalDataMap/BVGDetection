@@ -10,9 +10,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * Created by Johann Winter
@@ -52,7 +52,7 @@ public class NodeShowActivity extends BaseActivity {
         final String nodeName = (String) intent.getExtras().get("nodeName");
 
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
-        room = databaseHandler.getNode(nodeName);
+        room = databaseHandler.getRoom(nodeName);
 
         wifiLabelTextview.setVisibility(View.INVISIBLE);
         wifiNameTextview.setVisibility(View.INVISIBLE);

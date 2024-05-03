@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.Set;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 
 /**
@@ -46,7 +46,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
     DijkstraAlgorithmImpl(Context context, boolean accessible) {
         databaseHandler = DatabaseHandlerFactory.getInstance(context);
         this.accessible = accessible;
-        this.dijkstraNodes = mapNodes(databaseHandler.getAllNodes());
+        this.dijkstraNodes = mapNodes(databaseHandler.getAllRooms());
         this.dijkstraEdges = mapEdges(databaseHandler.getAllEdges());
     }
 
@@ -109,12 +109,12 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
      * @throws IllegalArgumentException if the source node does not exist
      */
     public void execute(String sourceNodeId) throws IllegalArgumentException {
-        final Room source = databaseHandler.getNode(sourceNodeId);
+        final Room source = databaseHandler.getRoom(sourceNodeId);
 
         if (source == null) {
             throw new IllegalArgumentException("Source Node Id is invalid! Given was:" + sourceNodeId);
         }
-        final DijkstraNode sourceNode = new DijkstraNode(databaseHandler.getNode(sourceNodeId));
+        final DijkstraNode sourceNode = new DijkstraNode(databaseHandler.getRoom(sourceNodeId));
         settledNodes = new HashSet<>();
         unSettledNodes = new HashSet<>();
         distance = new HashMap<>();
@@ -240,7 +240,7 @@ class DijkstraAlgorithmImpl implements DijkstraAlgorithm {
      */
     public LinkedList<String> getPath(String targetNodeID) {
         LinkedList<String> path = new LinkedList<>();
-        DijkstraNode step = new DijkstraNode(databaseHandler.getNode(targetNodeID));
+        DijkstraNode step = new DijkstraNode(databaseHandler.getRoom(targetNodeID));
 
         // check if a path exists
         if (predecessors.get(step) == null) {

@@ -1,4 +1,4 @@
-package de.htwberlin.f4.ai.ma.indoorroutefinder.node;
+package de.htwberlin.f4.ai.ma.indoorroutefinder.room;
 
 import static org.junit.Assert.assertEquals;
 

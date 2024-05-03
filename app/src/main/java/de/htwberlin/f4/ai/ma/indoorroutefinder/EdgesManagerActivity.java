@@ -18,9 +18,9 @@ import java.util.List;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.EdgeFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.node.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * Created by Johann Winter
@@ -63,7 +63,7 @@ public class EdgesManagerActivity extends BaseActivity {
         allEdges = new ArrayList<>();
         lastSelectedItemA = "";
 
-        List<Room> allRooms = databaseHandler.getAllNodes();
+        List<Room> allRooms = databaseHandler.getAllRooms();
 
         // Fill the spinners with Nodes
         for (Room room : allRooms) {
@@ -125,8 +125,8 @@ public class EdgesManagerActivity extends BaseActivity {
             connectNodesButton.setImageResource(R.drawable.ways_inactive);
             boolean accessible = accessibilityCheckbox.isChecked();
 
-            Room roomA = databaseHandler.getNode(spinnerA.getSelectedItem().toString());
-            Room roomB = databaseHandler.getNode(spinnerB.getSelectedItem().toString());
+            Room roomA = databaseHandler.getRoom(spinnerA.getSelectedItem().toString());
+            Room roomB = databaseHandler.getRoom(spinnerB.getSelectedItem().toString());
 
             Edge edge = EdgeFactory.createInstance(roomA, roomB, accessible, 0);
 

@@ -152,9 +152,9 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
                 locationTextview.setText(foundNode);
                 locationImageview.setVisibility(View.VISIBLE);
 
-                descriptionTextview.setText(databaseHandler.getNode(foundNode).getDescription());
+                descriptionTextview.setText(databaseHandler.getRoom(foundNode).getDescription());
 
-                final String picturePath = databaseHandler.getNode(foundNode).getPicturePath();
+                final String picturePath = databaseHandler.getRoom(foundNode).getPicturePath();
 
                 if (picturePath != null) {
                     Glide.with(context).load(picturePath).into(locationImageview);
