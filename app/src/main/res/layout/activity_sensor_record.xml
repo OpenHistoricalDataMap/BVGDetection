@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="de.htwberlin.f4.ai.ma.android.measure.MeasureViewImpl">
+    tools:context="de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.MeasureViewImpl">
 
     <!-- TODO: Update blank fragment layout -->
 

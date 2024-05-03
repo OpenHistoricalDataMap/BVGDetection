@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="1"
-    tools:context="de.htwberlin.f4.ai.ma.android.measure.MeasureViewImpl">
+    tools:context="de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.MeasureViewImpl">
 
     <!-- TODO: Update blank fragment layout -->
 
