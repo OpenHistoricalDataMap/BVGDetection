@@ -1,0 +1,13 @@
+<paths>
+    <files-path
+        name="databases"
+        path="databases/" />
+
+    <external-path
+        name="external_files"
+        path="IndoorPositioning/Pictures/" />
+
+    <files-path
+        name="images"
+        path="IndoorPositioning/Pictures/" />
+</paths>

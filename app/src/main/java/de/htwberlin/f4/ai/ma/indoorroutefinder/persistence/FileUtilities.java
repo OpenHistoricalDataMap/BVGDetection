@@ -1,6 +1,6 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.persistence;
 
-import android.os.Environment;
+import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
@@ -51,9 +51,8 @@ public class FileUtilities {
      * @param name the filename
      * @return File object of the image file
      */
-    public static File getFile(String name, Timestamp timestamp) {
-        File externalStorageDirectory = Environment.getExternalStorageDirectory();
-        File folder = new File(externalStorageDirectory.getAbsolutePath() + "/IndoorPositioning/Pictures");
+    public static File getFile(Context context, String name, Timestamp timestamp) {
+        File folder = new File(context.getFilesDir(), "IndoorPositioning/Pictures");
         long realTimestamp = timestamp.getTime();
 
         if (!folder.exists()) {

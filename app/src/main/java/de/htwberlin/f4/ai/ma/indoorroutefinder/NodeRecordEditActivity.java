@@ -303,7 +303,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
                 timestamp = new Timestamp(System.currentTimeMillis());
-                File file = FileUtilities.getFile(nodeIdEdittext.getText().toString(), timestamp);
+                File file = FileUtilities.getFile(NodeRecordEditActivity.this, nodeIdEdittext.getText().toString(), timestamp);
 
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                 startActivityForResult(cameraIntent, CAM_REQUEST);

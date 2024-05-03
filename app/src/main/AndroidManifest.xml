@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.htwberlin.f4.ai.ma.indoorroutefinder">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -10,7 +14,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
 
 
     <application
@@ -22,7 +25,7 @@
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.NodeListActivity" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.MaxPictureActivity" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.NodeShowActivity" />
-        <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.ShowFingerprintActivity"/>
+        <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.ShowFingerprintActivity" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.ImportExportActivity" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.EdgesManagerActivity" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.RouteFinderActivity" />
@@ -33,13 +36,14 @@
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.barcode.BarcodeCaptureActivity" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.android.record.RecordViewImpl" />
         <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.android.calibrate.CalibrateViewImpl" />
-        <activity android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.edges.EdgeDetailsViewImpl"
-            android:windowSoftInputMode="stateHidden"/>
+        <activity
+            android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.android.measure.edges.EdgeDetailsViewImpl"
+            android:windowSoftInputMode="stateHidden" />
 
         <activity
             android:name="de.htwberlin.f4.ai.ma.indoorroutefinder.NodeRecordEditActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -51,10 +55,12 @@
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
 
     </application>
-
 
 
 </manifest>
