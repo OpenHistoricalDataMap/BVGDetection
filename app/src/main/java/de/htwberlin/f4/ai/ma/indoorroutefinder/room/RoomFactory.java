@@ -9,7 +9,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.Fingerprint;
  */
 public class RoomFactory {
 
-    public static Room createInstance(String id, String description, Fingerprint fingerprint, String coordinates, String picturePath, String additionalInfo) {
-        return new RoomImpl(id, description, fingerprint, coordinates, picturePath, additionalInfo);
+    public static Room createInstance(String roomName, String description, Fingerprint fingerprint, String coordinates, String picturePath, String additionalInfo) {
+        return new RoomImpl(roomName, description, fingerprint, coordinates, picturePath, additionalInfo);
     }
 }

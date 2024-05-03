@@ -24,7 +24,7 @@ public interface DatabaseHandler {
      *
      * @param room the node
      */
-    void insertRoom(Room room);
+    void insertOrUpdateRoom(Room room);
 
     /**
      * Update a node in the database
@@ -152,5 +152,17 @@ public interface DatabaseHandler {
      * @return true if it succeeded
      */
     boolean exportDatabase();
+
+    /**
+     * Delete all unused routers from the database.
+     * This is done to keep the database clean.
+     */
+    void deleteAllUnusedRouter();
+
+    /**
+     * Delete all unused measurements from the database.
+     * This is done to keep the database clean.
+     */
+    void deleteAllUnusedMeasurements();
 
 }

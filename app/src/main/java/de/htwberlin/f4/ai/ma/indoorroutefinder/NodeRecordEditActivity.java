@@ -395,7 +395,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 picPathToSave = null;
             }
 
-            final String nodeID = nodeIdEdittext.getText().toString();
+            final String roomName = nodeIdEdittext.getText().toString();
             final String nodeDescription = descriptionEdittext.getText().toString();
 
             if (databaseHandler.checkIfRoomExists(nodeIdEdittext.getText().toString())) {
@@ -409,9 +409,9 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                             .setMessage("Soll der Ort \"" + nodeIdEdittext.getText().toString() + "\" wirklich ohne Fingerprint erstellt werden?")
                             .setCancelable(false)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                                final Room room = RoomFactory.createInstance(nodeID, nodeDescription, null, "", picPathToSave, "");
+                                final Room room = RoomFactory.createInstance(roomName, nodeDescription, null, "", picPathToSave, "");
                                 JSONWriter.writeJSON(room);
-                                databaseHandler.insertRoom(room);
+                                databaseHandler.insertOrUpdateRoom(room);
                                 Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
                                 deleteOldPictures();
                                 resetUiElements();
@@ -424,9 +424,9 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
                     // If a fingerprint has been captured...
                 } else {
-                    final Room room = RoomFactory.createInstance(nodeID, nodeDescription, fingerprint, "", picPathToSave, "");
+                    final Room room = RoomFactory.createInstance(roomName, nodeDescription, fingerprint, "", picPathToSave, "");
                     JSONWriter.writeJSON(room);
-                    databaseHandler.insertRoom(room);
+                    databaseHandler.insertOrUpdateRoom(room);
                     progressStatus = 0;
                     progressTextview.setText(String.valueOf(progressStatus));
                     progressBar.setProgress(progressStatus);

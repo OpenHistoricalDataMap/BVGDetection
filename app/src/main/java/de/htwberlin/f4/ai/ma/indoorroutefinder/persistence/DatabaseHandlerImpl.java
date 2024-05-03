@@ -182,20 +182,9 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
      */
     @SuppressLint("Range")
     @Override
-    public void insertRoom(Room room) {
+    public void insertOrUpdateRoom(Room room) {
         // Open the database for write operations
         SQLiteDatabase database = this.getWritableDatabase();
-
-        // Check if a room with the same name already exists
-        Cursor cursor = database.rawQuery("SELECT " + ROOM_ID + " FROM " + TABLE_ROOMS + " WHERE " + ROOM_NAME + " = ?", new String[]{room.getRoomName()});
-        if (cursor.getCount() > 0) {
-            // Close the cursor and the database and log an error
-            cursor.close();
-            database.close();
-            Log.d("INSERT_ROOM", "Room with name " + room.getRoomName() + " already exists in the database.");
-            return;
-        }
-        cursor.close();
 
         // Create a ContentValues object to store the column values of the room
         ContentValues roomValues = new ContentValues();
@@ -205,9 +194,19 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         roomValues.put(ROOM_PICTURE_PATH, room.getPicturePath());
         roomValues.put(ROOM_ADDITIONAL_INFO, room.getAdditionalInfo());
 
-        // Insert the new room into the rooms table
-        long roomId = database.insert(TABLE_ROOMS, null, roomValues);
-
+        // Check if a room with the same name already exists
+        Cursor cursor = database.rawQuery("SELECT " + ROOM_ID + " FROM " + TABLE_ROOMS + " WHERE " + ROOM_NAME + " = ?", new String[]{room.getRoomName()});
+        long roomId;
+        if (cursor.getCount() > 0) {
+            roomId = cursor.getLong(cursor.getColumnIndex(ROOM_ID));
+            database.update(TABLE_ROOMS, roomValues, ROOM_ID + " = ?", new String[]{String.valueOf(roomId)});
+            cursor.close();
+        } else {
+            // Insert the new room into the rooms table
+            roomId = database.insert(TABLE_ROOMS, null, roomValues);
+            cursor.close();
+        }
+        
         // Check if the insertion was successful
         if (roomId != -1) {
             // Extract the fingerprint from the room
@@ -254,6 +253,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                     }
                 }
             }
+
         }
 
         // Close the database
@@ -765,6 +765,50 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
             Log.d(DATABASE_HANDLER_IMPL, e.toString());
         }
         return false;
+    }
+
+    //------------------- H E L P E R   M E T H O D S ------------------------------------------------------------
+
+    /**
+     * Delete all router entries that do not have corresponding entries in TABLE_MEASUREMENT_ROUTER.
+     */
+    public void deleteAllUnusedRouter() {
+        // Open the database for write operations
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        try {
+            // Delete router entries not present in TABLE_MEASUREMENT_ROUTER
+            database.execSQL("DELETE FROM " + TABLE_ROUTERS + " WHERE " + ROUTER_ID +
+                    " NOT IN (SELECT DISTINCT " + ROUTER_ID + " FROM " + TABLE_MEASUREMENT_ROUTER + ")");
+            Log.d("DELETE_UNUSED_ROUTER", "Deleted all unused router entries successfully.");
+        } catch (Exception e) {
+            // Log any exceptions that occur
+            Log.e("DELETE_UNUSED_ROUTER", "Error deleting unused router entries: " + e.getMessage());
+        }
+
+        // Close the database
+        database.close();
+    }
+
+    /**
+     * Delete all entries from TABLE_MEASUREMENT_ROUTER that do not have corresponding entries in TABLE_MEASUREMENTS.
+     */
+    public void deleteAllUnusedMeasurements() {
+        // Open the database for write operations
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        try {
+            // Delete entries from TABLE_MEASUREMENT_ROUTER not present in TABLE_MEASUREMENTS
+            database.execSQL("DELETE FROM " + TABLE_MEASUREMENT_ROUTER + " WHERE " + MEASUREMENT_ID +
+                    " NOT IN (SELECT DISTINCT " + MEASUREMENT_ID + " FROM " + TABLE_MEASUREMENTS + ")");
+            Log.d("DELETE_UNUSED_MEASUREMENTS", "Deleted all unused measurement entries successfully.");
+        } catch (Exception e) {
+            // Log any exceptions that occur
+            Log.e("DELETE_UNUSED_MEASUREMENTS", "Error deleting unused measurement entries: " + e.getMessage());
+        }
+
+        // Close the database
+        database.close();
     }
 
 }

@@ -505,7 +505,7 @@ public class MeasureControllerImpl implements MeasureController {
                 // create a new node
                 room = RoomFactory.createInstance(id, null, null, coordinates, null, "");
                 // save the node into database
-                databaseHandler.insertRoom(room);
+                databaseHandler.insertOrUpdateRoom(room);
                 // update ui
                 view.setStartNode(room);
             }
