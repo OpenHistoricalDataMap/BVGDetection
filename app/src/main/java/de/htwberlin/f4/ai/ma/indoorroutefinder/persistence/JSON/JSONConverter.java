@@ -81,7 +81,7 @@ public class JSONConverter {
                 for (int j = 0; j < signalSampleArray.length(); j++) {
 
                     JSONObject jsonSignalSample = signalSampleArray.getJSONObject(j);
-                    String timestamp = jsonSignalSample.getString("timestamp");
+                    long timestamp = jsonSignalSample.getLong("timestamp");
 
                     JSONArray accessPointInfoArray = jsonSignalSample.getJSONArray("accessPointInfoList");
                     List<AccessPointInformation> accessPointInformations = new ArrayList<>();

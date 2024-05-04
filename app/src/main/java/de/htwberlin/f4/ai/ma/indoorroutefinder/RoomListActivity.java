@@ -23,6 +23,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 public class RoomListActivity extends BaseActivity {
 
+    public static final String ROOM_LIST_ACTIVITY = "RoomListActivity";
     List<Room> allRooms = new ArrayList<>();
     List<String> roomNames = new ArrayList<>();
 
@@ -54,7 +55,8 @@ public class RoomListActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(), MeasurementsListActivity.class);
                 // TODO: Change nodeId to roomDatabaseID
-                intent.putExtra("nodeId", allRooms.get(position).getRoomName());
+                intent.putExtra("roomID", allRooms.get(position).getRoomName());
+                Log.d(ROOM_LIST_ACTIVITY, "Room ID: " + allRooms.get(position).getRoomName());
                 startActivity(intent);
             }
         });

@@ -13,12 +13,9 @@ import androidx.annotation.Nullable;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
@@ -165,9 +162,10 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
 
             wifiScanList.clear();
 
-            SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy-hh.mm.ss", Locale.getDefault());
-            String format = s.format(new Date());
-            SignalSample signalSample = new SignalSample(format, accessPointInformationList);
+//            SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy-hh.mm.ss", Locale.getDefault());
+//            String format = s.format(new Date());
+            long timestampSeconds = System.currentTimeMillis() / 1000;
+            SignalSample signalSample = new SignalSample(timestampSeconds, accessPointInformationList);
             signalSampleList.add(signalSample);
 
 

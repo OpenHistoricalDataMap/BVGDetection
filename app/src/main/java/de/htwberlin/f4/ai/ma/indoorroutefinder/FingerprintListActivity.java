@@ -9,7 +9,6 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.FingerprintListAdapter;
@@ -29,7 +28,7 @@ public class FingerprintListActivity extends BaseActivity {
     ListView measurementsListView;
     FingerprintListAdapter fingerprintListAdapter;
     DatabaseHandler databaseHandler;
-    private int nodeDatabaseID;
+    private int measurementID = -1;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,9 +46,9 @@ public class FingerprintListActivity extends BaseActivity {
         loadDbData();
 
         Intent intent = getIntent();
-        if (intent.hasExtra("nodeDatabaseID")) {
+        if (intent.hasExtra("measurementID")) {
             System.out.println("FOUND ROOM ID!");
-            nodeDatabaseID = (int) intent.getExtras().get("nodeDatabaseID");
+            measurementID = (int) intent.getExtras().get("measurementID");
         } else {
             System.out.println("DON'T FOUND ROOM ID!");
             // TODO
@@ -72,7 +71,7 @@ public class FingerprintListActivity extends BaseActivity {
      * Clear and reload the nodelist
      */
     private void loadDbData() {
-        if (Objects.equals(nodeDatabaseID, "")) return;
+        if (measurementID == -1) return;
 
         accessPointInformationList.clear();
         accessPointNames.clear();
@@ -80,8 +79,8 @@ public class FingerprintListActivity extends BaseActivity {
         accesPointSSIDs.clear();
 
         // TODO: Implement getAccessPointInformationForMeasurement
-//        accessPointInformationList = databaseHandler.getAccessPointInformationForMeasurement(nodeDatabaseID);
-        List<AccessPointInformation> accessPointInformationList = new ArrayList<>();
+        accessPointInformationList = databaseHandler.getAccessPointInformationForMeasurement(measurementID);
+//        List<AccessPointInformation> accessPointInformationList = new ArrayList<>();
 
 
         for (AccessPointInformation ap : accessPointInformationList) {

@@ -654,7 +654,7 @@ public class MeasureControllerImpl implements MeasureController {
             // TODO: change to real ssid
             AccessPointInformation signal = AccessPointInformationFactory.createInstance(s, value, "");
             SsiList.add(signal);
-            SignalSample signalSample = new SignalSample("", SsiList);
+            SignalSample signalSample = new SignalSample(0L, SsiList);
             signalSampleList.add(signalSample);
 
         }

@@ -11,12 +11,19 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_informati
  */
 public class SignalSample {
 
-    private final String timestamp;
+    private final long timestamp;
     private final List<AccessPointInformation> accessPointInformationList;
+    private int measurementID;
 
-    public SignalSample(String timestamp, List<AccessPointInformation> accessPointInformations) {
+    public SignalSample(long timestamp, List<AccessPointInformation> accessPointInformations) {
         this.timestamp = timestamp;
         this.accessPointInformationList = accessPointInformations;
+    }
+
+    public SignalSample(long timestamp, List<AccessPointInformation> accessPointInformations, int measurementID) {
+        this.timestamp = timestamp;
+        this.accessPointInformationList = accessPointInformations;
+        this.measurementID = measurementID;
     }
 
     /**
@@ -24,7 +31,7 @@ public class SignalSample {
      *
      * @return the timestamp
      */
-    public String getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
@@ -43,5 +50,23 @@ public class SignalSample {
                 "timestamp='" + timestamp + '\'' +
                 ", accessPointInformationList=" + accessPointInformationList +
                 '}';
+    }
+
+    /**
+     * Getter for the measurementID
+     *
+     * @return the measurementID
+     */
+    public int getMeasurementID() {
+        return measurementID;
+    }
+
+    /**
+     * Setter for the measurementID
+     *
+     * @param measurementID the measurementID
+     */
+    public void setMeasurementID(int measurementID) {
+        this.measurementID = measurementID;
     }
 }

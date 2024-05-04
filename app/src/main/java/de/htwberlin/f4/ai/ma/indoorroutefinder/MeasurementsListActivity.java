@@ -17,21 +17,24 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.SignalSample;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 
 public class MeasurementsListActivity extends BaseActivity {
 
-    List<Room> allNodes = new ArrayList<>();
+    public static final String MEASUREMENTS_LIST_ACTIVITY = "MeasurementsListActivity";
+    //    Room allNodes;
     List<String> nodeNames = new ArrayList<>();
+    List<SignalSample> allMeasurements = new ArrayList<>();
 
     ListView roomListView;
     DatabaseHandler databaseHandler;
-    private int roomID = -1;
+    private String roomName = "";
     private ArrayAdapter<String> nodeListAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,7 @@ public class MeasurementsListActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(), FingerprintListActivity.class);
-                intent.putExtra("nodeDatabaseID", allNodes.get(position).getRoomDatabaseID());
+                intent.putExtra("measurementID", allMeasurements.get(position).getMeasurementID());
                 startActivity(intent);
             }
         });
@@ -73,7 +76,8 @@ public class MeasurementsListActivity extends BaseActivity {
                         .setCancelable(false)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                databaseHandler.deleteRoom(allNodes.get(position));
+                                // TODO:
+//                                databaseHandler.deleteRoom(allNodes.get(position));
                                 loadDbData();
                             }
                         })
@@ -92,7 +96,7 @@ public class MeasurementsListActivity extends BaseActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("roomID")) {
             System.out.println("FOUND ROOM ID!");
-            roomID = (int) intent.getExtras().get("roomID");
+            roomName = (String) Objects.requireNonNull(intent.getExtras()).get("roomID");
         } else {
             System.out.println("DON'T FOUND ROOM ID!");
             // TODO
@@ -116,23 +120,26 @@ public class MeasurementsListActivity extends BaseActivity {
      */
     private void loadDbData() {
 
-        if (roomID == -1) return;
+        if (Objects.equals(roomName, "")) return;
 
-        allNodes.clear();
+        allMeasurements = null;
         nodeNames.clear();
 
-        // TODO: Implement DatabaseHandler.getAllNodesForRoom
-//        allRooms = databaseHandler.getAllNodesForRoom(roomID);
-        List<Room> allRooms = new ArrayList<>();
+//        allNodes = databaseHandler.getRoom(roomName);
 
-        for (Room node : allRooms) {
+        allMeasurements = databaseHandler.getAllMeasurementsForRoom(roomName);
+
+        Log.d(MEASUREMENTS_LIST_ACTIVITY, String.valueOf(allMeasurements));
+
+        for (SignalSample signalSample : allMeasurements) {
             Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-            cal.setTimeInMillis(Integer.parseInt(node.getFingerprint().getSignalSampleList().get(0).getTimestamp()) * 1000L);
+            cal.setTimeInMillis(signalSample.getTimestamp() * 1000L);
             String date = DateFormat.format("dd.MM.yyyy hh:mm:ss", cal).toString();
             nodeNames.add(date);
         }
 
-        Log.d("MeasurementsListActivity", String.valueOf(allRooms));
+
+//        Log.d("MeasurementsListActivity", String.valueOf(allNodes));
 
         nodeListAdapter.notifyDataSetChanged();
     }

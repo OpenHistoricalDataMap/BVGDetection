@@ -25,6 +25,17 @@ class RoomImpl implements Room {
         this.additionalInfo = additionalInfo;
     }
 
+    // TODO: Just use this constructor in the future
+    RoomImpl(String roomName, String description, Fingerprint fingerprint, String coordinates, String picturePath, String additionalInfo, int roomDatabaseID) {
+        this.roomName = roomName;
+        this.description = description;
+        this.coordinates = coordinates;
+        this.picturePath = picturePath;
+        this.fingerprint = fingerprint;
+        this.additionalInfo = additionalInfo;
+        this.roomDatabaseID = roomDatabaseID;
+    }
+
     @Override
     public String getRoomName() {
         return this.roomName;

@@ -101,7 +101,7 @@ public class BluetoothActivity extends BaseActivity {
                                 accessPointInformationList.add(accessPointInformation);
                             }
 
-                            SignalSample signalSample = new SignalSample(json.getString("Timestamp"), accessPointInformationList);
+                            SignalSample signalSample = new SignalSample(json.getLong("Timestamp"), accessPointInformationList);
                             List<SignalSample> signalSampleList = new ArrayList<>();
                             signalSampleList.add(signalSample);
                             Fingerprint fingerprint = FingerprintFactory.createInstance(signalSampleList);

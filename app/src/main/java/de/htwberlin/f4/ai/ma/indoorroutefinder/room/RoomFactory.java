@@ -12,4 +12,9 @@ public class RoomFactory {
     public static Room createInstance(String roomName, String description, Fingerprint fingerprint, String coordinates, String picturePath, String additionalInfo) {
         return new RoomImpl(roomName, description, fingerprint, coordinates, picturePath, additionalInfo);
     }
+
+    // TODO: Just use this method in the future
+    public static Room createInstance(String roomName, String description, Fingerprint fingerprint, String coordinates, String picturePath, String additionalInfo, int roomDatabaseID) {
+        return new RoomImpl(roomName, description, fingerprint, coordinates, picturePath, additionalInfo, roomDatabaseID);
+    }
 }

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.List;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.SignalSample;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
@@ -64,6 +66,8 @@ public interface DatabaseHandler {
      * @param room the node to be deleted
      */
     void deleteRoom(Room room);
+
+    List<Room> getAllNodesForRoom(String roomName);
 
 
 //-------------------- Edges management -------------------------------
@@ -161,8 +165,18 @@ public interface DatabaseHandler {
 
     /**
      * Delete all unused measurements from the database.
+     * <p>
      * This is done to keep the database clean.
      */
     void deleteAllUnusedMeasurements();
 
+    /**
+     * Get all measurements for a room.
+     *
+     * @param roomName the name of the room
+     * @return a list of all measurements for the room
+     */
+    List<SignalSample> getAllMeasurementsForRoom(String roomName);
+
+    List<AccessPointInformation> getAccessPointInformationForMeasurement(int measurementID);
 }

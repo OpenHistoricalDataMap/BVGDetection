@@ -347,7 +347,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                 if (fingerprintCursor.moveToFirst()) {
                     do {
                         // Retrieve SignalSample data from the fingerprint cursor
-                        String timestamp = fingerprintCursor.getString(fingerprintCursor.getColumnIndex(TIMESTAMP));
+                        long timestamp = fingerprintCursor.getLong(fingerprintCursor.getColumnIndex(TIMESTAMP));
+                        int measurementId = fingerprintCursor.getInt(fingerprintCursor.getColumnIndex(MEASUREMENT_ID));
 
                         // Query to retrieve the AccessPointInformation data for the current SignalSample
                         Cursor accessPointCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENT_ROUTER + " WHERE " + MEASUREMENT_ID + " = ?", new String[]{String.valueOf(fingerprintCursor.getInt(fingerprintCursor.getColumnIndex(MEASUREMENT_ID)))});
@@ -371,7 +372,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                         accessPointCursor.close();
 
                         // Create a SignalSample object with the retrieved data and add it to the list
-                        signalSamples.add(new SignalSample(timestamp, accessPointInformationList));
+                        signalSamples.add(new SignalSample(timestamp, accessPointInformationList, measurementId));
                     } while (fingerprintCursor.moveToNext());
                 }
 
@@ -426,7 +427,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
             if (fingerprintCursor.moveToFirst()) {
                 do {
                     // Retrieve SignalSample data from the fingerprint cursor
-                    String timestamp = fingerprintCursor.getString(fingerprintCursor.getColumnIndex(TIMESTAMP));
+                    long timestamp = fingerprintCursor.getLong(fingerprintCursor.getColumnIndex(TIMESTAMP));
 
                     // Query to retrieve the AccessPointInformation data for the current SignalSample
                     Cursor accessPointCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENT_ROUTER + " WHERE " + MEASUREMENT_ID + " = ?", new String[]{String.valueOf(fingerprintCursor.getInt(fingerprintCursor.getColumnIndex(MEASUREMENT_ID)))});
@@ -505,6 +506,11 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
         // Close the database
         database.close();
+    }
+
+    @Override
+    public List<Room> getAllNodesForRoom(String roomName) {
+        return null;
     }
 
 
@@ -814,6 +820,131 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
         // Close the database
         database.close();
+    }
+
+    @SuppressLint("Range")
+    @Override
+    public List<SignalSample> getAllMeasurementsForRoom(String roomName) {
+//        Room room = null;
+        List<SignalSample> signalSamples = new ArrayList<>();
+
+        // Open the database for read operations
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        // Query to retrieve the room with the specified name from the rooms table
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_ROOMS + " WHERE " + ROOM_NAME + " = ?", new String[]{roomName});
+
+        // Check if a room was found with the specified name
+        if (cursor.moveToFirst()) {
+            Log.d("GET_MEASUREMENTS", "Room found with name " + roomName);
+            // Retrieve room data from the cursor
+//            String description = cursor.getString(cursor.getColumnIndex(ROOM_DESCRIPTION));
+//            String coordinates = cursor.getString(cursor.getColumnIndex(ROOM_COORDINATES));
+//            String picturePath = cursor.getString(cursor.getColumnIndex(ROOM_PICTURE_PATH));
+//            String additionalInfo = cursor.getString(cursor.getColumnIndex(ROOM_ADDITIONAL_INFO));
+            int roomId = cursor.getInt(cursor.getColumnIndex(ROOM_ID));
+
+            // Query to retrieve the fingerprint data for the current room
+            Cursor fingerprintCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENTS + " WHERE " + ROOM_ID_FK + " = ?", new String[]{String.valueOf(roomId)});
+
+            // Create a list to store the SignalSamples for the fingerprint
+//            List<SignalSample> signalSamples = new ArrayList<>();
+
+            // Iterate through the fingerprint cursor to retrieve SignalSamples
+            if (fingerprintCursor.moveToFirst()) {
+                Log.d("GET_MEASUREMENTS", "Fingerprint found for room " + roomName);
+                do {
+                    // Retrieve SignalSample data from the fingerprint cursor
+                    long timestamp = fingerprintCursor.getLong(fingerprintCursor.getColumnIndex(TIMESTAMP));
+
+                    int measurementId = fingerprintCursor.getInt(fingerprintCursor.getColumnIndex(MEASUREMENT_ID));
+
+                    // Query to retrieve the AccessPointInformation data for the current SignalSample
+                    Cursor accessPointCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENT_ROUTER + " WHERE " + MEASUREMENT_ID + " = ?", new String[]{String.valueOf(measurementId)});
+
+                    // Create a list to store the AccessPointInformation for the SignalSample
+                    List<AccessPointInformation> accessPointInformationList = new ArrayList<>();
+
+                    // Iterate through the accessPointCursor to retrieve AccessPointInformation
+                    if (accessPointCursor.moveToFirst()) {
+                        Log.d("GET_MEASUREMENTS", "AccessPointInformation found for measurement " + measurementId);
+                        do {
+                            // Retrieve AccessPointInformation data from the accessPointCursor
+//                            String bssid = accessPointCursor.getString(accessPointCursor.getColumnIndex(BSSID));
+                            String bssid = "";
+                            int rssi = accessPointCursor.getInt(accessPointCursor.getColumnIndex(RSSI));
+                            String ssid = ""; // Assuming ssid is stored somewhere
+                            int routerId = accessPointCursor.getInt(accessPointCursor.getColumnIndex(ROUTER_ID));
+
+                            Cursor routerCursor = database.rawQuery("SELECT * FROM " + TABLE_ROUTERS + " WHERE " + ROUTER_ID + " = ?", new String[]{String.valueOf(routerId)});
+
+                            if (routerCursor.moveToFirst()) {
+                                bssid = routerCursor.getString(routerCursor.getColumnIndex(BSSID));
+                                ssid = routerCursor.getString(routerCursor.getColumnIndex(SSID));
+                            }
+
+                            routerCursor.close();
+
+                            // Create an AccessPointInformation object and add it to the list
+                            accessPointInformationList.add(AccessPointInformationFactory.createInstance(bssid, rssi, ssid));
+                        } while (accessPointCursor.moveToNext());
+                    }
+
+                    accessPointCursor.close();
+
+                    // Create a SignalSample object with the retrieved data and add it to the list
+                    signalSamples.add(new SignalSample(timestamp, accessPointInformationList, measurementId));
+                } while (fingerprintCursor.moveToNext());
+            }
+
+            fingerprintCursor.close();
+
+            // Create a Room object with the retrieved data
+//            room = RoomFactory.createInstance(roomName, description, FingerprintFactory.createInstance(signalSamples), coordinates, picturePath, additionalInfo);
+        }
+
+        // Close the cursor and the database
+        cursor.close();
+        database.close();
+
+        // Return the room with the specified name (or null if not found)
+//        return room;
+        return signalSamples;
+    }
+
+    @SuppressLint("Range")
+    @Override
+    public List<AccessPointInformation> getAccessPointInformationForMeasurement(int measurementID) {
+        List<AccessPointInformation> accessPointInformations = new ArrayList<>();
+
+        // Open the database for read operations
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        // Query to retrieve the room with the specified name from the rooms table
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENT_ROUTER + " WHERE " + MEASUREMENT_ID + " = ?", new String[]{String.valueOf(measurementID)});
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                int routerId = cursor.getInt(cursor.getColumnIndex(ROUTER_ID));
+                int rssi = cursor.getInt(cursor.getColumnIndex(RSSI));
+
+                Cursor routerCursor = database.rawQuery("SELECT * FROM " + TABLE_ROUTERS + " WHERE " + ROUTER_ID + " = ?", new String[]{String.valueOf(routerId)});
+
+                if (routerCursor.moveToFirst()) {
+                    String bssid = routerCursor.getString(routerCursor.getColumnIndex(BSSID));
+                    String ssid = routerCursor.getString(routerCursor.getColumnIndex(SSID));
+                    accessPointInformations.add(AccessPointInformationFactory.createInstance(bssid, rssi, ssid));
+                }
+
+                routerCursor.close();
+
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        database.close();
+        return accessPointInformations;
     }
 
 }
