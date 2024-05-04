@@ -31,8 +31,7 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactor
  */
 public class LocationActivity extends BaseActivity implements AsyncResponse {
 
-    ImageButton locate1sButton;
-    ImageButton locate10sButton;
+    ImageButton locateButton;
     ImageView locationImageview;
     TextView locationTextview;
     TextView descriptionTextview;
@@ -64,16 +63,14 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
 
-        locate1sButton = (ImageButton) findViewById(R.id.locate_1s_button);
-        locate10sButton = (ImageButton) findViewById(R.id.locate_10s_button);
+        locateButton = (ImageButton) findViewById(R.id.locate_1s_button);
         locationImageview = (ImageView) findViewById(R.id.location_imageview);
         locationTextview = (TextView) findViewById(R.id.location_textview);
         descriptionTextview = (TextView) findViewById(R.id.description_textview_location);
         infobox = (TextView) findViewById(R.id.infobox_location);
         progressBar = (ProgressBar) findViewById(R.id.location_progressbar);
+        locateButton.setImageResource(R.drawable.locate_1s_button);
 
-        locate1sButton.setImageResource(R.drawable.locate_1s_button);
-        locate10sButton.setImageResource(R.drawable.locate_10s_button);
 
         // Get preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -90,25 +87,16 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
 
         progressBar.setVisibility(View.INVISIBLE);
 
-        locate1sButton.setOnClickListener(v -> findLocation(1));
-
-        locate10sButton.setOnClickListener(v -> {
-            progressBar.setVisibility(View.VISIBLE);
-            findLocation(10);
-        });
+        locateButton.setOnClickListener(v -> findLocation());
     }
 
     /**
      * Create a fingerprint
-     *
-     * @param seconds the time to measure in seconds
      */
-    private void findLocation(final int seconds) {
-        locate1sButton.setEnabled(false);
-        locate10sButton.setEnabled(false);
-        locate1sButton.setImageResource(R.drawable.locate_1s_button_inactive);
-        locate10sButton.setImageResource(R.drawable.locate_10s_button_inactive);
-
+    // TODO: Changed numberOfMeasurements to number of measurements
+    private void findLocation() {
+        locateButton.setEnabled(false);
+        locateButton.setImageResource(R.drawable.locate_1s_button_inactive);
         locationImageview.setVisibility(View.INVISIBLE);
         locationTextview.setText(getString(R.string.searching_node_text));
         descriptionTextview.setText("");
@@ -121,12 +109,12 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
             if (useSSIDfilter) {
                 ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
             }
-            fingerprintTask = new FingerprintTask(ssidFilterString, seconds, wifiManager, true, progressBar, null, infobox);
+            fingerprintTask = new FingerprintTask(ssidFilterString, 1, wifiManager, true, progressBar, null, infobox);
         } else {
             if (useSSIDfilter) {
                 ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
             }
-            fingerprintTask = new FingerprintTask(ssidFilterString, seconds, wifiManager, true, progressBar, null);
+            fingerprintTask = new FingerprintTask(ssidFilterString, 1, wifiManager, true, progressBar, null);
         }
 
         fingerprintTask.delegate = this;
@@ -178,11 +166,7 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
         }
         progressBar.setVisibility(View.INVISIBLE);
 
-        locate1sButton.setEnabled(true);
-        locate10sButton.setEnabled(true);
-        locate1sButton.setImageResource(R.drawable.locate_1s_button);
-        locate10sButton.setImageResource(R.drawable.locate_10s_button);
+        locateButton.setEnabled(true);
+        locateButton.setImageResource(R.drawable.locate_1s_button);
     }
-
-
 }

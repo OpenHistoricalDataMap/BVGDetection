@@ -92,7 +92,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     private String picturePath;
     private String oldNodeId = null;
     private List<String> oldPicturePaths;
-    private int recordTime;
+    private int measures;
     private int progressStatus = 0;
     private ProgressBar progressBar;
     private JSONWriter JSONWriter;
@@ -106,7 +106,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     private EditText coordinatesEdittext;
     private DatabaseHandler databaseHandler;
     private SharedPreferences sharedPreferences;
-    private Spinner minutesDropdown;
+    private Spinner measureCount;
     private boolean pictureTaken;
     private boolean takingPictureAtTheMoment;
     private boolean showingBigPictureAtTheMoment;
@@ -179,7 +179,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         coordinatesLabelTextview = findViewById(R.id.coordinates_label_textview_editmode);
         infobox = findViewById(R.id.infobox_record_edit);
         progressBar = findViewById(R.id.progress_bar);
-        minutesDropdown = findViewById(R.id.minutes_dropdown);
+        measureCount = findViewById(R.id.measure_count_dropdown);
 
         List<Room> roomsList = databaseHandler.getAllRooms();
         nodeIdEdittextSuggestions = roomsList.stream()
@@ -222,7 +222,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
             minutesList.add(i + 1);
         }
         ArrayAdapter<Integer> minutesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, minutesList);
-        minutesDropdown.setAdapter(minutesAdapter);
+        measureCount.setAdapter(minutesAdapter);
 
 
         // Check if Update-Mode is enabled
@@ -310,7 +310,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 progressBar.setVisibility(View.VISIBLE);
                 progressTextview.setVisibility(View.VISIBLE);
                 recordButton.setImageResource(R.drawable.fingerprint_low_contrast);
-                recordTime = minutesDropdown.getSelectedItemPosition() + 1;
+                measures = measureCount.getSelectedItemPosition() + 1;
 
                 verboseMode = sharedPreferences.getBoolean("verbose_mode", false);
                 String ssidFilterString = null;
@@ -319,13 +319,13 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                     if (useSSIDfilter) {
                         ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
                     }
-                    fingerprintTask = new FingerprintTask(ssidFilterString, 6 * recordTime, wifiManager, false, progressBar, progressTextview, infobox);
+                    fingerprintTask = new FingerprintTask(ssidFilterString, measures, wifiManager, false, progressBar, progressTextview, infobox);
                 } else {
                     if (useSSIDfilter) {
                         ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
                     }
                     infobox.setText(getString(R.string.please_stay));
-                    fingerprintTask = new FingerprintTask(ssidFilterString, 6 * recordTime, wifiManager, false, progressBar, progressTextview);
+                    fingerprintTask = new FingerprintTask(ssidFilterString, measures, wifiManager, false, progressBar, progressTextview);
                 }
 
                 fingerprintTask.delegate = NodeRecordEditActivity.this;
@@ -435,7 +435,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
             final String roomName = nodeIdEdittext.getText().toString();
             final String nodeDescription = descriptionEdittext.getText().toString();
-            
+
             // If no fingerprint has been captured...
             if (fingerprint == null) {
                 new AlertDialog.Builder(this)

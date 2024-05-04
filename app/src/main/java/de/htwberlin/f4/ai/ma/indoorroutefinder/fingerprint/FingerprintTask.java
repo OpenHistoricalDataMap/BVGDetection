@@ -38,53 +38,54 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
 
     public static final String FINGERPRINT_TASK = "FingerprintTask";
     private static final HashMap<String, Long> timestampMap = new HashMap<>();
+    private final int scanCount;
     @SuppressLint("StaticFieldLeak")
     private final ProgressBar progressBar;
     @SuppressLint("StaticFieldLeak")
     private final TextView progressTextview;
     private final String wifiName;
-    private final int seconds;
     private final WifiManager wifiManager;
-    private final boolean calculateAverage;
     public AsyncResponse delegate = null;
     @SuppressLint("StaticFieldLeak")
     private TextView verboseOutputTextview;
+    private int seconds;
     private Multimap<String, Integer> multiMap;
     private List<SignalSample> signalSampleList;
     private List<AccessPointInformation> accessPointInformationList;
+    private boolean calculateAverage = false;
 
     // Used for console output, sorted by accesspoint
     //private HashMap<String, List<Integer>> testData = new HashMap<>();
 
 
     // Normal mode constructor
-    public FingerprintTask(final String wifiName, final int seconds, final WifiManager wifiManager, final Boolean calculateAverage,
+    public FingerprintTask(final String wifiName, final int scanCount, final WifiManager wifiManager, final Boolean calculateAverage,
                            final @Nullable ProgressBar progressBar, final @Nullable TextView progressTextview) {
         this.wifiManager = wifiManager;
         this.wifiName = wifiName;
-        this.seconds = seconds;
         this.calculateAverage = calculateAverage;
         this.progressBar = progressBar;
         this.progressTextview = progressTextview;
+        this.scanCount = scanCount;
     }
 
     // Verbose mode constructor
-    public FingerprintTask(final String wifiName, final int seconds, final WifiManager wifiManager, final Boolean calculateAverage,
+    public FingerprintTask(final String wifiName, final int scanCount, final WifiManager wifiManager, final Boolean calculateAverage,
                            final @Nullable ProgressBar progressBar, final @Nullable TextView progressTextview, final TextView verboseOutputTextview) {
         this.wifiManager = wifiManager;
         this.wifiName = wifiName;
-        this.seconds = seconds;
         this.calculateAverage = calculateAverage;
         this.progressBar = progressBar;
         this.progressTextview = progressTextview;
         this.verboseOutputTextview = verboseOutputTextview;
+        this.scanCount = scanCount;
     }
 
 
     @Override
     @SuppressLint({"MissingPermission", "CheckResult"})
     protected Fingerprint doInBackground(Void... voids) {
-        for (int i = 0; i < seconds; i++) {
+        for (int i = 0; i < scanCount; i++) {
 
             accessPointInformationList = new ArrayList<>();
 
@@ -99,7 +100,7 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
 
             // When measuring for just one second, compare the timestamps of the scan results
             // with the last saved scan data, and cancel measurement if more than 50% are deprecated.
-            if (seconds == 1) {
+            if (scanCount == 1) {
                 System.out.println("######################################################################");
 
                 float deprecatedAccessPoints = 0;
@@ -133,16 +134,6 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
                 // If the wifiName was defined, filter for only this SSID
                 if (wifiName != null) {
                     if (sr.SSID.equals(wifiName)) {
-
-                        // Used for console output, sorted by accesspoint
-                            /*
-                            if (testData.get(sr.BSSID) == null) {
-                                testData.put(sr.BSSID, new ArrayList<Integer>());
-                            } else {
-                                testData.get(sr.BSSID).add(sr.level);
-                            }
-                            */
-
                         Log.d("Fingerprinting... ", "MAC: " + sr.BSSID + "   Strength: " + sr.level + " dBm         timestamp: " + sr.timestamp);
                         AccessPointInformation accessPointInformation = AccessPointInformationFactory.createInstance(sr.BSSID, sr.level, sr.SSID);
                         accessPointInformationList.add(accessPointInformation);
@@ -156,23 +147,24 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
                     multiMap.put(sr.BSSID, sr.level);
                 }
             }
-            //Log.d("--------", "-------------------------------------------------");
-
             publishProgress(i);
 
             wifiScanList.clear();
 
-//            SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy-hh.mm.ss", Locale.getDefault());
-//            String format = s.format(new Date());
             long timestampSeconds = System.currentTimeMillis() / 1000;
+            System.out.println("TIME");
+            System.out.println(timestampSeconds);
             SignalSample signalSample = new SignalSample(timestampSeconds, accessPointInformationList);
+            System.out.println(signalSample);
             signalSampleList.add(signalSample);
 
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Log.d(FINGERPRINT_TASK, e.getMessage());
+            if (i != (scanCount - 1)) {
+                try {
+                    Thread.sleep(30000);
+                } catch (InterruptedException e) {
+                    Log.d(FINGERPRINT_TASK, e.toString());
+                }
             }
         }
 
@@ -194,7 +186,7 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
     @Override
     protected void onPreExecute() {
         if (progressBar != null) {
-            progressBar.setMax(seconds);
+            progressBar.setMax(scanCount);
         }
         multiMap = ArrayListMultimap.create();
         signalSampleList = new ArrayList<>();
@@ -219,13 +211,13 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
             }
             verboseOutputTextview.setText(textviewString.toString());
             if (progressTextview != null) {
-                progressTextview.setText(String.valueOf(seconds - values[0]));
+                progressTextview.setText(String.valueOf(scanCount - values[0]));
             }
 
             // Normal mode
         } else {
             if (progressTextview != null) {
-                progressTextview.setText(String.valueOf(seconds - values[0]));
+                progressTextview.setText(String.valueOf(scanCount - values[0]));
             }
         }
     }
@@ -242,7 +234,7 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
             System.out.println(mac + ": " + output);
         }*/
 
-        delegate.processFinish(fingerprint, seconds);
+        delegate.processFinish(fingerprint, scanCount);
     }
 
 }

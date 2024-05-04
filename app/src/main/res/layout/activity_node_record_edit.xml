@@ -66,22 +66,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@+id/measure_time_edittext"
-            android:text="@string/measure_time_text"
+            android:text="@string/measure_count_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold" />
 
         <Spinner
-            android:id="@+id/minutes_dropdown"
+            android:id="@+id/measure_count_dropdown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="end"
             android:spinnerMode="dropdown" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/minutes_text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <!--        <TextView-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@string/minutes_text"-->
+        <!--            android:textAppearance="?android:attr/textAppearanceMedium" />-->
 
     </LinearLayout>
 

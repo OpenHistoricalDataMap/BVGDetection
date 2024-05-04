@@ -70,7 +70,7 @@
     <!-- activity_node_record_edit -->
     <string name="capture_button">Bild aufnehmen</string>
     <string name="description_text">Beschreibung:</string>
-    <string name="measure_time_text">Messzeit:</string>
+    <string name="measure_count_text">Anzahl Messungen:</string>
     <string name="wifi_name_text">WLAN:</string>
     <string name="node_name_text">Name des Ortes:</string>
     <string name="minutes_text">Minute(n)</string>
@@ -110,7 +110,7 @@
     <string name="searching_node_text">Lokalisiere...</string>
     <string name="percent_label_textview"> %</string>
     <string name="detailed_results_button_description">Details</string>
-    <string name="location_infobox_text">Falls die 1-Sekunden-Messung keinen Erfolg hat, probieren Sie bitte die 10-Sekunden-Messung. \n\n<b>Tip:</b> Falls vorhanden, Bild antippen zum vergrößern</string>
+    <string name="location_infobox_text"><b>Tip:</b> Falls vorhanden, Bild antippen zum vergrößern</string>
 
     <!-- activity_import_export -->
     <string name="import_button_text">Daten importieren</string>
