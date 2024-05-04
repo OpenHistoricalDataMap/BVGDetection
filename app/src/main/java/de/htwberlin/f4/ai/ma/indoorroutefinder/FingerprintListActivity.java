@@ -43,17 +43,14 @@ public class FingerprintListActivity extends BaseActivity {
 
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
 
-        loadDbData();
-
         Intent intent = getIntent();
-        if (intent.hasExtra("measurementID")) {
-            System.out.println("FOUND ROOM ID!");
+        try {
             measurementID = (int) intent.getExtras().get("measurementID");
-        } else {
-            System.out.println("DON'T FOUND ROOM ID!");
-            // TODO
+        } catch (NullPointerException e) {
+            Log.e(FINGERPRINT_LIST_ACTIVITY, "No measurementID found in intent");
         }
 
+        loadDbData();
     }
 
 
@@ -78,10 +75,7 @@ public class FingerprintListActivity extends BaseActivity {
         accessPointStrength.clear();
         accesPointSSIDs.clear();
 
-        // TODO: Implement getAccessPointInformationForMeasurement
         accessPointInformationList = databaseHandler.getAccessPointInformationForMeasurement(measurementID);
-//        List<AccessPointInformation> accessPointInformationList = new ArrayList<>();
-
 
         for (AccessPointInformation ap : accessPointInformationList) {
             Log.d(FINGERPRINT_LIST_ACTIVITY, String.valueOf(ap));

@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -99,7 +100,8 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     private TextView infobox;
     private ImageButton recordButton;
     private ImageView cameraImageview;
-    private EditText nodeIdEdittext;
+    private AutoCompleteTextView nodeIdEdittext;
+    private String[] nodeIdEdittextSuggestions;
     private EditText descriptionEdittext;
     private EditText coordinatesEdittext;
     private DatabaseHandler databaseHandler;
@@ -169,7 +171,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         showFingerprintButton = findViewById(R.id.show_fingerprint_button);
         cameraImageview = findViewById(R.id.camera_imageview);
         descriptionEdittext = findViewById(R.id.description_edittext);
-        nodeIdEdittext = findViewById(R.id.record_id_edittext);
+//        nodeIdEdittext = findViewById(R.id.record_id_edittext);
         coordinatesEdittext = findViewById(R.id.coordinates_edittext);
         progressTextview = findViewById(R.id.progress_textview);
         initialWifiTextview = findViewById(R.id.initial_wifi_textview);
@@ -178,6 +180,16 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         infobox = findViewById(R.id.infobox_record_edit);
         progressBar = findViewById(R.id.progress_bar);
         minutesDropdown = findViewById(R.id.minutes_dropdown);
+
+        List<Room> roomsList = databaseHandler.getAllRooms();
+        nodeIdEdittextSuggestions = roomsList.stream()
+                .map(Room::getRoomName)
+                .toArray(String[]::new);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, nodeIdEdittextSuggestions);
+        nodeIdEdittext = findViewById(R.id.record_id_edittext);
+        nodeIdEdittext.setAdapter(adapter);
+        nodeIdEdittext.setThreshold(1);
 
         buttonsLayout = findViewById(R.id.buttons_layout_rec_and_edit);
 
@@ -293,8 +305,6 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         recordButton.setOnClickListener(v -> {
             if (nodeIdEdittext.getText().toString().isEmpty()) {
                 Toast.makeText(getApplicationContext(), getString(R.string.please_enter_node_name), Toast.LENGTH_SHORT).show();
-            } else if (databaseHandler.checkIfRoomExists(nodeIdEdittext.getText().toString()) && !updateMode) {
-                Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_SHORT).show();
             } else {
                 recordButton.setEnabled(false);
                 progressBar.setVisibility(View.VISIBLE);
@@ -379,11 +389,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         fingerprint.setDeviceID(UniqueIDManager.getUniqueID(this));
         infobox.setText(R.string.record_and_edit_infobox);
 
-        if (fp == null) {
-            recordButton.setImageResource(R.drawable.fingerprint);
-        } else {
-            recordButton.setImageResource(R.drawable.fingerprint_done);
-        }
+        recordButton.setImageResource(R.drawable.fingerprint_done);
         progressBar.setVisibility(View.INVISIBLE);
         progressTextview.setVisibility(View.INVISIBLE);
     }
@@ -429,45 +435,41 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
             final String roomName = nodeIdEdittext.getText().toString();
             final String nodeDescription = descriptionEdittext.getText().toString();
+            
+            // If no fingerprint has been captured...
+            if (fingerprint == null) {
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.no_fingerprint_title_text))
+                        .setMessage("Soll der Ort \"" + nodeIdEdittext.getText().toString() + "\" wirklich ohne Fingerprint erstellt werden?")
+                        .setCancelable(false)
+                        .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                            final Room room = RoomFactory.createInstance(roomName, nodeDescription, null, "", picPathToSave, "");
+                            JSONWriter.writeJSON(room);
+                            databaseHandler.insertOrUpdateRoom(room);
+                            Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
+                            deleteOldPictures();
+                            resetUiElements();
+                            askForNewNode();
+                        })
+                        .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
 
-            if (databaseHandler.checkIfRoomExists(nodeIdEdittext.getText().toString())) {
-                Toast.makeText(getApplicationContext(), getString(R.string.node_already_exists_toast), Toast.LENGTH_LONG).show();
+                // If a fingerprint has been captured...
             } else {
-
-                // If no fingerprint has been captured...
-                if (fingerprint == null) {
-                    new AlertDialog.Builder(this)
-                            .setTitle(getString(R.string.no_fingerprint_title_text))
-                            .setMessage("Soll der Ort \"" + nodeIdEdittext.getText().toString() + "\" wirklich ohne Fingerprint erstellt werden?")
-                            .setCancelable(false)
-                            .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                                final Room room = RoomFactory.createInstance(roomName, nodeDescription, null, "", picPathToSave, "");
-                                JSONWriter.writeJSON(room);
-                                databaseHandler.insertOrUpdateRoom(room);
-                                Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
-                                deleteOldPictures();
-                                resetUiElements();
-                                askForNewNode();
-                            })
-                            .setNegativeButton(android.R.string.no, (dialog, which) -> {
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-
-                    // If a fingerprint has been captured...
-                } else {
-                    final Room room = RoomFactory.createInstance(roomName, nodeDescription, fingerprint, "", picPathToSave, "");
-                    JSONWriter.writeJSON(room);
-                    Log.d(NODE_RECORD_EDIT_ACTIVITY, "Fingerprint: " + fingerprint.toString());
-                    databaseHandler.insertOrUpdateRoom(room);
-                    progressStatus = 0;
-                    progressTextview.setText(String.valueOf(progressStatus));
-                    progressBar.setProgress(progressStatus);
-                    Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
-                    deleteOldPictures();
-                    askForNewNode();
-                }
+                final Room room = RoomFactory.createInstance(roomName, nodeDescription, fingerprint, "", picPathToSave, "");
+                JSONWriter.writeJSON(room);
+                Log.d(NODE_RECORD_EDIT_ACTIVITY, "Fingerprint: " + fingerprint.toString());
+                databaseHandler.insertOrUpdateRoom(room);
+                progressStatus = 0;
+                progressTextview.setText(String.valueOf(progressStatus));
+                progressBar.setProgress(progressStatus);
+                Toast.makeText(context, getString(R.string.node_saved_toast), Toast.LENGTH_LONG).show();
+                deleteOldPictures();
+                askForNewNode();
             }
+
         }
     }
 
