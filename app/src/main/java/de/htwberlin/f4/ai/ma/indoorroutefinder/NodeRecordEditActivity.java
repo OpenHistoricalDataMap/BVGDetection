@@ -73,6 +73,8 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.room.RoomFactory;
  * <a href="http://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/48/export-icon.png">...</a>
  * <a href="http://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/48/import-icon.png">...</a>
  * <a href="https://thenounproject.com/search/?q=connect&i=1227146">...</a>
+ * <a href="https://www.flaticon.com/free-icon/fingerprint_2313142">...</a>
+ * <a href="https://www.flaticon.com/free-icon/file-sharing_2840068">...</a>
  */
 public class NodeRecordEditActivity extends BaseActivity implements AsyncResponse {
 

@@ -15,10 +15,8 @@ import com.google.android.material.navigation.NavigationView;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.BluetoothActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.EdgesManagerActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.FingerprintListActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.ImportExportActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.LocationActivity;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.MeasurementsListActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.NodeListActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.NodeRecordEditActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.R;
@@ -120,15 +118,15 @@ public class BaseActivity extends AppCompatActivity {
                         drawerLayout.closeDrawers();
                         break;
 
-                    case R.id.nav_fingerprint_list:
-                        loadFingerprintListActivity();
-                        drawerLayout.closeDrawers();
-                        break;
-
-                    case R.id.nav_measurements_list:
-                        loadMeasurementsListActivity();
-                        drawerLayout.closeDrawers();
-                        break;
+//                    case R.id.nav_fingerprint_list:
+//                        loadFingerprintListActivity();
+//                        drawerLayout.closeDrawers();
+//                        break;
+//
+//                    case R.id.nav_measurements_list:
+//                        loadMeasurementsListActivity();
+//                        drawerLayout.closeDrawers();
+//                        break;
 
                     case R.id.nav_room_list:
                         loadRoomListActivity();
@@ -216,17 +214,17 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void loadFingerprintListActivity() {
-        Intent intent = new Intent(getApplicationContext(), FingerprintListActivity.class);
-        finish();
-        startActivity(intent);
-    }
-
-    public void loadMeasurementsListActivity() {
-        Intent intent = new Intent(getApplicationContext(), MeasurementsListActivity.class);
-        finish();
-        startActivity(intent);
-    }
+//    public void loadFingerprintListActivity() {
+//        Intent intent = new Intent(getApplicationContext(), FingerprintListActivity.class);
+//        finish();
+//        startActivity(intent);
+//    }
+//
+//    public void loadMeasurementsListActivity() {
+//        Intent intent = new Intent(getApplicationContext(), MeasurementsListActivity.class);
+//        finish();
+//        startActivity(intent);
+//    }
 
     public void loadRoomListActivity() {
         Intent intent = new Intent(getApplicationContext(), RoomListActivity.class);

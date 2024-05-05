@@ -4,20 +4,20 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_bluetooth"
-            android:icon="@drawable/record_place"
-            android:title="nav_bluetooth" />
-        <item
-            android:id="@+id/nav_fingerprint_list"
-            android:icon="@drawable/record_place"
-            android:title="nav_fingerprint_list" />
-        <item
-            android:id="@+id/nav_measurements_list"
-            android:icon="@drawable/record_place"
-            android:title="nav_measurements_list" />
+            android:icon="@drawable/data_sharing"
+            android:title="Datenbank teilen" />
+        <!--        <item-->
+        <!--            android:id="@+id/nav_fingerprint_list"-->
+        <!--            android:icon="@drawable/record_place"-->
+        <!--            android:title="nav_fingerprint_list" />-->
+        <!--        <item-->
+        <!--            android:id="@+id/nav_measurements_list"-->
+        <!--            android:icon="@drawable/record_place"-->
+        <!--            android:title="nav_measurements_list" />-->
         <item
             android:id="@+id/nav_room_list"
-            android:icon="@drawable/record_place"
-            android:title="nav_room_list" />
+            android:icon="@drawable/fingerprint_thick"
+            android:title="Fingerprints verwalten" />
         <item
             android:id="@+id/nav_location_record"
             android:icon="@drawable/record_place"

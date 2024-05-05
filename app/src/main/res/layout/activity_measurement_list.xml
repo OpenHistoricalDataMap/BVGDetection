@@ -18,10 +18,12 @@
     <ListView
         android:id="@+id/measurementsListListview"
         android:layout_width="match_parent"
-        android:layout_height="500dp" />
+        android:layout_height="wrap_content"
+        android:layout_above="@id/infoTextView" />
 
 
     <TextView
+        android:id="@+id/infoTextView"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
