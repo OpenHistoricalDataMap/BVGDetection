@@ -181,10 +181,6 @@ public class BluetoothActivity extends BaseActivity {
 
         sendDataToApiButton.setOnClickListener(view -> {
             Log.d(BLUETOOTH_ACTIVITY, "Send data to API button pressed");
-//            List<Room> nodes = databaseHandler.getAllRooms();
-//            JSONConverter jsonConverter = new JSONConverter();
-//            String json = jsonConverter.convertRoomListToJSONArray(nodes);
-//            Log.d(BLUETOOTH_ACTIVITY, json);
             sendDataToApi();
         });
     }
@@ -202,6 +198,7 @@ public class BluetoothActivity extends BaseActivity {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void startServer() {
         if (acceptThread != null) {
             acceptThread.cancel();
@@ -211,7 +208,8 @@ public class BluetoothActivity extends BaseActivity {
         statusTextView.setText("Listening for incoming connections...");
     }
 
-    @SuppressLint("MissingPermission")
+
+    @SuppressLint({"SetTextI18n", "MissingPermission"})
     private void connectToBluetoothDevice(BluetoothDevice device) {
         if (connectThread != null) {
             connectThread.cancel();
@@ -221,6 +219,7 @@ public class BluetoothActivity extends BaseActivity {
         statusTextView.setText("Connecting to " + device.getName() + "...");
     }
 
+    @SuppressLint("SetTextI18n")
     private void sendMessage() {
         Log.d(BLUETOOTH_ACTIVITY, "Connected thread: " + connectedThread);
         if (connectedThread != null) {
@@ -239,7 +238,6 @@ public class BluetoothActivity extends BaseActivity {
             }
             connectedThread.write(MESSAGE_END.getBytes());
 
-
         } else {
             statusTextView.setText("Not connected to any device");
         }
@@ -256,6 +254,7 @@ public class BluetoothActivity extends BaseActivity {
 
     private void connected(BluetoothSocket socket) {
         runOnUiThread(new Runnable() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void run() {
                 connectedThread = new ConnectedThread(socket);
@@ -281,16 +280,15 @@ public class BluetoothActivity extends BaseActivity {
         }
 
         public void run() {
-            BluetoothSocket socket = null;
+            BluetoothSocket socket;
             while (true) {
                 try {
                     socket = serverSocket.accept();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.d(BLUETOOTH_ACTIVITY, "Socket's accept() method failed", e);
                     break;
                 }
                 if (socket != null) {
-                    // A connection was accepted
                     connected(socket);
                     try {
                         serverSocket.close();
@@ -325,6 +323,7 @@ public class BluetoothActivity extends BaseActivity {
             socket = tmp;
         }
 
+        @SuppressLint("SetTextI18n")
         public void run() {
             bluetoothAdapter.cancelDiscovery();
             try {
@@ -335,12 +334,7 @@ public class BluetoothActivity extends BaseActivity {
                     socket.close();
                 } catch (IOException closeException) {
                     Log.d(BLUETOOTH_ACTIVITY, "Could not close the client socket", closeException);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            statusTextView.setText("Error... Please try again");
-                        }
-                    });
+                    runOnUiThread(() -> statusTextView.setText("Error... Please try again"));
                 }
                 return;
             }
@@ -377,6 +371,7 @@ public class BluetoothActivity extends BaseActivity {
             outputStream = tmpOut;
         }
 
+        @SuppressLint("SetTextI18n")
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
@@ -386,12 +381,7 @@ public class BluetoothActivity extends BaseActivity {
                     handler.obtainMessage(STATE_MESSAGE_RECEIVED, bytes, -1, buffer).sendToTarget();
                 } catch (IOException e) {
                     Log.d(BLUETOOTH_ACTIVITY, "Input stream was disconnected", e);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            statusTextView.setText("Error... Please try again");
-                        }
-                    });
+                    runOnUiThread(() -> statusTextView.setText("Error... Please try again"));
                     break;
                 }
             }

@@ -18,8 +18,9 @@
     <ListView
         android:id="@+id/roomListListview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/infoTextView" />
+        android:layout_height="match_parent"
+        android:layout_above="@id/infoTextView"
+        android:layout_alignParentTop="true" />
 
 
     <TextView
