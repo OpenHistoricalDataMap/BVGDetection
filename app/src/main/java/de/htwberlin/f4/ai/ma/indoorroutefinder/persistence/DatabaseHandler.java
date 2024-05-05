@@ -2,6 +2,8 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.persistence;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import org.json.JSONArray;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -179,4 +181,8 @@ public interface DatabaseHandler {
     List<SignalSample> getAllMeasurementsForRoom(String roomName);
 
     List<AccessPointInformation> getAccessPointInformationForMeasurement(int measurementID);
+
+    void deleteMeasurement(int measurementID);
+
+    JSONArray getAllMeasurementsInJSON();
 }

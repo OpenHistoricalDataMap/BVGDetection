@@ -78,6 +78,7 @@ public class MeasurementsListActivity extends BaseActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 // TODO:
 //                                databaseHandler.deleteRoom(allNodes.get(position));
+                                databaseHandler.deleteMeasurement(allMeasurements.get(position).getMeasurementID());
                                 loadDbData();
                             }
                         })

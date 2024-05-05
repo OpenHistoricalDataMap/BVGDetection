@@ -101,7 +101,6 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     private ImageButton recordButton;
     private ImageView cameraImageview;
     private AutoCompleteTextView nodeIdEdittext;
-    private String[] nodeIdEdittextSuggestions;
     private EditText descriptionEdittext;
     private EditText coordinatesEdittext;
     private DatabaseHandler databaseHandler;
@@ -182,7 +181,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         measureCount = findViewById(R.id.measure_count_dropdown);
 
         List<Room> roomsList = databaseHandler.getAllRooms();
-        nodeIdEdittextSuggestions = roomsList.stream()
+        String[] nodeIdEdittextSuggestions = roomsList.stream()
                 .map(Room::getRoomName)
                 .toArray(String[]::new);
 
@@ -433,7 +432,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 picPathToSave = null;
             }
 
-            final String roomName = nodeIdEdittext.getText().toString();
+            final String roomName = nodeIdEdittext.getText().toString().trim();
             final String nodeDescription = descriptionEdittext.getText().toString();
 
             // If no fingerprint has been captured...

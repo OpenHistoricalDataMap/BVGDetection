@@ -39,9 +39,9 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_informati
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformationFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
-import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.JSON.JSONConverter;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.room.RoomFactory;
+
 
 public class BluetoothActivity extends BaseActivity {
 
@@ -86,6 +86,8 @@ public class BluetoothActivity extends BaseActivity {
                         }
                     }
 
+                    Log.d(BLUETOOTH_ACTIVITY, "Results: " + results);
+
                     for (String result : results) {
                         if (result.isEmpty()) continue;
                         try {
@@ -105,7 +107,9 @@ public class BluetoothActivity extends BaseActivity {
                             List<SignalSample> signalSampleList = new ArrayList<>();
                             signalSampleList.add(signalSample);
                             Fingerprint fingerprint = FingerprintFactory.createInstance(signalSampleList);
+                            fingerprint.setDeviceID(json.getString("DeviceID"));
                             Room room = RoomFactory.createInstance(json.getString("Room"), "", fingerprint, "", "", "");
+                            Log.d(BLUETOOTH_ACTIVITY, "Room: " + room);
                             countNewNodes += databaseHandler.insertOrUpdateRoom(room);
                         } catch (Exception ignored) {
                         }
@@ -177,13 +181,11 @@ public class BluetoothActivity extends BaseActivity {
 
         sendDataToApiButton.setOnClickListener(view -> {
             Log.d(BLUETOOTH_ACTIVITY, "Send data to API button pressed");
-            List<Room> nodes = databaseHandler.getAllRooms();
-            JSONConverter jsonConverter = new JSONConverter();
-            // TODO: Implement convertNodeListToJSON
-//            String json = jsonConverter.convertNodeListToJSON(nodes);
-            String json = "";
-            Log.d(BLUETOOTH_ACTIVITY, json);
-//            sendDataToApi();
+//            List<Room> nodes = databaseHandler.getAllRooms();
+//            JSONConverter jsonConverter = new JSONConverter();
+//            String json = jsonConverter.convertRoomListToJSONArray(nodes);
+//            Log.d(BLUETOOTH_ACTIVITY, json);
+            sendDataToApi();
         });
     }
 
@@ -220,14 +222,14 @@ public class BluetoothActivity extends BaseActivity {
     }
 
     private void sendMessage() {
+        Log.d(BLUETOOTH_ACTIVITY, "Connected thread: " + connectedThread);
         if (connectedThread != null) {
 
-            // TODO: implement getAllMeasurementsInJSON
-//            JSONArray data = databaseHandler.getAllMeasurementsInJSON();
-            JSONArray data = new JSONArray();
+            JSONArray data = databaseHandler.getAllMeasurementsInJSON();
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String element = data.get(i).toString();
+                    Log.d(BLUETOOTH_ACTIVITY, element);
                     byte[] byteElements = element.getBytes();
                     if (i != 0) connectedThread.write(MESSAGE_SPLIT.getBytes());
                     connectedThread.write(byteElements);
@@ -245,16 +247,11 @@ public class BluetoothActivity extends BaseActivity {
 
     private void sendDataToApi() {
         Log.d(BLUETOOTH_ACTIVITY, "Sending data to API");
-        String jsonData = "{a: a; b: b}";
+//        String jsonData = "{a: a; b: b}";
+        String jsonData = databaseHandler.getAllMeasurementsInJSON().toString();
         SendDataToAPI.Endpoint endpoint = SendDataToAPI.Endpoint.ADD_MEASUREMENTS;
-        SendDataToAPI sendDataToAPI = new SendDataToAPI(endpoint, jsonData, SendDataToAPI.RequestMethod.POST, new SendDataToAPI.ApiResponseListener() {
-            @Override
-            public void onApiResponse(String response) {
-                Log.d(BLUETOOTH_ACTIVITY, "API Response: " + response);
-            }
-        });
+        SendDataToAPI sendDataToAPI = new SendDataToAPI(endpoint, jsonData, SendDataToAPI.RequestMethod.POST, response -> Log.d(BLUETOOTH_ACTIVITY, "API Response: " + response));
         sendDataToAPI.execute();
-
     }
 
     private void connected(BluetoothSocket socket) {

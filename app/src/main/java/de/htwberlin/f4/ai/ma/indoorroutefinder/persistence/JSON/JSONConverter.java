@@ -12,6 +12,7 @@ import java.util.List;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.SignalSample;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformationFactory;
+import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 
 /**
  * Created by Johann Winter
@@ -102,5 +103,39 @@ public class JSONConverter {
             Log.d(JSON_CONVERTER, e.toString());
         }
         return signalSampleList;
+    }
+
+    public String convertRoomListToJSONArray(List<Room> rooms) {
+        JSONArray nodeJsonArray = new JSONArray();
+        try {
+            for (Room room : rooms) {
+
+                if (room.getFingerprint().getSignalSampleList().isEmpty()) continue;
+                JSONObject jsonObjectNode = new JSONObject();
+                String roomName = room.getRoomName();
+                long timestamp = room.getFingerprint().getSignalSampleList().get(0).getTimestamp();
+                jsonObjectNode.put("room", roomName);
+                jsonObjectNode.put("timestamp", timestamp);
+
+                if (room.getFingerprint() != null) {
+                    JSONArray signalJsonArray = new JSONArray();
+                    for (int i = 0; i < room.getFingerprint().getSignalSampleList().size(); i++) {
+                        for (int j = 0; j < room.getFingerprint().getSignalSampleList().get(i).getAccessPointInformationList().size(); j++) {
+                            JSONObject signalJsonObject = new JSONObject();
+                            signalJsonObject.put("bssid", room.getFingerprint().getSignalSampleList().get(i).getAccessPointInformationList().get(j).getBSSID());
+                            signalJsonObject.put("ssid", room.getFingerprint().getSignalSampleList().get(i).getAccessPointInformationList().get(j).getSSID());
+                            signalJsonObject.put("level", room.getFingerprint().getSignalSampleList().get(i).getAccessPointInformationList().get(j).getRSSI());
+                            signalJsonArray.put(signalJsonObject);
+                        }
+
+                    }
+                    jsonObjectNode.put("fingerprint", signalJsonArray);
+                }
+                nodeJsonArray.put(jsonObjectNode);
+            }
+        } catch (final JSONException e) {
+            Log.d(JSON_CONVERTER, "Error while converting rooms to JSON.");
+        }
+        return nodeJsonArray.toString();
     }
 }
