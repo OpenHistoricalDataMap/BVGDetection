@@ -245,12 +245,15 @@ public class BluetoothActivity extends BaseActivity {
 
     private void sendDataToApi() {
         Log.d(BLUETOOTH_ACTIVITY, "Sending data to API");
-//        String jsonData = "{a: a; b: b}";
         String jsonData = databaseHandler.getAllMeasurementsInJSON().toString();
         SendDataToAPI.Endpoint endpoint = SendDataToAPI.Endpoint.ADD_MEASUREMENTS;
-        SendDataToAPI sendDataToAPI = new SendDataToAPI(endpoint, jsonData, SendDataToAPI.RequestMethod.POST, response -> Log.d(BLUETOOTH_ACTIVITY, "API Response: " + response));
+        SendDataToAPI sendDataToAPI = new SendDataToAPI(endpoint, jsonData, SendDataToAPI.RequestMethod.POST, response -> {
+            Log.d(BLUETOOTH_ACTIVITY, "API Response: " + response);
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "API Response: " + response, Toast.LENGTH_SHORT).show());
+        });
         sendDataToAPI.execute();
     }
+
 
     private void connected(BluetoothSocket socket) {
         runOnUiThread(new Runnable() {

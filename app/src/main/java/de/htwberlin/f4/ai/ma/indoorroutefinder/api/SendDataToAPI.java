@@ -38,6 +38,8 @@ public class SendDataToAPI extends AsyncTask<Void, Void, String> {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method.toString());
             conn.setRequestProperty("Content-Type", "application/json");
+            conn.setConnectTimeout(1000);
+            conn.setReadTimeout(1000);
             conn.setDoOutput(true);
 
             if (jsonData != null && !jsonData.isEmpty()) {
@@ -58,11 +60,11 @@ public class SendDataToAPI extends AsyncTask<Void, Void, String> {
                 response = stringBuilder.toString();
             } else {
                 response = "Error: " + responseCode;
-                Log.e(TAG, "Error Response: " + response);
+                Log.e(TAG, "HTTP Error Response Code: " + responseCode);
             }
         } catch (IOException e) {
-            Log.e(TAG, "Exception: " + e.getMessage());
-            response = "Exception: " + e.getMessage();
+            response = "Connection Error: Unable to reach the server. Check if you are connected to the HTW Berlin nework.";
+            Log.e(TAG, "Network Exception: " + e.getMessage());
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -77,6 +79,7 @@ public class SendDataToAPI extends AsyncTask<Void, Void, String> {
         }
         return response;
     }
+
 
     @Override
     protected void onPostExecute(String result) {

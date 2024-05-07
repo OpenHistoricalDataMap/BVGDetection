@@ -210,6 +210,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                         ContentValues sampleValues = new ContentValues();
                         sampleValues.put(TIMESTAMP, sample.getTimestamp());
                         sampleValues.put(DEVICE_ID, fingerprint.getDeviceID());
+                        sampleValues.put(ROOM_ID_FK, roomId);
 
                         long measurementId = database.insert(TABLE_MEASUREMENTS, null, sampleValues);
 
