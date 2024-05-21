@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.Edge;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.edge.EdgeFactory;
@@ -303,12 +304,13 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         if (cursor.moveToFirst()) {
             do {
                 String roomName = cursor.getString(cursor.getColumnIndex(ROOM_NAME));
+                int roomID = cursor.getInt(cursor.getColumnIndex(ROOM_ID));
                 String description = cursor.getString(cursor.getColumnIndex(ROOM_DESCRIPTION));
                 String coordinates = cursor.getString(cursor.getColumnIndex(ROOM_COORDINATES));
                 String picturePath = cursor.getString(cursor.getColumnIndex(ROOM_PICTURE_PATH));
                 String additionalInfo = cursor.getString(cursor.getColumnIndex(ROOM_ADDITIONAL_INFO));
 
-                Cursor fingerprintCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENTS + " WHERE " + ROOM_ID_FK + " = ?", new String[]{String.valueOf(roomName)});
+                Cursor fingerprintCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENTS + " WHERE " + ROOM_ID_FK + " = ?", new String[]{String.valueOf(roomID)});
 
                 List<SignalSample> signalSamples = new ArrayList<>();
 
@@ -317,15 +319,26 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                         long timestamp = fingerprintCursor.getLong(fingerprintCursor.getColumnIndex(TIMESTAMP));
                         int measurementId = fingerprintCursor.getInt(fingerprintCursor.getColumnIndex(MEASUREMENT_ID));
 
-                        Cursor accessPointCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENT_ROUTER + " WHERE " + MEASUREMENT_ID + " = ?", new String[]{String.valueOf(fingerprintCursor.getInt(fingerprintCursor.getColumnIndex(MEASUREMENT_ID)))});
+
+                        Cursor accessPointCursor = database.rawQuery("SELECT * FROM " + TABLE_MEASUREMENT_ROUTER + " WHERE " + MEASUREMENT_ID + " = ?", new String[]{String.valueOf(measurementId)});
 
                         List<AccessPointInformation> accessPointInformationList = new ArrayList<>();
 
                         if (accessPointCursor.moveToFirst()) {
                             do {
-                                String bssid = accessPointCursor.getString(accessPointCursor.getColumnIndex(BSSID));
+                                String bssid = "";
                                 int rssi = accessPointCursor.getInt(accessPointCursor.getColumnIndex(RSSI));
                                 String ssid = "";
+                                int routerId = accessPointCursor.getInt(accessPointCursor.getColumnIndex(ROUTER_ID));
+
+                                Cursor routerCursor = database.rawQuery("SELECT * FROM " + TABLE_ROUTERS + " WHERE " + ROUTER_ID + " = ?", new String[]{String.valueOf(routerId)});
+
+                                if (routerCursor.moveToFirst()) {
+                                    bssid = routerCursor.getString(routerCursor.getColumnIndex(BSSID));
+                                    ssid = routerCursor.getString(routerCursor.getColumnIndex(SSID));
+                                }
+
+                                routerCursor.close();
 
                                 accessPointInformationList.add(AccessPointInformationFactory.createInstance(bssid, rssi, ssid));
                             } while (accessPointCursor.moveToNext());
@@ -348,6 +361,35 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         database.close();
 
         return allRooms;
+    }
+
+    @SuppressLint("Range")
+    @Override
+    public List<AccessPointInformation> getAllAccessPoints() {
+        List<AccessPointInformation> accessPointInformationList = new ArrayList<>();
+
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_ROUTERS, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int router_id = cursor.getInt(cursor.getColumnIndex(ROUTER_ID));
+                String ssid = cursor.getString(cursor.getColumnIndex(SSID));
+                String bssid = cursor.getString(cursor.getColumnIndex(BSSID));
+
+                AccessPointInformation accessPointInformation = AccessPointInformationFactory.createInstance(bssid, 0, ssid);
+
+                accessPointInformationList.add(accessPointInformation);
+
+
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        database.close();
+
+        return accessPointInformationList;
     }
 
     /**
@@ -788,7 +830,6 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                     List<AccessPointInformation> accessPointInformationList = new ArrayList<>();
 
                     if (accessPointCursor.moveToFirst()) {
-                        Log.d("GET_MEASUREMENTS", "AccessPointInformation found for measurement " + measurementId);
                         do {
                             String bssid = "";
                             int rssi = accessPointCursor.getInt(accessPointCursor.getColumnIndex(RSSI));
@@ -898,7 +939,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                             scanResultObject.put("BSSID", bssid);
                             scanResultObject.put("Level", level);
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.d(DATABASE_HANDLER_IMPL, "Error creating JSON object for scan result.");
+                            Log.e(DATABASE_HANDLER_IMPL, Objects.requireNonNull(e.getMessage()));
                         }
                         scanResultsArray.put(scanResultObject);
                     } while (routerCursor.moveToNext());
@@ -913,7 +955,8 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                     measurementObject.put("DeviceID", deviceID);
                     measurementObject.put("ScanResults", scanResultsArray);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.d(DATABASE_HANDLER_IMPL, "Error creating JSON object for measurement.");
+                    Log.e(DATABASE_HANDLER_IMPL, Objects.requireNonNull(e.getMessage()));
                 }
                 measurementsArray.put(measurementObject);
             } while (measurementCursor.moveToNext());

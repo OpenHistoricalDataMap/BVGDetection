@@ -69,6 +69,7 @@ public interface DatabaseHandler {
      */
     void deleteRoom(Room room);
 
+    @Deprecated
     List<Room> getAllNodesForRoom(String roomName);
 
 
@@ -185,4 +186,6 @@ public interface DatabaseHandler {
     void deleteMeasurement(int measurementID);
 
     JSONArray getAllMeasurementsInJSON();
+
+    List<AccessPointInformation> getAllAccessPoints();
 }

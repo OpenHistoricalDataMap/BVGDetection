@@ -12,7 +12,7 @@ public class SettingsActivity extends BaseActivity {
         setTitle(getString(R.string.title_activity_settings));
 
         getFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, new SettingsFragment())
+                .replace(R.id.content_frame, new SettingsFragment(this))
                 .commit();
     }
 }

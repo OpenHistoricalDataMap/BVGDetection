@@ -20,7 +20,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.dijkstra.DijkstraAlgorithm;
@@ -67,7 +70,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
     private SharedPreferences sharedPreferences;
     private String selectedStartNode;
     private String lastSelectedStartNode;
-    private String defaultWifi;
+    private Set<String> defaultWifi;
     private boolean useSSIDfilter;
 
     @Override
@@ -102,7 +105,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
         allRooms = databaseHandler.getAllRooms();
 
         useSSIDfilter = sharedPreferences.getBoolean("use_ssid_filter", false);
-        defaultWifi = sharedPreferences.getString("default_wifi_network", null);
+        defaultWifi = sharedPreferences.getStringSet("default_wifi_network", new HashSet<>());
 
         locateButton.setImageResource(R.drawable.locate);
 
@@ -163,7 +166,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(getString(R.string.select_wifi));
-                    builder.setItems(wifiArray, (dialog, which) -> findLocation(wifiNamesList.get(which)));
+                    builder.setItems(wifiArray, (dialog, which) -> findLocation(new HashSet<>(Collections.singletonList(wifiNamesList.get(which)))));
                     builder.setCancelable(false);
                     builder.show();
                     // If default WiFi is set in preferences
@@ -239,7 +242,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
      *
      * @param wifiName the WiFi to measure
      */
-    private void findLocation(String wifiName) {
+    private void findLocation(Set<String> wifiName) {
         verboseMode = sharedPreferences.getBoolean("verbose_mode", false);
         FingerprintTask fingerprintTask;
         if (verboseMode) {

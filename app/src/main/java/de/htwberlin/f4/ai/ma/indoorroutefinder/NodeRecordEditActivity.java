@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -37,7 +36,10 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.deviceID.UniqueIDManager;
@@ -81,11 +83,8 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     public static final String NODE_RECORD_EDIT_ACTIVITY = "NodeRecordEditActivity";
     private static final int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 3;
     private static final int CAM_REQUEST = 1;
-    private final File sdCard = Environment.getExternalStorageDirectory();
     private final Context context = this;
     String[] permissions;
-    TextView initialWifiTextview;
-    TextView initialWifiLabelTextview;
     TextView coordinatesLabelTextview;
     ImageButton showFingerprintButton;
     ImageButton captureButton;
@@ -113,7 +112,6 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
     private boolean showingBigPictureAtTheMoment;
     private boolean updateMode = false;
     private boolean verboseMode;
-    private boolean useSSIDfilter;
     private Room roomToUpdate;
     private WifiManager wifiManager;
     private Timestamp timestamp;
@@ -126,7 +124,6 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         FrameLayout contentFrameLayout = findViewById(R.id.content_frame);
         getLayoutInflater().inflate(R.layout.activity_node_record_edit, contentFrameLayout);
         setTitle(getString(R.string.title_activity_recordedit_rec));
-
 
         List<String> permissionList = new ArrayList<>();
 
@@ -165,18 +162,14 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
 
         oldPicturePaths = new ArrayList<>();
 
-
         recordButton = findViewById(R.id.record_button);
         captureButton = findViewById(R.id.capture_button);
         saveNodeButton = findViewById(R.id.save_node_button);
         showFingerprintButton = findViewById(R.id.show_fingerprint_button);
         cameraImageview = findViewById(R.id.camera_imageview);
         descriptionEdittext = findViewById(R.id.description_edittext);
-//        nodeIdEdittext = findViewById(R.id.record_id_edittext);
         coordinatesEdittext = findViewById(R.id.coordinates_edittext);
         progressTextview = findViewById(R.id.progress_textview);
-        initialWifiTextview = findViewById(R.id.initial_wifi_textview);
-        initialWifiLabelTextview = findViewById(R.id.initial_wifi_label_textview);
         coordinatesLabelTextview = findViewById(R.id.coordinates_label_textview_editmode);
         infobox = findViewById(R.id.infobox_record_edit);
         progressBar = findViewById(R.id.progress_bar);
@@ -199,14 +192,6 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         pictureTaken = false;
         takingPictureAtTheMoment = false;
         showingBigPictureAtTheMoment = false;
-
-        useSSIDfilter = sharedPreferences.getBoolean("use_ssid_filter", false);
-        if (useSSIDfilter) {
-            String ssidFilter = sharedPreferences.getString("default_wifi_network", null);
-            initialWifiTextview.setText(ssidFilter);
-        } else {
-            initialWifiTextview.setText(getString(R.string.no_ssid_filter));
-        }
 
         recordButton.setImageResource(R.drawable.fingerprint);
         captureButton.setImageResource(R.drawable.camera);
@@ -232,7 +217,7 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         if (intent.hasExtra("nodeId")) {
             updateMode = true;
             setTitle(getString(R.string.title_activity_recordedit_edit));
-            oldNodeId = (String) intent.getExtras().get("nodeId");
+            oldNodeId = (String) Objects.requireNonNull(intent.getExtras()).get("nodeId");
             roomToUpdate = databaseHandler.getRoom(oldNodeId);
             nodeIdEdittext.setText(roomToUpdate.getRoomName());
             descriptionEdittext.setText(roomToUpdate.getDescription());
@@ -250,16 +235,8 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
             if (roomToUpdate.getFingerprint() != null) {
                 recordButton.setImageResource(R.drawable.fingerprint_done);
                 showFingerprintButton.setImageResource(R.drawable.info);
-
-//                initialWifiTextview.setText(roomToUpdate.getFingerprint().getSsid());
-                initialWifiTextview.setText(getString(R.string.no_ssid_filter));
-
-//                if (roomToUpdate.getFingerprint().getSsid() == null) {
-//                    initialWifiTextview.setText(getString(R.string.no_ssid_filter));
-//                }
-            } else {
-                initialWifiTextview.setText("-");
             }
+
 
             if (!roomToUpdate.getCoordinates().isEmpty()) {
                 coordinatesEdittext.setVisibility(View.VISIBLE);
@@ -314,19 +291,15 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 measures = measureCount.getSelectedItemPosition() + 1;
 
                 verboseMode = sharedPreferences.getBoolean("verbose_mode", false);
-                String ssidFilterString = null;
+                Set<String> ssidFilterNew;
 
                 if (verboseMode) {
-                    if (useSSIDfilter) {
-                        ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
-                    }
-                    fingerprintTask = new FingerprintTask(ssidFilterString, measures, wifiManager, false, progressBar, progressTextview, infobox);
+                    ssidFilterNew = sharedPreferences.getStringSet("default_wifi_network", new HashSet<>());
+                    fingerprintTask = new FingerprintTask(ssidFilterNew, measures, wifiManager, false, progressBar, progressTextview, infobox);
                 } else {
-                    if (useSSIDfilter) {
-                        ssidFilterString = sharedPreferences.getString("default_wifi_network", null);
-                    }
+                    ssidFilterNew = sharedPreferences.getStringSet("default_wifi_network", new HashSet<>());
                     infobox.setText(getString(R.string.please_stay));
-                    fingerprintTask = new FingerprintTask(ssidFilterString, measures, wifiManager, false, progressBar, progressTextview);
+                    fingerprintTask = new FingerprintTask(ssidFilterNew, measures, wifiManager, false, progressBar, progressTextview);
                 }
 
                 fingerprintTask.delegate = NodeRecordEditActivity.this;
@@ -590,7 +563,6 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         progressTextview.setText(String.valueOf(progressStatus));
         progressBar.setProgress(progressStatus);
         recordButton.setEnabled(true);
-        //recordTimeText.setEnabled(true);
         nodeIdEdittext.setEnabled(true);
         descriptionEdittext.setEnabled(true);
     }
@@ -625,7 +597,8 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
      * @return boolean, if all permissions are given
      */
     private boolean hasPermissions(Context context, String[] permissions) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+        if (context != null && permissions != null) {
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     System.out.println("----- Permission not granted: " + permission);

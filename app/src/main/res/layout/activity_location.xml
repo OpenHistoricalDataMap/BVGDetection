@@ -42,12 +42,36 @@
         android:layout_marginEnd="5dp"
         android:background="#7A7A7A" />
 
+    <LinearLayout
+        android:id="@+id/initial_wifi_label_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/separator_view_location"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/initial_wifi_label_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/initial_wifi_textview"
+            android:text="@string/initial_wifi_name"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/wifi_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
 
     <RelativeLayout
         android:id="@+id/result_node_linearlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/separator_view_location"
+        android:layout_below="@+id/initial_wifi_label_layout"
         android:layout_marginTop="5dp">
 
         <TextView

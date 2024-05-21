@@ -1,115 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="match_parent" android:layout_width="match_parent">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <CheckBoxPreference
+        android:defaultValue="false"
         android:key="verbose_mode"
-        android:title="Verbose-Modus (Fingerprinting)"
-        android:defaultValue="false" />
-
+        android:title="Verbose-Modus (Fingerprinting)" />
 
 
     <PreferenceCategory
-        android:title="Aufnahme"
-        android:key="pref_offline">
+        android:key="pref_offline"
+        android:title="Aufnahme">
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="use_ssid_filter"
-            android:title="SSID-Filter benutzen"
-            android:defaultValue="false" />
+            android:title="SSID-Filter benutzen" />
 
-        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.ListPreference
-            android:key="default_wifi_network"
+        <MultiSelectListPreference
+            android:defaultValue="@array/default_wifi_networks"
             android:dependency="use_ssid_filter"
+            android:key="default_wifi_network"
             android:title="Filtern nach SSID:" />
 
 
-
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="pref_movingAverage"
-            android:title="Gleitender Mittelwertfilter"
-            android:defaultValue="true" >
-        </CheckBoxPreference>
+            android:title="Gleitender Mittelwertfilter" />
 
         <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.ListPreference
+            android:defaultValue="@string/pref_movingAverage_default"
             android:dependency="pref_movingAverage"
-            android:key="pref_movivngAverageOrder"
-            android:title="Ordnung"
             android:entries="@array/pref_movingAverage_entries"
             android:entryValues="@array/pref_movingAverage_values"
-            android:defaultValue="@string/pref_movingAverage_default" />
+            android:key="pref_movivngAverageOrder"
+            android:title="Ordnung" />
 
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="pref_kalman"
-            android:title="Kalman Filter"
-            android:defaultValue="true" />
+            android:title="Kalman Filter" />
 
         <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
             android:defaultValue="2"
-            android:key="pref_kalmanValue"
-            android:title="Kalman Wert"
             android:dependency="pref_kalman"
             android:inputType="number"
-            />
+            android:key="pref_kalmanValue"
+            android:title="Kalman Wert" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Ortung"
-        android:key="pref_online">
+        android:key="pref_online"
+        android:title="Ortung">
 
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="pref_euclideanDistance"
-            android:title="Euklidische Distanz"
-            android:defaultValue="true" />
+            android:title="Euklidische Distanz" />
 
         <CheckBoxPreference
-            android:key="pref_knnAlgorithm"
-            android:title="k-nächster-Nachbar Algorithmus"
+            android:defaultValue="true"
             android:dependency="pref_euclideanDistance"
-            android:defaultValue="true" />
+            android:key="pref_knnAlgorithm"
+            android:title="k-nächster-Nachbar Algorithmus" />
 
         <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
             android:defaultValue="3"
-            android:key="pref_knnNeighbours"
-            android:title="k Nachbarn"
             android:dependency="pref_knnAlgorithm"
             android:inputType="number"
-            />
+            android:key="pref_knnNeighbours"
+            android:title="k Nachbarn" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="Messung">
+    <PreferenceCategory android:title="Messung">
 
         <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.ListPreference
-            android:key="pref_measurement_type"
-            android:title="Messvariante"
-            android:entries="@array/listDisplayWord"
-            android:summary="%s"
-            android:entryValues="@array/listReturnValue"
+            android:defaultValue="Variante B"
             android:dialogTitle="Bitte Messvariante auswählen"
-            android:defaultValue="Variante B"/>
+            android:entries="@array/listDisplayWord"
+            android:entryValues="@array/listReturnValue"
+            android:key="pref_measurement_type"
+            android:summary="%s"
+            android:title="Messvariante" />
 
         <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
-            android:key="pref_lowpass_value"
-            android:title="Lowpass Filter Wert"
-            android:inputType="numberDecimal"
-            android:numeric="decimal"
             android:defaultValue="0.1"
-            />
+            android:inputType="numberDecimal"
+            android:key="pref_lowpass_value"
+            android:numeric="decimal"
+            android:title="Lowpass Filter Wert" />
 
         <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
-            android:key="pref_barometer_threshold"
-            android:title="Barometer Threshold (m)"
-            android:inputType="numberDecimal"
-            android:numeric="decimal"
             android:defaultValue="0.14"
-            />
+            android:inputType="numberDecimal"
+            android:key="pref_barometer_threshold"
+            android:numeric="decimal"
+            android:title="Barometer Threshold (m)" />
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="pref_stepdirection"
-            android:title="Schrittrichtung erkennen"
-            android:defaultValue="false" />
+            android:title="Schrittrichtung erkennen" />
 
     </PreferenceCategory>
 

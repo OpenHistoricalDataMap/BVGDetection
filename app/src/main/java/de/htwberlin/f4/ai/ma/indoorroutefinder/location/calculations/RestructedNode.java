@@ -1,5 +1,7 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder.location.calculations;
 
+import androidx.annotation.NonNull;
+
 import com.google.common.collect.Multimap;
 
 /**
@@ -23,5 +25,14 @@ public class RestructedNode {
 
     public Multimap<String, Double> getRestructedSignals() {
         return this.restructedSignals;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "RestructedNode{" +
+                "id='" + id + '\'' +
+                ", restructedSignals=" + restructedSignals +
+                '}';
     }
 }

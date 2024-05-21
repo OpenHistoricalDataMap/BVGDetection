@@ -1,12 +1,9 @@
 package de.htwberlin.f4.ai.ma.indoorroutefinder;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
@@ -50,43 +47,33 @@ public class RoomListActivity extends BaseActivity {
 
         loadDbData();
 
-        roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), MeasurementsListActivity.class);
-                // TODO: Change nodeId to roomDatabaseID
-                intent.putExtra("roomID", allRooms.get(position).getRoomName());
-                Log.d(ROOM_LIST_ACTIVITY, "Room ID: " + allRooms.get(position).getRoomName());
-                startActivity(intent);
-            }
+        roomListView.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent = new Intent(getApplicationContext(), MeasurementsListActivity.class);
+            // TODO: Change nodeId to roomDatabaseID
+            intent.putExtra("roomID", allRooms.get(position).getRoomName());
+            Log.d(ROOM_LIST_ACTIVITY, "Room ID: " + allRooms.get(position).getRoomName());
+            startActivity(intent);
         });
 
-        roomListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Room room = allRooms.get(position);
+        roomListView.setOnItemLongClickListener((parent, view, position, id) -> {
+            Room room = allRooms.get(position);
 
 
-                new AlertDialog.Builder(view.getContext())
-                        .setTitle(getString(R.string.delete_entry_title_question))
-                        .setMessage("Soll der Ort \"" + room.getRoomName() + "\" wirklich gelöscht werden?")
-                        .setCancelable(false)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                databaseHandler.deleteRoom(room);
-                                loadDbData();
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-                return true;
+            new AlertDialog.Builder(view.getContext())
+                    .setTitle(getString(R.string.delete_entry_title_question))
+                    .setMessage("Soll der Ort \"" + room.getRoomName() + "\" wirklich gelöscht werden?")
+                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        databaseHandler.deleteRoom(room);
+                        loadDbData();
+                    })
+                    .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+            return true;
 
 
-            }
         });
 
     }
@@ -112,6 +99,7 @@ public class RoomListActivity extends BaseActivity {
 
         allRooms = databaseHandler.getAllRooms();
         for (Room room : allRooms) {
+
             roomNames.add(room.getRoomName());
         }
 
@@ -121,4 +109,13 @@ public class RoomListActivity extends BaseActivity {
     }
 }
 
-
+/*
+bssid='da:bf:c0:0e:1e:17', rssi=-47, ssid='MicroPython-0e1e17'}, AccessPointInformationImpl{
+bssid='dc:b8:08:c9:04:a0', rssi=-54, ssid='eduroam'}, AccessPointInformationImpl{
+bssid='dc:b8:08:c9:04:a1', rssi=-54, ssid='HowToUseEduroam'}, AccessPointInformationImpl{
+bssid='dc:b8:08:c9:04:a2', rssi=-54, ssid='Gast@HTW'}, AccessPointInformationImpl{
+bssid='e4:fa:c4:fc:34:26', rssi=-66, ssid='Rechnernetze'}, AccessPointInformationImpl{
+bssid='dc:b8:08:c9:01:b0', rssi=-61, ssid='eduroam'}, AccessPointInformationImpl{
+bssid='00:09:9a:00:b6:43', rssi=-78, ssid='ELTX1001901'}, AccessPointInformationImpl{
+bssid='dc:b8:08:c8:fe:e2', rssi=-88, ssid='Gast@HTW'}]}]}, roomName='test'}
+ */

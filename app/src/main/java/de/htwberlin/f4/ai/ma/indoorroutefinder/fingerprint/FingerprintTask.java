@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformation;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.fingerprint.accesspoint_information.AccessPointInformationFactory;
@@ -43,7 +44,7 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
     private final ProgressBar progressBar;
     @SuppressLint("StaticFieldLeak")
     private final TextView progressTextview;
-    private final String wifiName;
+    private final Set<String> wifiName;
     private final WifiManager wifiManager;
     public AsyncResponse delegate = null;
     @SuppressLint("StaticFieldLeak")
@@ -52,14 +53,10 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
     private Multimap<String, Integer> multiMap;
     private List<SignalSample> signalSampleList;
     private List<AccessPointInformation> accessPointInformationList;
-    private boolean calculateAverage = false;
-
-    // Used for console output, sorted by accesspoint
-    //private HashMap<String, List<Integer>> testData = new HashMap<>();
-
+    private final boolean calculateAverage;
 
     // Normal mode constructor
-    public FingerprintTask(final String wifiName, final int scanCount, final WifiManager wifiManager, final Boolean calculateAverage,
+    public FingerprintTask(final Set<String> wifiName, final int scanCount, final WifiManager wifiManager, final Boolean calculateAverage,
                            final @Nullable ProgressBar progressBar, final @Nullable TextView progressTextview) {
         this.wifiManager = wifiManager;
         this.wifiName = wifiName;
@@ -70,7 +67,7 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
     }
 
     // Verbose mode constructor
-    public FingerprintTask(final String wifiName, final int scanCount, final WifiManager wifiManager, final Boolean calculateAverage,
+    public FingerprintTask(final Set<String> wifiName, final int scanCount, final WifiManager wifiManager, final Boolean calculateAverage,
                            final @Nullable ProgressBar progressBar, final @Nullable TextView progressTextview, final TextView verboseOutputTextview) {
         this.wifiManager = wifiManager;
         this.wifiName = wifiName;
@@ -133,7 +130,7 @@ public class FingerprintTask extends AsyncTask<Void, Integer, Fingerprint> {
             for (final ScanResult sr : wifiScanList) {
                 // If the wifiName was defined, filter for only this SSID
                 if (wifiName != null) {
-                    if (sr.SSID.equals(wifiName)) {
+                    if (wifiName.contains(sr.SSID)) {
                         Log.d("Fingerprinting... ", "MAC: " + sr.BSSID + "   Strength: " + sr.level + " dBm         timestamp: " + sr.timestamp);
                         AccessPointInformation accessPointInformation = AccessPointInformationFactory.createInstance(sr.BSSID, sr.level, sr.SSID);
                         accessPointInformationList.add(accessPointInformation);
