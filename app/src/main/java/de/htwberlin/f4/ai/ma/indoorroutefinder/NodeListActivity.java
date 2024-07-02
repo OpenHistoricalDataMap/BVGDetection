@@ -3,6 +3,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
@@ -36,12 +37,12 @@ public class NodeListActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(getString(R.string.title_activity_nodelist));
-        FrameLayout contentFrameLayout = (FrameLayout) findViewById(R.id.content_frame);
+        FrameLayout contentFrameLayout = findViewById(R.id.content_frame);
         getLayoutInflater().inflate(R.layout.activity_nodelist, contentFrameLayout);
 
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
 
-        nodeListView = (ListView) findViewById(R.id.nodeListListview);
+        nodeListView = findViewById(R.id.nodeListListview);
 
         allRooms = new ArrayList<>();
         nodeNames = new ArrayList<>();
@@ -58,6 +59,7 @@ public class NodeListActivity extends BaseActivity {
             if (!nodeListIsEmpty) {
                 Intent intent = new Intent(getApplicationContext(), NodeRecordEditActivity.class);
                 intent.putExtra("nodeId", nodeListView.getAdapter().getItem(position).toString());
+                Log.d("nodeId", nodeListView.getAdapter().getItem(position).toString());
                 startActivity(intent);
             }
         });

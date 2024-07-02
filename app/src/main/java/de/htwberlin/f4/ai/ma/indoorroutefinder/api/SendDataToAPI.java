@@ -38,16 +38,22 @@ public class SendDataToAPI extends AsyncTask<Void, Void, String> {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method.toString());
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setConnectTimeout(1000);
-            conn.setReadTimeout(1000);
-            conn.setDoOutput(true);
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
 
-            if (jsonData != null && !jsonData.isEmpty()) {
-                OutputStream os = conn.getOutputStream();
-                os.write(jsonData.getBytes());
-                os.flush();
-                os.close();
+            // Nur für POST, PUT und DELETE setzen
+            if (method == RequestMethod.POST || method == RequestMethod.PUT || method == RequestMethod.DELETE) {
+                conn.setDoOutput(true);
+
+                if (jsonData != null && !jsonData.isEmpty()) {
+                    OutputStream os = conn.getOutputStream();
+                    os.write(jsonData.getBytes());
+                    os.flush();
+                    os.close();
+                }
             }
+
+            Log.d(TAG, "Sending " + method + " request to " + url + " with data: " + jsonData);
 
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -96,10 +102,8 @@ public class SendDataToAPI extends AsyncTask<Void, Void, String> {
     }
 
     public enum Endpoint {
-        ADD_MEASUREMENTS("/add_measurements"),
-        GET_MEASUREMENTS("/get_measurements"),
-        DELETE_MEASUREMENT("/delete_measurement"),
-        UPDATE_MEASUREMENT("/update_measurement");
+        ADD_MULTIPLE_MEASUREMENTS("/measurements/batch"),
+        GET_ALL_MEASUREMENTS("/measurements/all");
 
         private final String path;
 

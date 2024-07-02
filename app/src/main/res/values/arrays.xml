@@ -8,9 +8,78 @@
         <item>3</item>
         <item>5</item>
     </string-array>
-    <string-array name="default_wifi_networks">
-        <item>eduroam</item>
-        <item>Gast@HTW</item>
-        <item>HowToUseEduroam</item>
+    <!--    <string-array name="default_wifi_networks">-->
+    <!--        <item>eduroam</item>-->
+    <!--        <item>Gast@HTW</item>-->
+    <!--        <item>HowToUseEduroam</item>-->
+    <!--    </string-array>-->
+
+    <string-array name="algorithm_entries">
+        <item>SVM</item>
+        <item>KNN</item>
+        <item>Random Forest</item>
+    </string-array>
+
+    <string-array name="algorithm_values">
+        <item>svm</item>
+        <item>knn</item>
+        <item>random_forest</item>
+    </string-array>
+
+    <string-array name="distance_metric_entries">
+        <item>Euklidisch</item>
+        <item>Sorensen</item>
+    </string-array>
+
+    <string-array name="distance_metric_values">
+        <item>euclidean</item>
+        <item>sorensen</item>
+    </string-array>
+
+    <string-array name="weight_type_entries">
+        <item>Uniform</item>
+        <item>Distanzbasiert</item>
+    </string-array>
+
+    <string-array name="weight_type_values">
+        <item>uniform</item>
+        <item>distance</item>
+    </string-array>
+
+    <string-array name="kernel_type_entries">
+        <item>Linear</item>
+        <item>RBF</item>
+    </string-array>
+
+    <string-array name="kernel_type_values">
+        <item>linear</item>
+        <item>rbf</item>
+    </string-array>
+
+    <string-array name="scaling_strategy_entries">
+        <item>None</item>
+        <item>Positive</item>
+        <item>Exponential</item>
+        <item>Powed</item>
+    </string-array>
+    <string-array name="scaling_strategy_values">
+        <item>none</item>
+        <item>positive</item>
+        <item>exponential</item>
+        <item>powed</item>
+    </string-array>
+
+    <string-array name="handle_missing_entries">
+        <item>-100</item>
+        <item>0</item>
+        <item>Ignorieren</item>
+    </string-array>
+    <string-array name="handle_missing_values">
+        <item>-100</item>
+        <item>0</item>
+        <item>Ignorieren</item>
     </string-array>
 </resources>
+
+
+

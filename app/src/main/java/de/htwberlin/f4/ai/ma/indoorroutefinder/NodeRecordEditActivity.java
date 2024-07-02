@@ -36,10 +36,8 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import de.htwberlin.f4.ai.ma.indoorroutefinder.android.BaseActivity;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.deviceID.UniqueIDManager;
@@ -128,6 +126,10 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
         List<String> permissionList = new ArrayList<>();
 
         permissionList.add(Manifest.permission.CAMERA);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            permissionList.add(Manifest.permission.BLUETOOTH_SCAN);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
             permissionList.add(Manifest.permission.BLUETOOTH_CONNECT);
@@ -291,15 +293,12 @@ public class NodeRecordEditActivity extends BaseActivity implements AsyncRespons
                 measures = measureCount.getSelectedItemPosition() + 1;
 
                 verboseMode = sharedPreferences.getBoolean("verbose_mode", false);
-                Set<String> ssidFilterNew;
 
                 if (verboseMode) {
-                    ssidFilterNew = sharedPreferences.getStringSet("default_wifi_network", new HashSet<>());
-                    fingerprintTask = new FingerprintTask(ssidFilterNew, measures, wifiManager, false, progressBar, progressTextview, infobox);
+                    fingerprintTask = new FingerprintTask(measures, wifiManager, false, progressBar, progressTextview, infobox);
                 } else {
-                    ssidFilterNew = sharedPreferences.getStringSet("default_wifi_network", new HashSet<>());
                     infobox.setText(getString(R.string.please_stay));
-                    fingerprintTask = new FingerprintTask(ssidFilterNew, measures, wifiManager, false, progressBar, progressTextview);
+                    fingerprintTask = new FingerprintTask(measures, wifiManager, false, progressBar, progressTextview);
                 }
 
                 fingerprintTask.delegate = NodeRecordEditActivity.this;

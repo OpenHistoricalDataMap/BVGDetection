@@ -5,7 +5,7 @@
         <item
             android:id="@+id/nav_location_record"
             android:icon="@drawable/record_place"
-            android:title="Ort aufnehmen" />
+            android:title="Ort/Fingerprint aufnehmen" />
         <item
             android:id="@+id/nav_location_manager"
             android:icon="@drawable/manage_places"

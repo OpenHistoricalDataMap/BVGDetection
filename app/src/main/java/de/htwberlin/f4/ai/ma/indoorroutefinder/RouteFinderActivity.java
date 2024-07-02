@@ -71,7 +71,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
     private String selectedStartNode;
     private String lastSelectedStartNode;
     private Set<String> defaultWifi;
-    private boolean useSSIDfilter;
+//    private boolean useSSIDfilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +104,7 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         allRooms = databaseHandler.getAllRooms();
 
-        useSSIDfilter = sharedPreferences.getBoolean("use_ssid_filter", false);
+//        useSSIDfilter = sharedPreferences.getBoolean("use_ssid_filter", false);
         defaultWifi = sharedPreferences.getStringSet("default_wifi_network", new HashSet<>());
 
         locateButton.setImageResource(R.drawable.locate);
@@ -151,31 +151,31 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
         // Get WiFis around and ask the user which to use
         locateButton.setOnClickListener(view -> {
             locateButton.setImageResource(R.drawable.locate_inactive);
-            if (useSSIDfilter) {
-                // If default WiFi is not set in preferences
-                if (defaultWifi == null) {
-                    locateButton.setEnabled(false);
+//            if (useSSIDfilter) {
+            // If default WiFi is not set in preferences
+            if (defaultWifi == null) {
+                locateButton.setEnabled(false);
 
-                    WifiScanner wifiScanner = WifiScannerFactory.createInstance();
-                    final List<String> wifiNamesList = wifiScanner.getAvailableNetworks(wifiManager, true);
+                WifiScanner wifiScanner = WifiScannerFactory.createInstance();
+                final List<String> wifiNamesList = wifiScanner.getAvailableNetworks(wifiManager, true);
 
-                    final CharSequence[] wifiArray = new CharSequence[wifiNamesList.size()];
-                    for (int i = 0; i < wifiArray.length; i++) {
-                        wifiArray[i] = wifiNamesList.get(i);
-                    }
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle(getString(R.string.select_wifi));
-                    builder.setItems(wifiArray, (dialog, which) -> findLocation(new HashSet<>(Collections.singletonList(wifiNamesList.get(which)))));
-                    builder.setCancelable(false);
-                    builder.show();
-                    // If default WiFi is set in preferences
-                } else {
-                    findLocation(defaultWifi);
+                final CharSequence[] wifiArray = new CharSequence[wifiNamesList.size()];
+                for (int i = 0; i < wifiArray.length; i++) {
+                    wifiArray[i] = wifiNamesList.get(i);
                 }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setTitle(getString(R.string.select_wifi));
+                builder.setItems(wifiArray, (dialog, which) -> findLocation(new HashSet<>(Collections.singletonList(wifiNamesList.get(which)))));
+                builder.setCancelable(false);
+                builder.show();
+                // If default WiFi is set in preferences
             } else {
-                findLocation(null);
+                findLocation(defaultWifi);
             }
+//            } else {
+//                findLocation(null);
+//            }
         });
 
         // Start the route finding process
@@ -246,9 +246,9 @@ public class RouteFinderActivity extends BaseActivity implements AsyncResponse {
         verboseMode = sharedPreferences.getBoolean("verbose_mode", false);
         FingerprintTask fingerprintTask;
         if (verboseMode) {
-            fingerprintTask = new FingerprintTask(wifiName, 1, wifiManager, true, null, null, infobox);
+            fingerprintTask = new FingerprintTask(1, wifiManager, true, null, null, infobox);
         } else {
-            fingerprintTask = new FingerprintTask(wifiName, 1, wifiManager, true, null, null);
+            fingerprintTask = new FingerprintTask(1, wifiManager, true, null, null);
         }
         fingerprintTask.delegate = this;
         fingerprintTask.execute();

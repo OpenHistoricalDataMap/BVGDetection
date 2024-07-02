@@ -162,7 +162,6 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
     @SuppressLint("Range")
     @Override
     public int insertOrUpdateRoom(Room room) {
-        Log.d(DATABASE_HANDLER_IMPL, "Inserting room with name " + room.getRoomName());
         int numberOfNewFingerprints = 0;
         SQLiteDatabase database = this.getWritableDatabase();
 
@@ -176,28 +175,23 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
         Cursor cursor = database.rawQuery("SELECT " + ROOM_ID + " FROM " + TABLE_ROOMS + " WHERE " + ROOM_NAME + " = ?", new String[]{room.getRoomName()});
         long roomId;
         if (cursor.moveToFirst()) {
-            Log.d(DATABASE_HANDLER_IMPL, "Room with name " + room.getRoomName() + " already exists.");
             roomId = cursor.getInt(cursor.getColumnIndex(ROOM_ID));
             database.update(TABLE_ROOMS, roomValues, ROOM_ID + " = ?", new String[]{String.valueOf(roomId)});
             cursor.close();
         } else {
-            Log.d(DATABASE_HANDLER_IMPL, "Room with name " + room.getRoomName() + " did not exist. Inserted.");
             roomId = database.insert(TABLE_ROOMS, null, roomValues);
             cursor.close();
         }
-
-        Log.d(DATABASE_HANDLER_IMPL, "Room ID: " + roomId);
 
         if (roomId != -1) {
             Fingerprint fingerprint = room.getFingerprint();
 
             if (fingerprint != null) {
-                Log.d(DATABASE_HANDLER_IMPL, "Fingerprint for room " + room.getRoomName() + " found.");
 
                 String deviceId = fingerprint.getDeviceID();
 
                 for (SignalSample sample : fingerprint.getSignalSampleList()) {
-                    Log.d("INSERT_FINGERPRINT", "Inserting fingerprint for room " + room.getRoomName() + " with timestamp " + sample.getTimestamp());
+                    Log.d("INSERT_FINGERPRINT", "Inserting fingerprint for room " + room.getRoomName() + " with timestamp " + sample.getTimestamp() + " and device ID " + deviceId);
 
                     long timestamp = sample.getTimestamp();
 
@@ -206,7 +200,6 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
                             " WHERE " + DEVICE_ID + " = ? AND " + TIMESTAMP + " = ?", new String[]{deviceId, String.valueOf(timestamp)});
 
                     if (existingMeasurementCursor.getCount() == 0) {
-                        Log.d(DATABASE_HANDLER_IMPL, "No existing measurement found. Inserting new measurement.");
 
                         ContentValues sampleValues = new ContentValues();
                         sampleValues.put(TIMESTAMP, sample.getTimestamp());
@@ -935,9 +928,12 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
                         JSONObject scanResultObject = new JSONObject();
                         try {
-                            scanResultObject.put("SSID", ssid);
-                            scanResultObject.put("BSSID", bssid);
-                            scanResultObject.put("Level", level);
+                            // SSID -> ssid
+                            // BSSID -> bssid
+                            // Level -> signal_strength
+                            scanResultObject.put("ssid", ssid);
+                            scanResultObject.put("bssid", bssid);
+                            scanResultObject.put("signal_strength", level);
                         } catch (JSONException e) {
                             Log.d(DATABASE_HANDLER_IMPL, "Error creating JSON object for scan result.");
                             Log.e(DATABASE_HANDLER_IMPL, Objects.requireNonNull(e.getMessage()));
@@ -950,10 +946,20 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
                 JSONObject measurementObject = new JSONObject();
                 try {
-                    measurementObject.put("Room", roomName);
-                    measurementObject.put("Timestamp", timestamp);
-                    measurementObject.put("DeviceID", deviceID);
-                    measurementObject.put("ScanResults", scanResultsArray);
+                    // Room -> room_name
+                    // Timestamp -> timestamp
+                    // DeviceID -> device_id
+                    // ScanResults -> routers
+
+                    if (scanResultsArray.length() != 0) {
+                        measurementObject.put("room_name", roomName);
+                        measurementObject.put("timestamp", timestamp);
+//                        measurementObject.put("timestamp", LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(timestamp)), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                        measurementObject.put("device_id", deviceID);
+                        measurementObject.put("routers", scanResultsArray);
+                    }
+
+
                 } catch (JSONException e) {
                     Log.d(DATABASE_HANDLER_IMPL, "Error creating JSON object for measurement.");
                     Log.e(DATABASE_HANDLER_IMPL, Objects.requireNonNull(e.getMessage()));

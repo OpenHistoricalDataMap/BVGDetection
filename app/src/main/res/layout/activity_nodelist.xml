@@ -4,13 +4,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <ListView
         android:id="@+id/nodeListListview"
         android:layout_width="match_parent"
-        android:layout_height="500dp" />
+        android:layout_height="match_parent"
+        android:layout_above="@id/infoTextViewNodeList"
+        android:layout_alignParentTop="true" />
 
 
     <TextView
+        android:id="@+id/infoTextViewNodeList"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"

@@ -8,7 +8,6 @@
         android:key="verbose_mode"
         android:title="Verbose-Modus (Fingerprinting)" />
 
-
     <PreferenceCategory
         android:key="pref_offline"
         android:title="Aufnahme">
@@ -18,12 +17,11 @@
             android:key="use_ssid_filter"
             android:title="SSID-Filter benutzen" />
 
-        <MultiSelectListPreference
-            android:defaultValue="@array/default_wifi_networks"
-            android:dependency="use_ssid_filter"
-            android:key="default_wifi_network"
-            android:title="Filtern nach SSID:" />
-
+        <!--        <MultiSelectListPreference-->
+        <!--            android:defaultValue="@array/default_wifi_networks"-->
+        <!--            android:dependency="use_ssid_filter"-->
+        <!--            android:key="default_wifi_network"-->
+        <!--            android:title="Filtern nach SSID:" />-->
 
         <CheckBoxPreference
             android:defaultValue="true"
@@ -107,5 +105,120 @@
             android:title="Schrittrichtung erkennen" />
 
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="Algorithmus">
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.ListPreference
+            android:defaultValue="svm"
+            android:dialogTitle="Bitte Algorithmus auswählen"
+            android:entries="@array/algorithm_entries"
+            android:entryValues="@array/algorithm_values"
+            android:key="pref_algorithm"
+            android:title="Algorithmus" />
+
+        <!-- K-Nächster-Nachbar Einstellungen -->
+        <Preference
+            android:key="knn_settings"
+            android:title="K-Nächster-Nachbar Einstellungen" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.ListPreference
+            android:defaultValue="euclidean"
+            android:entries="@array/distance_metric_entries"
+            android:entryValues="@array/distance_metric_values"
+            android:key="pref_knn_distance_metric"
+            android:title="Distanzmetrik" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.ListPreference
+            android:defaultValue="uniform"
+            android:entries="@array/weight_type_entries"
+            android:entryValues="@array/weight_type_values"
+            android:key="pref_knn_weight_type"
+            android:title="Gewichtung" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
+            android:defaultValue="3"
+            android:inputType="number"
+            android:key="pref_knn_k"
+            android:title="Anzahl der Nachbarn (k)" />
+
+        <!-- SVM Einstellungen -->
+        <Preference
+            android:key="svm_settings"
+            android:title="SVM Einstellungen" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
+            android:defaultValue="1.0"
+            android:inputType="numberDecimal"
+            android:key="pref_svm_c"
+            android:title="Regularisierungsparameter (C)" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
+            android:defaultValue="0.1"
+            android:inputType="numberDecimal"
+            android:key="pref_svm_gamma"
+            android:title="Kernelkoeffizient (Gamma)" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.ListPreference
+            android:defaultValue="linear"
+            android:entries="@array/kernel_type_entries"
+            android:entryValues="@array/kernel_type_values"
+            android:key="pref_svm_kernel"
+            android:title="Kerneltyp" />
+
+        <!-- Random Forest Einstellungen -->
+        <Preference
+            android:key="rf_settings"
+            android:title="Random Forest Einstellungen" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
+            android:defaultValue="10"
+            android:inputType="number"
+            android:key="pref_rf_trees"
+            android:title="Anzahl der Bäume" />
+
+    </PreferenceCategory>
+
+    <!-- Neue Kategorie für die Router-Einstellungen -->
+    <PreferenceCategory
+        android:key="pref_router_settings"
+        android:title="Router Einstellungen">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_all_routers"
+            android:title="Alle Router verwenden" />
+
+        <MultiSelectListPreference
+            android:key="default_wifi_network"
+            android:title="Filtern nach SSID:" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
+            android:defaultValue="0.25"
+            android:inputType="numberDecimal"
+            android:key="router_threshold"
+            android:title="Router-Schwellenwert (0.0 - 1.0)" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
+            android:defaultValue="-100"
+            android:inputType="number"
+            android:key="signal_threshold"
+            android:title="Signal-Schwellenwert" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.ListPreference
+            android:defaultValue="none"
+            android:entries="@array/scaling_strategy_entries"
+            android:entryValues="@array/scaling_strategy_values"
+            android:key="scaling_strategy"
+            android:title="Skalierungsstrategie" />
+
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.ListPreference
+            android:defaultValue="-100"
+            android:entries="@array/handle_missing_entries"
+            android:entryValues="@array/handle_missing_values"
+            android:key="handle_missing"
+            android:title="Fehlende Werte behandeln" />
+
+    </PreferenceCategory>
+
 
 </PreferenceScreen>

@@ -3,7 +3,7 @@
     <string name="pref_movingAverage_default">3</string>
 
     <!-- activity titles -->
-    <string name="title_activity_recordedit_rec">Ort aufnehmen</string>
+    <string name="title_activity_recordedit_rec">Ort/Fingerprint aufnehmen</string>
     <string name="title_activity_recordedit_edit">Ort editieren</string>
     <string name="title_activity_nodelist">Orte verwalten</string>
     <string name="title_activity_show_fingerprint"></string>
@@ -77,9 +77,9 @@
     <string name="save_node_button_text">Speichern</string>
     <string name="standard_wifi_name">BVG Wi-Fi</string>
     <string name="measure_wifi_button_text">Fingerprint erstellen</string>
-    <string name="record_another_node_title_text">Neuen Ort aufnehmen?</string>
+    <string name="record_another_node_title_text">Neuen Ort/Fingerprint aufnehmen?</string>
     <string name="please_enter_node_name">Bitte erst einen Namen eingeben.</string>
-    <string name="record_another_node_question">Möchten Sie noch einen Ort aufnehmen?</string>
+    <string name="record_another_node_question">Möchten Sie noch einen Ort/Fingerprint aufnehmen?</string>
     <string name="no_fingerprint_title_text">Kein Fingerprint</string>
     <string name="node_saved_toast">Ort gespeichert</string>
     <string name="node_already_exists_toast">Ort existiert bereits: bitte neuen Namen wählen.</string>
@@ -95,6 +95,9 @@
 
     <!-- activity_nodelist -->
     <string name="nodelist_infobox_text">Antippen zum editieren, Tippen + halten zum Löschen</string>
+
+    <!-- activity_roomList -->
+    <string name="roomList_infobox_text">Antippen um Fingerprints anzuzeigenTippen + halten zum Bearbeiten des Orts</string>
 
     <!-- activity_node_show -->
     <string name="image_placeholder">Bild</string>

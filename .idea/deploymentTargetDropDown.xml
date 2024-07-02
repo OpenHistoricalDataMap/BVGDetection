@@ -10,12 +10,28 @@
               <deviceKey>
                 <Key>
                   <type value="SERIAL_NUMBER" />
-                  <value value="Y800000000000045684" />
+                  <value value="44020DLJH000EA" />
                 </Key>
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-05-21T07:25:22.204151Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-07-02T13:26:22.388715Z" />
+        </State>
+      </entry>
+      <entry key="app2">
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="SERIAL_NUMBER" />
+                  <value value="44020DLJH000EA" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-06-29T13:38:57.493153Z" />
         </State>
       </entry>
     </value>

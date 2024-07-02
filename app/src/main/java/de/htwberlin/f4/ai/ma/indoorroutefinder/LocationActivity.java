@@ -27,7 +27,6 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.Loca
 import de.htwberlin.f4.ai.ma.indoorroutefinder.location.location_calculator.LocationCalculatorFactory;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandler;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.persistence.DatabaseHandlerFactory;
-import smile.classification.KNN;
 
 /**
  * Created by Johann Winter
@@ -36,32 +35,22 @@ import smile.classification.KNN;
  */
 public class LocationActivity extends BaseActivity implements AsyncResponse {
 
-    ImageButton locateButton;
-    ImageView locationImageview;
-    TextView locationTextview;
-    TextView descriptionTextview;
-    TextView infobox;
-    TextView wifiFilter;
-    ProgressBar progressBar;
-    Context context;
-    boolean movingAverage;
-    boolean kalmanFilter;
-    boolean euclideanDistance;
-    boolean knnAlgorithm;
-    int knnValue;
-    int movingAverageOrder;
-    int kalmanValue;
+    private ImageButton locateButton;
+    private ImageView locationImageview;
+    private TextView locationTextview;
+    private TextView descriptionTextview;
+    private TextView infobox;
+    private ProgressBar progressBar;
+    private Context context;
     private DatabaseHandler databaseHandler;
-    private SharedPreferences sharedPreferences;
     private WifiManager wifiManager;
     private boolean verboseMode;
-    private boolean useSSIDfilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(getString(R.string.title_activity_location));
-        FrameLayout contentFrameLayout = (FrameLayout) findViewById(R.id.content_frame);
+        FrameLayout contentFrameLayout = findViewById(R.id.content_frame);
         getLayoutInflater().inflate(R.layout.activity_location, contentFrameLayout);
 
         context = this;
@@ -69,32 +58,38 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
 
-        locateButton = (ImageButton) findViewById(R.id.locate_1s_button);
-        locationImageview = (ImageView) findViewById(R.id.location_imageview);
-        locationTextview = (TextView) findViewById(R.id.location_textview);
-        descriptionTextview = (TextView) findViewById(R.id.description_textview_location);
-        infobox = (TextView) findViewById(R.id.infobox_location);
-        wifiFilter = (TextView) findViewById(R.id.wifi_filter);
-        progressBar = (ProgressBar) findViewById(R.id.location_progressbar);
+        locateButton = findViewById(R.id.locate_1s_button);
+        locationImageview = findViewById(R.id.location_imageview);
+        locationTextview = findViewById(R.id.location_textview);
+        descriptionTextview = findViewById(R.id.description_textview_location);
+        infobox = findViewById(R.id.infobox_location);
+        TextView wifiFilter = findViewById(R.id.wifi_filter);
+        TextView locattionSettingsTextview = findViewById(R.id.locattion_settings_textview);
+        progressBar = findViewById(R.id.location_progressbar);
         locateButton.setImageResource(R.drawable.locate_1s_button);
 
-
-        // Get preferences
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        movingAverage = sharedPreferences.getBoolean("pref_movingAverage", true);
-        kalmanFilter = sharedPreferences.getBoolean("pref_kalman", false);
-        euclideanDistance = sharedPreferences.getBoolean("pref_euclideanDistance", false);
-        knnAlgorithm = sharedPreferences.getBoolean("pref_knnAlgorithm", true);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean movingAverage = sharedPreferences.getBoolean("pref_movingAverage", true);
+        boolean kalmanFilter = sharedPreferences.getBoolean("pref_kalman", false);
+        boolean euclideanDistance = sharedPreferences.getBoolean("pref_euclideanDistance", false);
+        boolean knnAlgorithm = sharedPreferences.getBoolean("pref_knnAlgorithm", true);
         verboseMode = sharedPreferences.getBoolean("verbose_mode", false);
-        useSSIDfilter = sharedPreferences.getBoolean("use_ssid_filter", false);
+        int movingAverageOrder = Integer.parseInt(sharedPreferences.getString("pref_movivngAverageOrder", "3"));
+        int knnValue = Integer.parseInt(sharedPreferences.getString("pref_knnNeighbours", "3"));
+        int kalmanValue = Integer.parseInt(sharedPreferences.getString("pref_kalmanValue", "2"));
+        boolean useAllRouters = sharedPreferences.getBoolean("use_all_routers", false);
+        String algorithm = sharedPreferences.getString("pref_algorithm", "svm");
+        Set<String> defaultWifiNetworks = sharedPreferences.getStringSet("default_wifi_network", new HashSet<>());
 
-        movingAverageOrder = Integer.parseInt(sharedPreferences.getString("pref_movivngAverageOrder", "3"));
-        knnValue = Integer.parseInt(sharedPreferences.getString("pref_knnNeighbours", "3"));
-        kalmanValue = Integer.parseInt(sharedPreferences.getString("pref_kalmanValue", "2"));
+        String knnDistanceMetric = sharedPreferences.getString("pref_knn_distance_metric", "euclidean");
+        String knnWeightType = sharedPreferences.getString("pref_knn_weight_type", "uniform");
+        float svmC = Float.parseFloat(sharedPreferences.getString("pref_svm_c", "1.0"));
+        float svmGamma = Float.parseFloat(sharedPreferences.getString("pref_svm_gamma", "0.1"));
+        String svmKernel = sharedPreferences.getString("pref_svm_kernel", "linear");
+        int rfTrees = Integer.parseInt(sharedPreferences.getString("pref_rf_trees", "10"));
 
-        Set<String> defaultWifiNetworks = sharedPreferences.getStringSet("default_wifi_network", new HashSet<String>());
 
-        if (useSSIDfilter) {
+        if (!useAllRouters) {
             for (String network : defaultWifiNetworks) {
                 String wifiText = wifiFilter.getText().toString();
                 wifiText += network + ", ";
@@ -106,39 +101,33 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
         }
 
 
-        progressBar.setVisibility(View.INVISIBLE);
-
-        locateButton.setOnClickListener(v -> findLocation());
-
-        double[][] X = {
-                {10, 10, 10}, {10, 10, 10}, {90, 90, 90}, {90, 90, 90},
-                {10, 10, 10}, {10, 10, 10}, {90, 90, 90}, {90, 90, 90}
-        };
-
-        int[] y = {0, 0, 1, 1, 0, 0, 1, 1};
-
-        KNN<double[]> knn = KNN.fit(X, y, 3);
-
-        double[][] test = {
-                {10, 10, 10}, {49, 49, 49}, {49, 50, 50}, {51, 51, 51}, {90, 90, 90}
-        };
-
-        StringBuilder predictions = new StringBuilder();
-        for (double[] t : test) {
-            int prediction = knn.predict(t);
-            predictions.append("Prediction: ").append(prediction == 0 ? "Class 0" : "Class 1").append("\n");
+        if (algorithm.equals("svm")) {
+            String text = "Support-Vector-Machine Einstellungen:\n";
+            text += "SVM-C: " + svmC + "\n";
+            text += "SVM-Gamma: " + svmGamma + "\n";
+            text += "SVM-Kernel: " + svmKernel + "\n";
+            locattionSettingsTextview.setText(text);
+        } else if (algorithm.equals("knn")) {
+            String text = "K-Nearst-Neighbour Einstellungen:\n";
+            text += "KNN-Nachbarn: " + knnValue + "\n";
+            text += "KNN-Distanzmetrik: " + knnDistanceMetric + "\n";
+            text += "KNN-Gewichtung: " + knnWeightType + "\n";
+            locattionSettingsTextview.setText(text);
+        } else {
+            String text = "Random-Forest Einstellungen:\n";
+            text += "Anzahl Bäume: " + rfTrees + "\n";
+            locattionSettingsTextview.setText(text);
         }
 
-        Log.d("KNN", predictions.toString());
-
-
+        progressBar.setVisibility(View.INVISIBLE);
+        locateButton.setOnClickListener(v -> findLocation());
     }
 
     /**
-     * Create a fingerprint
+     * Initiates the process to find the user's location by creating a fingerprint.
      */
-    // TODO: Changed numberOfMeasurements to number of measurements
     private void findLocation() {
+        Log.d("LocationActivity", "Starting location process");
         locateButton.setEnabled(false);
         locateButton.setImageResource(R.drawable.locate_1s_button_inactive);
         locationImageview.setVisibility(View.INVISIBLE);
@@ -147,27 +136,18 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
 
         FingerprintTask fingerprintTask;
 
-        Set<String> ssidFilterNew = null;
-
         if (verboseMode) {
-            if (useSSIDfilter) {
-                ssidFilterNew = sharedPreferences.getStringSet("default_wifi_network", new HashSet<String>());
-            }
-            fingerprintTask = new FingerprintTask(ssidFilterNew, 1, wifiManager, true, progressBar, null, infobox);
+            fingerprintTask = new FingerprintTask(1, wifiManager, false, progressBar, null, infobox);
         } else {
-            if (useSSIDfilter) {
-                ssidFilterNew = sharedPreferences.getStringSet("default_wifi_network", new HashSet<String>());
-            }
-            fingerprintTask = new FingerprintTask(ssidFilterNew, 1, wifiManager, true, progressBar, null);
+            fingerprintTask = new FingerprintTask(1, wifiManager, false, progressBar, null);
         }
 
         fingerprintTask.delegate = this;
         fingerprintTask.execute();
     }
 
-
     /**
-     * If the background FingerprintTask is finished, display results
+     * Displays the results after the background FingerprintTask is finished.
      *
      * @param seconds     the measured time
      * @param fingerprint the fingerprint measured before
@@ -175,19 +155,17 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
     @Override
     public void processFinish(Fingerprint fingerprint, int seconds) {
         if (fingerprint != null) {
-
+            Log.d("LocationActivity", "Fingerprint obtained, processing location");
             LocationCalculator locationCalculator = LocationCalculatorFactory.createInstance(this);
             final String foundNode = locationCalculator.calculateNodeId(fingerprint);
 
             if (foundNode != null) {
-
                 locationTextview.setText(foundNode);
                 locationImageview.setVisibility(View.VISIBLE);
 
                 Log.d("LocationActivity", "Found node: " + foundNode);
 
                 descriptionTextview.setText(databaseHandler.getRoom(foundNode).getDescription());
-
                 final String picturePath = databaseHandler.getRoom(foundNode).getPicturePath();
 
                 if (picturePath != null) {
@@ -203,16 +181,17 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
                     startActivity(intent);
                 });
 
-
             } else {
                 locationTextview.setText(getString(R.string.no_node_found_text));
+                Log.d("LocationActivity", "No node found");
             }
         } else {
             locationTextview.setText(getString(R.string.please_try_again));
+            Log.d("LocationActivity", "Fingerprint is null, please try again");
         }
         progressBar.setVisibility(View.INVISIBLE);
-
         locateButton.setEnabled(true);
         locateButton.setImageResource(R.drawable.locate_1s_button);
     }
+
 }

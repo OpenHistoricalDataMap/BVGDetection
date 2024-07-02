@@ -46,22 +46,45 @@
         android:textSize="14sp"
         android:textStyle="italic" />
 
-    <!-- HTTP Elements -->
-    <Button
-        android:id="@+id/send_to_api_button"
+    <!--        <Button-->
+    <!--            android:id="@+id/send_to_api_button"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_alignParentBottom="true"-->
+    <!--            android:layout_centerHorizontal="true"-->
+    <!--            android:layout_marginBottom="16dp"-->
+    <!--            android:text="Send to API" />-->
+
+
+    <LinearLayout
+        android:id="@+id/api_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
-        android:text="Send to API" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/receive_data_from_api"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:text="Receive from API" />
+
+        <Button
+            android:id="@+id/send_to_api_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send to API" />
+    </LinearLayout>
 
 
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/send_to_api_button"
+        android:layout_above="@id/api_buttons"
         android:layout_below="@id/statusText"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp" />
