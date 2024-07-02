@@ -56,6 +56,12 @@ public class BluetoothActivity extends BaseActivity {
     private List<String> results = new ArrayList<>();
     private BluetoothAdapter bluetoothAdapter;
     private ArrayAdapter<String> deviceListAdapter;
+    private ListView deviceListView;
+    private TextView statusTextView;
+    private ConnectThread connectThread;
+    private ConnectedThread connectedThread;
+    private AcceptThread acceptThread;
+    private DatabaseHandler databaseHandler;
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler() {
         @Override
@@ -77,12 +83,6 @@ public class BluetoothActivity extends BaseActivity {
             }
         }
     };
-    private ListView deviceListView;
-    private TextView statusTextView;
-    private ConnectThread connectThread;
-    private ConnectedThread connectedThread;
-    private AcceptThread acceptThread;
-    private DatabaseHandler databaseHandler;
     private Button listenButton, sendButton, listDevicesButton, sendDataToApiButton, receiveDataFromApiButton;
 
     /**
