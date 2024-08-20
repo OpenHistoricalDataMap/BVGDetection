@@ -13,12 +13,14 @@ import java.util.Set;
 
 /**
  * This class implements a simple Random Forest algorithm in Java.
- * The implementation is inspired by the Python code example from <a href="https://konfuzio.com/en/random-forest/#pure-python-implementierung-von-einem-random-forest">...</a>.
+ * The implementation is inspired by the Python code example from
+ * <a href="https://konfuzio.com/en/random-forest/#pure-python-implementierung-von-einem-random-forest">...</a>.
  */
 public class RandomForestClassifier implements Classifier {
     private final int nTrees;
     private final int maxDepth;
     private final int minSamplesSplit;
+    private final int maxFeatures;
     private final List<Node> trees;
 
     /**
@@ -28,10 +30,11 @@ public class RandomForestClassifier implements Classifier {
      * @param trainLabels Labels for the training data.
      * @param nTrees      Number of trees in the forest.
      */
-    public RandomForestClassifier(double[][] trainData, String[] trainLabels, int nTrees) {
+    public RandomForestClassifier(double[][] trainData, String[] trainLabels, int nTrees, int rfMaxFeatures, int rfMaxDepth) {
         this.nTrees = nTrees;
-        this.maxDepth = 5; // Default max depth
-        this.minSamplesSplit = 2; // Default minimum samples split
+        this.maxDepth = rfMaxDepth;
+        this.minSamplesSplit = 2;
+        this.maxFeatures = rfMaxFeatures;
         this.trees = new ArrayList<>();
         Log.d("Random Forest Classifier", "Initializing RandomForestClassifier with " + nTrees + " trees.");
         fit(trainData, trainLabels);
@@ -168,7 +171,7 @@ public class RandomForestClassifier implements Classifier {
      */
     private int[] randomFeatureIndices(int nFeatures) {
         Random rand = new Random();
-        int[] indices = new int[(int) Math.sqrt(nFeatures)];
+        int[] indices = new int[Math.min(maxFeatures, nFeatures)];
         for (int i = 0; i < indices.length; i++) {
             indices[i] = rand.nextInt(nFeatures);
         }

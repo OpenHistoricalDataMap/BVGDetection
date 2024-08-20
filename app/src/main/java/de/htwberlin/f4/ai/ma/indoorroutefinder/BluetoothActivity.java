@@ -119,6 +119,10 @@ public class BluetoothActivity extends BaseActivity {
             startActivityForResult(enableBluetoothIntent, REQUEST_ENABLE_BLUETOOTH);
         }
 
+        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+        startActivity(discoverableIntent);
+
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
         setupListeners();
     }

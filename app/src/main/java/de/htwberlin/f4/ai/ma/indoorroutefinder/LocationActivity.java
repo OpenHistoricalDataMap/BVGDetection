@@ -87,7 +87,8 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
         float svmGamma = Float.parseFloat(sharedPreferences.getString("pref_svm_gamma", "0.1"));
         String svmKernel = sharedPreferences.getString("pref_svm_kernel", "linear");
         int rfTrees = Integer.parseInt(sharedPreferences.getString("pref_rf_trees", "10"));
-
+        int rfMaxFeatures = Integer.parseInt(sharedPreferences.getString("pref_rf_max_features", "10"));
+        int rfMaxDepth = Integer.parseInt(sharedPreferences.getString("pref_rf_max_depth", "10"));
 
         if (!useAllRouters) {
             for (String network : defaultWifiNetworks) {
@@ -116,6 +117,8 @@ public class LocationActivity extends BaseActivity implements AsyncResponse {
         } else {
             String text = "Random-Forest Einstellungen:\n";
             text += "Anzahl Bäume: " + rfTrees + "\n";
+            text += "Maximale Anzahl an Features: " + rfMaxFeatures + "\n";
+            text += "Maximale Tiefe: " + rfMaxDepth + "\n";
             locattionSettingsTextview.setText(text);
         }
 

@@ -953,7 +953,7 @@ class DatabaseHandlerImpl extends SQLiteOpenHelper implements DatabaseHandler {
 
                     if (scanResultsArray.length() != 0) {
                         measurementObject.put("room_name", roomName);
-                        measurementObject.put("timestamp", timestamp);
+                        measurementObject.put("timestamp", Integer.valueOf(timestamp));
 //                        measurementObject.put("timestamp", LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(timestamp)), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                         measurementObject.put("device_id", deviceID);
                         measurementObject.put("routers", scanResultsArray);

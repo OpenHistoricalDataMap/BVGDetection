@@ -54,6 +54,8 @@ class LocationCalculatorImpl implements LocationCalculator {
         float svmGamma = Float.parseFloat(sharedPreferences.getString("pref_svm_gamma", "0.1"));
         String svmKernel = sharedPreferences.getString("pref_svm_kernel", "linear");
         int rfTrees = Integer.parseInt(sharedPreferences.getString("pref_rf_trees", "10"));
+        int rfMaxFeatures = Integer.parseInt(sharedPreferences.getString("pref_rf_max_features", "10"));
+        int rfMaxDepth = Integer.parseInt(sharedPreferences.getString("pref_rf_max_depth", "10"));
 
         String[] defaultWifiNetworks = sharedPreferences.getStringSet("default_wifi_network", new HashSet<>()).toArray(new String[0]);
         boolean useAllRouters = sharedPreferences.getBoolean("use_all_routers", true);
@@ -165,7 +167,7 @@ class LocationCalculatorImpl implements LocationCalculator {
                 prediction = svmClassifier.predict(scaledTestData);
                 break;
             case "random_forest":
-                RandomForestClassifier randomForestClassifier = new RandomForestClassifier(scaledTrainData, trainLabels, rfTrees);
+                RandomForestClassifier randomForestClassifier = new RandomForestClassifier(scaledTrainData, trainLabels, rfTrees, rfMaxFeatures, rfMaxDepth);
                 prediction = randomForestClassifier.predict(scaledTestData);
                 break;
         }

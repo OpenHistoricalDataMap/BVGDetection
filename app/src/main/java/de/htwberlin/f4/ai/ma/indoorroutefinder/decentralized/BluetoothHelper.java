@@ -2,6 +2,7 @@ package de.htwberlin.f4.ai.ma.indoorroutefinder.decentralized;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -20,6 +21,8 @@ import de.htwberlin.f4.ai.ma.indoorroutefinder.room.Room;
 import de.htwberlin.f4.ai.ma.indoorroutefinder.room.RoomFactory;
 
 public class BluetoothHelper {
+
+    public static final String BLUETOOTH_HELPER = "BluetoothHelper";
 
     /**
      * Processes received Bluetooth messages.
@@ -100,7 +103,7 @@ public class BluetoothHelper {
                 Room room = RoomFactory.createInstance(responseArray.getJSONObject(i).getString("room_name"), "", fingerprint, "", "", "");
                 databaseHandler.insertOrUpdateRoom(room);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.d(BLUETOOTH_HELPER, "Error while processing API response: " + e.getMessage());
             }
         }
     }

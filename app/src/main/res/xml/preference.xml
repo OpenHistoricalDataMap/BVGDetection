@@ -176,6 +176,12 @@
             android:key="pref_rf_trees"
             android:title="Anzahl der Bäume" />
 
+        <de.htwberlin.f4.ai.ma.indoorroutefinder.settings.EditTextPreference
+            android:defaultValue="10"
+            android:inputType="number"
+            android:key="pref_rf_max_features"
+            android:title="Anzahl der Features" />
+
     </PreferenceCategory>
 
     <!-- Neue Kategorie für die Router-Einstellungen -->

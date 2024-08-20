@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * KNNClassifier - A simple k-Nearest Neighbors classifier.
@@ -98,19 +97,42 @@ public class KNNClassifier implements Classifier {
      * @return A list of weights and their corresponding labels.
      */
     private List<Map.Entry<Double, String>> computeWeights(List<Map.Entry<Double, String>> distances) {
-        switch (this.weightType) {
-            case UNIFORM:
-                return distances.stream().map(d -> new AbstractMap.SimpleEntry<>(1.0, d.getValue())).collect(Collectors.toList());
-            case DISTANCE:
-                boolean hasZeroDistance = distances.stream().anyMatch(d -> d.getKey() == 0.0);
-                if (hasZeroDistance) {
-                    return distances.stream().filter(d -> d.getKey() == 0.0).map(d -> new AbstractMap.SimpleEntry<>(1.0, d.getValue())).collect(Collectors.toList());
-                } else {
-                    return distances.stream().map(d -> new AbstractMap.SimpleEntry<>(1 / d.getKey(), d.getValue())).collect(Collectors.toList());
+        List<Map.Entry<Double, String>> weightedList = new ArrayList<>();
+
+        if (this.weightType == WeightType.UNIFORM) {
+            for (Map.Entry<Double, String> entry : distances) {
+                Map.Entry<Double, String> weightedEntry = new AbstractMap.SimpleEntry<>(1.0, entry.getValue());
+                weightedList.add(weightedEntry);
+            }
+        } else if (this.weightType == WeightType.DISTANCE) {
+            boolean hasZeroDistance = false;
+
+            for (Map.Entry<Double, String> entry : distances) {
+                if (entry.getKey() == 0.0) {
+                    hasZeroDistance = true;
+                    break;
                 }
-            default:
-                throw new IllegalArgumentException("Weight type not recognized: should be UNIFORM or DISTANCE");
+            }
+
+            if (hasZeroDistance) {
+                for (Map.Entry<Double, String> entry : distances) {
+                    if (entry.getKey() == 0.0) {
+                        Map.Entry<Double, String> weightedEntry = new AbstractMap.SimpleEntry<>(1.0, entry.getValue());
+                        weightedList.add(weightedEntry);
+                    }
+                }
+            } else {
+                for (Map.Entry<Double, String> entry : distances) {
+                    double weight = 1 / entry.getKey();
+                    Map.Entry<Double, String> weightedEntry = new AbstractMap.SimpleEntry<>(weight, entry.getValue());
+                    weightedList.add(weightedEntry);
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Weight type not recognized: should be UNIFORM or DISTANCE");
         }
+
+        return weightedList;
     }
 
     /**
@@ -126,7 +148,6 @@ public class KNNClassifier implements Classifier {
         for (int i = 0; i < X.length; i++) {
             double dist = distance(X[i], test);
             distances.add(new AbstractMap.SimpleEntry<>(dist, y[i]));
-            Log.d(TAG, "Distance from test point to training point " + i + ": " + dist);
         }
         distances.sort(Map.Entry.comparingByKey());
 

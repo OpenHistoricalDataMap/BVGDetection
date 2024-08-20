@@ -12,7 +12,7 @@ import java.net.URL;
 
 public class SendDataToAPI extends AsyncTask<Void, Void, String> {
 
-    private static final String BASE_URL = "http://141.45.212.246:5000";
+    private static final String BASE_URL = "http://141.45.212.246:8000";
     private static final String TAG = "SendDataToAPI";
 
     private final ApiResponseListener responseListener;

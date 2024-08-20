@@ -236,6 +236,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
         setPreferenceEnabled("rf_settings", isRf);
         setPreferenceEnabled("pref_rf_trees", isRf);
+        setPreferenceEnabled("pref_rf_max_features", isRf);
+        setPreferenceEnabled("pref_rf_max_depth", isRf);
 
         // Optionale Anpassungen für neue Präferenzen je nach Algorithmus
         setPreferenceEnabled("use_all_routers", true);
