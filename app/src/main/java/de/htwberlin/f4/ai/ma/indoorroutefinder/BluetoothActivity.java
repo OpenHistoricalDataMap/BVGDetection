@@ -107,7 +107,7 @@ public class BluetoothActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Bluetooth Communication");
+        setTitle("Datenbank teilen");
         FrameLayout contentFrameLayout = findViewById(R.id.content_frame);
         getLayoutInflater().inflate(R.layout.activity_bluetooth, contentFrameLayout);
 
@@ -118,7 +118,7 @@ public class BluetoothActivity extends BaseActivity {
             Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBluetoothIntent, REQUEST_ENABLE_BLUETOOTH);
         }
-        
+
         databaseHandler = DatabaseHandlerFactory.getInstance(this);
         setupListeners();
     }

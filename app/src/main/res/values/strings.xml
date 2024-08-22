@@ -12,7 +12,7 @@
     <string name="title_activity_findroute">Route finden</string>
     <string name="title_activity_importexport">Import / Export</string>
     <string name="title_activity_settings">Einstellungen</string>
-    <string name="title_activity_roomlist">title_activity_roomlist</string>
+    <string name="title_activity_roomlist">Fingerprints verwalten</string>
 
 
     <string name="action_settings">Settings</string>
